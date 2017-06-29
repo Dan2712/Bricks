@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -279,7 +280,6 @@ public class CasecrePanel extends JPanel{
 	                	
 	                	JButton btn1 = new JButton();
 	                	btn1.setBackground(Color.DARK_GRAY);
-	                	//btn1.setForeground(Color.WHITE);
 	                	btn1.setPreferredSize(new Dimension(50, 20));
 	            		btn1.setBorder(null);
 	            		//btn.setLocation(200, 20);
@@ -303,7 +303,7 @@ public class CasecrePanel extends JPanel{
 	                	//btn2.setForeground(Color.blue);
 	                	btn2.setPreferredSize(new Dimension(50, 20));
 	            		btn2.setBorder(null);
-	            		//btn.setLocation(200, 20);
+	            		
 	                	panelDown.add(btn2);
 	                	panelDown.updateUI();
 	                	System.out.println("act");
@@ -324,9 +324,9 @@ public class CasecrePanel extends JPanel{
 	                	//btn3.setForeground(Color.pink);
 	                	btn3.setPreferredSize(new Dimension(50, 20));
 	            		btn3.setBorder(null);
-	            		//btn.setLocation(200, 20);
+	            		btn3.addMouseListener(new PopClickListener());
 	            		
-	                	panelDown.add(btn3);
+	            		panelDown.add(btn3);
 	                	panelDown.updateUI();
 	                	System.out.println("ver");
 	                } catch (Exception e1) {
@@ -335,4 +335,36 @@ public class CasecrePanel extends JPanel{
 	            }
 	        });
 	  }
+	  
+	  class RightMenu extends JPopupMenu {
+		    JMenuItem add_bricks;
+		    JMenuItem delete_bricks;
+		    JMenuItem modify_bricks;
+		    public RightMenu(){
+		    	add_bricks = new JMenuItem("Add");
+		    	delete_bricks = new JMenuItem("Delete");
+		    	modify_bricks = new JMenuItem("Modify");
+		        add(add_bricks);
+		        add(delete_bricks);
+		        add(modify_bricks);
+		    }
+		}
+	  
+	  class PopClickListener extends MouseAdapter {
+		    public void mousePressed(MouseEvent e){
+		        if (e.isPopupTrigger())
+		            doPop(e);
+		    }
+
+		    public void mouseReleased(MouseEvent e){
+		        if (e.isPopupTrigger())
+		            doPop(e);
+		    }
+
+		    private void doPop(MouseEvent e){
+		    	RightMenu menu = new RightMenu();
+		        menu.show(e.getComponent(), e.getX(), e.getY());
+		    }
+		}
+	  
 }
