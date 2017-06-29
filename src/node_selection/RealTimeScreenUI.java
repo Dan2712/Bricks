@@ -95,19 +95,21 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 			e.printStackTrace();
 		}
 		
-		Rectangle rect = mModel.getCurrentDrawingRect();
-		if (rect != null) {
-			g2.setColor(Color.RED);
-			if (mModel.isExploreMode()) {
-				s = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{15,10,}, 0.0f);
+		if (mModel != null) {
+			Rectangle rect = mModel.getCurrentDrawingRect();
+			if (rect != null) {
 				g2.setColor(Color.RED);
-				g2.setStroke(s);
-			} else {
-				s = new BasicStroke(1.5f);
-				g2.setColor(Color.RED);
+				if (mModel.isExploreMode()) {
+					s = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{15,10,}, 0.0f);
+					g2.setColor(Color.RED);
+					g2.setStroke(s);
+				} else {
+					s = new BasicStroke(1.5f);
+					g2.setColor(Color.RED);
+				}
+				g2.drawRect(mDx + getScaledSize(rect.x), mDy + getScaledSize(rect.y),
+	                    getScaledSize(rect.width), getScaledSize(rect.height));
 			}
-			g2.drawRect(mDx + getScaledSize(rect.x), mDy + getScaledSize(rect.y),
-                    getScaledSize(rect.width), getScaledSize(rect.height));
 		}
 	}
 
@@ -203,6 +205,7 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 	            	mModel.setSelectedNode(node);
 	            	UiNode node_sel = (UiNode) node;
 	            	System.out.println(node_sel.getXpath());
+	            	System.out.println(node_sel.getAttribute("clickable"));
 	            	repaint();
             	}
             }
