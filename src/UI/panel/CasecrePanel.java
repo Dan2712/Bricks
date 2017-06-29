@@ -3,16 +3,24 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
+import javax.swing.event.MouseInputAdapter;
 
 import UI.AppMainWindow;
 import UI.ConstantsUI;
@@ -20,6 +28,7 @@ import UI.MyIconButton;
 import tools.BricksDrag;
 import tools.ConstantsTools;
 import tools.PropertyUtil;
+
 /**
  *
  * @author DraLastat
@@ -153,7 +162,7 @@ public class CasecrePanel extends JPanel{
 		 * @return
 		 */
 		JPanel panelGridActPick = new JPanel();
-		panelGridActPick.setBackground(Color.blue);
+		panelGridActPick.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelGridActPick.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
 
 		
@@ -229,36 +238,36 @@ public class CasecrePanel extends JPanel{
 	 * 
 	 * @return
 	 */
+	JPanel panelDown ;
 	private JPanel getDownPanel() {
-		JPanel panelDown = new JPanel();
+		if(panelDown == null){
+			panelDown = new JPanel();
+			/*JLabel labelTitle = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.title"));
+			labelTitle.setFont(ConstantsUI.FONT_TITLE);
+			labelTitle.setForeground(ConstantsUI.TOOL_BAR_BACK_COLOR);
+			
+			panelDown.add(labelTitle);*/
+		}
+		
 		Dimension preferredSize = new Dimension(245, 350);
 		panelDown.setPreferredSize(preferredSize);
 		panelDown.setBackground(Color.DARK_GRAY);
-		panelDown.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
-		/*JButton btn = new JButton();
+		panelDown.setLayout(new FlowLayout(FlowLayout.LEFT));
+		
+	/*	JButton btn = new JButton();
 		btn.setPreferredSize(new Dimension(50, 20));
 		btn.setBorder(null);
 		btn.setLocation(20, 20);
 		btn.addMouseMotionListener(new BricksDrag());*/
 
-		JLabel labelTitle = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.title"));
-		labelTitle.setFont(ConstantsUI.FONT_TITLE);
-		labelTitle.setForeground(ConstantsUI.TOOL_BAR_BACK_COLOR);
 		
-		panelDown.add(labelTitle);
 		//panelDown.add(btn);
 		panelDown.updateUI();
 		return panelDown;
 	}
 	
-/*	class ADDbutton extends JButton{
-		//private static JButton bricksELE; 
-		private JButton btn2 = bricksELE;
-		
-		public ADDbutton(JButton button){
-			JButton btn2 = new JButton();
-		}
-	}*/
+
+
 	
 	  private void addListener() {
 		  buttonEleAdd.addActionListener(new ActionListener() {
@@ -267,15 +276,63 @@ public class CasecrePanel extends JPanel{
 	            public void actionPerformed(ActionEvent e) {
 
 	                try {
-	                	JButton btn = new JButton();
-	                	CaseCre.add(btn);
-	                	System.out.println("work");
+	                	
+	                	JButton btn1 = new JButton();
+	                	btn1.setBackground(Color.DARK_GRAY);
+	                	//btn1.setForeground(Color.WHITE);
+	                	btn1.setPreferredSize(new Dimension(50, 20));
+	            		btn1.setBorder(null);
+	            		//btn.setLocation(200, 20);
+	                	panelDown.add(btn1);
+	                	panelDown.updateUI();
+	                	System.out.println("ele");
+	                } catch (Exception e1) {
+	                    	                }
+
+	            }
+	        });
+		  buttonActAdd.addActionListener(new ActionListener() {
+
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+
+	                try {
+	                	
+	                	JButton btn2 = new JButton();
+	                	btn2.setBackground(Color.DARK_GRAY);
+	                	//btn2.setForeground(Color.blue);
+	                	btn2.setPreferredSize(new Dimension(50, 20));
+	            		btn2.setBorder(null);
+	            		//btn.setLocation(200, 20);
+	                	panelDown.add(btn2);
+	                	panelDown.updateUI();
+	                	System.out.println("act");
+	                } catch (Exception e1) {
+	                    	                }
+
+	            }
+	        });
+		  buttonVerAdd.addActionListener(new ActionListener() {
+
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+
+	                try {
+	                	
+	                	JButton btn3 = new JButton();
+	                	btn3.setBackground(Color.DARK_GRAY);
+	                	//btn3.setForeground(Color.pink);
+	                	btn3.setPreferredSize(new Dimension(50, 20));
+	            		btn3.setBorder(null);
+	            		//btn.setLocation(200, 20);
+	            		
+	                	panelDown.add(btn3);
+	                	panelDown.updateUI();
+	                	System.out.println("ver");
 	                } catch (Exception e1) {
 	                    	                }
 
 	            }
 	        });
 	  }
-	
-	
 }
