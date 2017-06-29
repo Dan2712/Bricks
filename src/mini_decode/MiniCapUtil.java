@@ -49,6 +49,8 @@ public class MiniCapUtil implements ScreenSubject{
 	private String ADB_PULL_COMMAND = "adb -s %s pull %s %s";
 	private String ADB_GET_ORIENTATION = "dumpsys display | grep 'mDefaultViewport'";
 	private String GET_PID = "ps | grep /data/local/tmp/minicap";
+	private String GET_DPI = "getprop ro.sf.lcd_density";
+	private String start_command = "";
 	
 	private Queue<byte[]> dataQueue = new LinkedBlockingQueue<byte[]>();
 	private List<AndroidScreenObserver> observers = new ArrayList<AndroidScreenObserver>();
@@ -63,6 +65,7 @@ public class MiniCapUtil implements ScreenSubject{
 	
 	private String PID;
 	private int orientation_tag = 0;
+	private boolean isPad = false;
 	
 	public MiniCapUtil(IDevice device) {
 		this.device = device;
@@ -96,10 +99,14 @@ public class MiniCapUtil implements ScreenSubject{
 			
 			//get the screen orientation
 			orientation_tag = dumpsOrientation();
+			
+			//if the device is a pad
+			isPad = isPad();
 		} catch (SyncException | IOException | AdbCommandRejectedException | TimeoutException e1) {
 			e1.printStackTrace();
 		}
 	}
+	
 	/**
 	 * judge if the device supported
 	 */
@@ -110,6 +117,29 @@ public class MiniCapUtil implements ScreenSubject{
 			return true;
 		}
 		return false;
+	}
+	
+	/** 
+	 * judge if it's a pad 
+	 *  
+	 * @return 
+	 */  
+	private boolean isPad() {  
+	    // 屏幕宽度  
+	    int screenWidth = Integer.parseInt(size.split("x")[0]);  
+	    // 屏幕高度  
+	    int screenHeight = Integer.parseInt(size.split("x")[1]);
+	    int dpi = Integer.parseInt(executeShellCommand(GET_DPI).trim());
+	    double x = Math.pow(screenWidth / dpi, 2);  
+	    double y = Math.pow(screenHeight / dpi, 2); 
+	    
+	    double screenInches = Math.sqrt(x + y);  
+	    System.out.println(screenInches);
+	    // if the screen inches is larger than 6, it's a pad
+	    if (screenInches >= 6.0) {  
+	        return true;  
+	    }  
+	    return false;  
 	}
 	
 	private String executeShellCommand(String command) {
@@ -231,7 +261,7 @@ public class MiniCapUtil implements ScreenSubject{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		LOG.info("创建成功");
+		LOG.info("鍒涘缓鎴愬姛");
 		try {
 			bais.close();
 		} catch (IOException e) {
@@ -254,7 +284,10 @@ public class MiniCapUtil implements ScreenSubject{
 			LOG.debug("start receiving data");
 			
 			try {
-				String start_command = String.format(MINICAP_START_COMMAND, size, size, orientation_tag);
+				if (isPad)
+					start_command = String.format(MINICAP_START_COMMAND, size, size, 90);
+				else
+					start_command = String.format(MINICAP_START_COMMAND, size, size, orientation_tag);
 				
 				// start the minicap in background
 				new Thread(new Runnable() {
@@ -369,7 +402,7 @@ public class MiniCapUtil implements ScreenSubject{
 							restore();
 							
 						} else {
-							LOG.debug("所需数据大小 : " + frameLength);
+							LOG.debug("鎵�闇�鏁版嵁澶у皬 : " + frameLength);
 							byte[] subByte = subByteArray(buffer, cursor, buf_length);
 							frameBody = byteMerger(frameBody, subByte);
 							frameLength -= (buf_length - cursor);
