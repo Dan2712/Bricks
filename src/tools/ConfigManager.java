@@ -12,7 +12,7 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
 /**
- * ÅäÖÃÎÄ¼þ¹ÜÀí µ¥Àý
+ * ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
  * 
  * @author DraLastat
  *
@@ -22,16 +22,16 @@ public class ConfigManager {
 	private static Logger logger = Logger.getLogger(ConfigManager.class);
 	public Document document;
 
-	/**
-	 * Ë½ÓÐµÄ¹¹Ôì
-	 */
+/*	*//**
+	 * Ë½ï¿½ÐµÄ¹ï¿½ï¿½ï¿½
+	 *//*
 	private ConfigManager() {
 		reloadDom();
 	}
 
-	/**
-	 * ¶ÁÈ¡xml£¬¼ÓÔØµ½dom
-	 */
+	*//**
+	 * ï¿½ï¿½È¡xmlï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½dom
+	 *//*
 	public void reloadDom() {
 		SAXReader reader = new SAXReader();
 		try {
@@ -40,10 +40,10 @@ public class ConfigManager {
 			e.printStackTrace();
 			logger.error("Read config xml error:" + e.toString());
 		}
-	}
+	}*/
 
 	/**
-	 * »ñÈ¡ÊµÀý£¬Ïß³Ì°²È«
+	 * ï¿½ï¿½È¡Êµï¿½ï¿½ï¿½ï¿½ï¿½ß³Ì°ï¿½È«
 	 * 
 	 * @return
 	 */
@@ -59,22 +59,22 @@ public class ConfigManager {
 	}
 
 	/**
-	 * °Ñdocument¶ÔÏóÐ´ÈëÐÂµÄÎÄ¼þ
+	 * ï¿½ï¿½documentï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½Âµï¿½ï¿½Ä¼ï¿½
 	 * 
 	 * @param document
 	 * @throws Exception
 	 */
 	public void writeToXml() throws Exception {
-		// ÅÅ°æËõ½øµÄ¸ñÊ½
+		// ï¿½Å°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¸ï¿½Ê½
 		OutputFormat format = OutputFormat.createPrettyPrint();
-		// ÉèÖÃ±àÂë
+		// ï¿½ï¿½ï¿½Ã±ï¿½ï¿½ï¿½
 		format.setEncoding("UTF-8");
-		// ´´½¨XMLWriter¶ÔÏó,Ö¸¶¨ÁËÐ´³öÎÄ¼þ¼°±àÂë¸ñÊ½
+		// ï¿½ï¿½ï¿½ï¿½XMLWriterï¿½ï¿½ï¿½ï¿½,Ö¸ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½
 		XMLWriter writer = null;
 		writer = new XMLWriter(
 				new OutputStreamWriter(new FileOutputStream(new File(ConstantsTools.PATH_CONFIG)), "UTF-8"), format);
 
-		// Ð´Èë
+		// Ð´ï¿½ï¿½
 		writer.write(document);
 		writer.flush();
 		writer.close();
