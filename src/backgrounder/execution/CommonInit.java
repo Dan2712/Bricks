@@ -17,6 +17,7 @@ public class CommonInit {
 	private AppiumDriver driver; 
 	private Connection connection;
 	private Statement stmt;
+	private Boolean isSTF = false;
 	
 	public void setUp() throws Exception {
 		//init appium  
@@ -30,8 +31,6 @@ public class CommonInit {
         capabilities.setCapability("appActivity", "dji.pilot.main.activity.DJILauncherActivity");  
         capabilities.setCapability("noReset", true);
         capabilities.setCapability("sessionOverride", true);    //override session everytime， otherwise cannot start a new session second time 
-//        capabilities.setCapability("unicodeKeyboard", true);
-//        capabilities.setCapability("resetKeyboard", false);
 
         driver = new AppiumDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);  
         driver.manage().timeouts().implicitlyWait(5,TimeUnit.SECONDS);

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 2017-06-28 15:12:12  [ AWT-EventQueue-0:2636 ] - [ ERROR ]  无连接设备,请检查
 2017-06-28 15:14:32  [ AWT-EventQueue-0:1217 ] - [ ERROR ]  无连接设备,请检查
 2017-06-28 15:25:52  [ AWT-EventQueue-0:1181 ] - [ ERROR ]  无连接设备,请检查
@@ -23,3 +24,8 @@
 2017-06-29 22:56:36  [ AWT-EventQueue-0:904 ] - [ ERROR ]  无连接设备,请检查
 2017-06-29 23:47:15  [ AWT-EventQueue-0:878 ] - [ ERROR ]  无连接设备,请检查
 2017-06-29 23:51:53  [ AWT-EventQueue-0:882 ] - [ ERROR ]  无连接设备,请检查
+=======
+2017-06-30 10:14:51  [ Thread-1:2411 ] - [ ERROR ]  No suitable .so file
+2017-06-30 10:29:35  [ Thread-1:2578 ] - [ ERROR ]  No suitable .so file
+2017-06-30 10:41:24  [ Thread-1:2382 ] - [ ERROR ]  No suitable .so file
+>>>>>>> Stashed changes

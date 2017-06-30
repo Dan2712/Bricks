@@ -205,7 +205,7 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 	            	mModel.setSelectedNode(node);
 	            	UiNode node_sel = (UiNode) node;
 	            	System.out.println(node_sel.getXpath());
-	            	System.out.println(node_sel.getAttribute("clickable"));
+	            	System.out.println("clickable: " + node_sel.getAttribute("clickable"));
 	            	repaint();
             	}
             }
