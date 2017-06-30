@@ -10,13 +10,10 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 
 import io.appium.java_client.AppiumDriver;
 
-public class CommonInit {
+public class AppiumInit {
 	
 	public static final int WAIT_TIME = 5;
-	
 	private AppiumDriver driver; 
-	private Connection connection;
-	private Statement stmt;
 	private Boolean isSTF = false;
 	
 	public void setUp() throws Exception {
@@ -34,15 +31,6 @@ public class CommonInit {
 
         driver = new AppiumDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);  
         driver.manage().timeouts().implicitlyWait(5,TimeUnit.SECONDS);
-        
-        //init sqlite
-        try {
-        	Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:test.db");
-            stmt = connection.createStatement();
-        } catch (Exception e) {
-        	e.printStackTrace();
-        }
 	}
 	
 	public AppiumDriver getDriver() {
@@ -51,12 +39,6 @@ public class CommonInit {
 	
     public void tearDown() throws Exception {  
         driver.quit();
-        try {
-        	stmt.close();
-            connection.close();
-        }catch(Exception e) {
-        	e.printStackTrace();
-        }
     }
 	
 }

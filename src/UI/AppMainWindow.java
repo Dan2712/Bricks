@@ -12,6 +12,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 
 /**
  * ������ڣ�������Frame
@@ -26,17 +29,17 @@ public class AppMainWindow {
 
     private static JPanel mainPanel;
     public static JPanel mainPanelCenter;
-
     public static StatusPanel statusPanel;
     public static ElecrePanel elecrePanel;
     public static CasecrePanel casecrePanel;
     public static CaserunPanel caserunPanel;
     public static SettingPanel settingPanel;
-    
     public static JDialog dialog;
-
+	private Connection connection;
+	private Statement stmt;
+	
     /**
-     * �������main
+     * 
      */
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -52,7 +55,7 @@ public class AppMainWindow {
     }
 
     /**
-     * ���죬����APP
+     * 
      */
     public AppMainWindow() {
         initialize();
@@ -66,12 +69,21 @@ public class AppMainWindow {
         PropertyConfigurator
                 .configure(ConstantsUI.CURRENT_DIR + File.separator + "config" + File.separator + "log4j.properties");
         logger.info("==================BricksInitStart====================");
-        // ����ϵͳĬ����ʽ
+        // 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
                 | UnsupportedLookAndFeelException e) {
             e.printStackTrace();
+        }
+        
+        //init sqlite
+        try {
+        	Class.forName("org.sqlite.JDBC");
+            connection = DriverManager.getConnection("jdbc:sqlite:test.db");
+            stmt = connection.createStatement();
+        } catch (Exception e) {
+        	e.printStackTrace();
         }
 
         // ��ʼ��������
@@ -135,11 +147,16 @@ public class AppMainWindow {
 
             @Override
             public void windowClosing(WindowEvent e) {
-
+            	try {
+                	stmt.close();
+                    connection.close();
+                }catch(Exception e1) {
+                	e1.printStackTrace();
+                }
             	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 logger.info("==================BricksEnd==================");
                  //Dan to adding here
-
+                
             }
 
             @Override

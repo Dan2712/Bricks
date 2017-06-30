@@ -1,13 +1,13 @@
 package backgrounder;
 
-import backgrounder.execution.CommonInit;
+import backgrounder.execution.AppiumInit;
 import backgrounder.execution.RunTestCase;
 
 public class ExecutionMain {
 
 	public void RunTestCase() {
 		
-		CommonInit init = new CommonInit();
+		AppiumInit init = new AppiumInit();
 		try {
 			init.setUp();
 			

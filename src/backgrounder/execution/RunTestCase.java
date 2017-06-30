@@ -45,9 +45,9 @@ public class RunTestCase implements Runnable{
 				if (entry.getKey().endsWith("1")) {
 					JSONObject obj = JSON.parseObject(entry.getValue());
 					if (obj.containsKey("ele_id"))
-						ele_sub = new CusElement(CommonInit.WAIT_TIME, driver).explicitlyWait(0, obj.getString("ele_id")); 
+						ele_sub = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(0, obj.getString("ele_id")); 
 					else if (obj.containsKey("ele_xpath"))
-						ele_sub = new CusElement(CommonInit.WAIT_TIME, driver).explicitlyWait(1, obj.getString("ele_xpath"));
+						ele_sub = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(1, obj.getString("ele_xpath"));
 					
 					this.ele_customName = obj.getString("custom_name");
 				} else if (entry.getKey().endsWith("2")) {
