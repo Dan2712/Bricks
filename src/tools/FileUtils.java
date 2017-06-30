@@ -14,42 +14,44 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.opencsv.CSVReader;
 
 /**
- * 文件工具类
+ * 
  * 
  * @author DraLastat
  *
  */
 public class FileUtils {
 	/**
-	 * 复制文件
 	 * 
 	 * @param sourceFile
 	 * @param targetFile
 	 * @throws IOException
 	 */
 	public static void copyFile(File sourceFile, File targetFile) throws IOException {
-		// 新建文件输入流并对它进行缓冲
+		// 
 		FileInputStream input = new FileInputStream(sourceFile);
 		BufferedInputStream inBuff = new BufferedInputStream(input);
 
-		// 新建文件输出流并对它进行缓冲
+		// 
 		FileOutputStream output = new FileOutputStream(targetFile);
 		BufferedOutputStream outBuff = new BufferedOutputStream(output);
 
-		// 缓冲数组
+		// 
 		byte[] b = new byte[1024 * 5];
 		int len;
 		while ((len = inBuff.read(b)) != -1) {
 			outBuff.write(b, 0, len);
 		}
-		// 刷新此缓冲的输出流
+		//
 		outBuff.flush();
 
-		// 关闭流
+		//
 		inBuff.close();
 		outBuff.close();
 		output.close();
@@ -57,29 +59,28 @@ public class FileUtils {
 	}
 
 	/**
-	 * 复制文件夹
 	 * 
 	 * @param sourceDir
 	 * @param targetDir
 	 * @throws IOException
 	 */
 	public static void copyDirectiory(String sourceDir, String targetDir) throws IOException {
-		// 新建目标目录
+		//
 		(new File(targetDir)).mkdirs();
-		// 获取源文件夹当前下的文件或目录
+		//
 		File[] file = (new File(sourceDir)).listFiles();
 		for (int i = 0; i < file.length; i++) {
 			if (file[i].isFile()) {
-				// 源文件
+				//
 				File sourceFile = file[i];
-				// 目标文件
+				//
 				File targetFile = new File(new File(targetDir).getAbsolutePath() + File.separator + file[i].getName());
 				copyFile(sourceFile, targetFile);
 			}
 			if (file[i].isDirectory()) {
-				// 准备复制的源文件夹
+				//
 				String dir1 = sourceDir + "/" + file[i].getName();
-				// 准备复制的目标文件夹
+				//
 				String dir2 = targetDir + "/" + file[i].getName();
 				copyDirectiory(dir1, dir2);
 			}
@@ -87,7 +88,6 @@ public class FileUtils {
 	}
 
 	/**
-	 * 计算文件的 MD5 值
 	 * 
 	 * @param file
 	 * @return
@@ -122,7 +122,6 @@ public class FileUtils {
 	}
 
 	/**
-	 * 计算文件的SHA-1值
 	 * 
 	 * @param file
 	 * @return
@@ -156,7 +155,7 @@ public class FileUtils {
 	}
 
 	/***
-	 * 清空文件夹
+	 *
 	 * 
 	 * @param dir
 	 */
@@ -169,10 +168,9 @@ public class FileUtils {
 	}
 
 	/**
-	 * 读取csv文件到List
 	 * 
 	 * @param csvFile
-	 * @return 内容List（每行的字符串数组）
+	 * @return 
 	 * @throws IOException
 	 */
 	public static ArrayList<String[]> getCsvFileContentList(File csvFile) throws IOException {
@@ -181,10 +179,10 @@ public class FileUtils {
 		ArrayList<String[]> list = new ArrayList<String[]>();
 
 		try {
-			// 初始化reader
+			// 
 			fReader = new FileReader(csvFile);
 			csvReader = new CSVReader(fReader);
-			// 读取解析csv文件
+			// 
 			list = (ArrayList<String[]>) csvReader.readAll();
 			return list;
 
@@ -211,10 +209,9 @@ public class FileUtils {
 	}
 
 	/**
-	 * 读取sql文件到List
 	 * 
 	 * @param sqlFile
-	 * @return 内容List（每行的字符串）
+	 * @return 
 	 * @throws IOException
 	 */
 	public static ArrayList<String> getSqlFileContentList(File sqlFile) throws IOException {
@@ -222,17 +219,17 @@ public class FileUtils {
 
 		BufferedReader br = null;
 		try {
-			// 初始化reader
+			//
 			br = new BufferedReader(new InputStreamReader(new FileInputStream(sqlFile), "UTF-8"));
 			String lineTxt = null;
 			while ((lineTxt = br.readLine()) != null) {
 				lineTxt = lineTxt.trim();
 				if ("".equals(lineTxt) || lineTxt.startsWith("//")) {
-					// 跳过注释和空行
+					// 
 					continue;
 				} else {
 					if (lineTxt.contains("//")) {
-						// 去掉注释
+						//
 						lineTxt = lineTxt.substring(0, lineTxt.indexOf("//")).trim();
 					}
 					list.add(lineTxt);
@@ -256,7 +253,6 @@ public class FileUtils {
 	}
 
 	/**
-	 * 转换文件大小
 	 * 
 	 * @param fileS
 	 * @return
@@ -274,5 +270,30 @@ public class FileUtils {
 			fileSizeString = df.format((double) fileS / 1073741824) + "G";
 		}
 		return fileSizeString;
+	}
+	
+	public static LinkedHashMap<String, String> loadJson(String path) {
+		
+		BufferedReader reader;
+		LinkedHashMap<String, String> jsonMap = null;
+		
+		try {
+			reader = new BufferedReader(new FileReader(path));
+			String line = "";
+			String str = "";
+			while((line = reader.readLine()) != null) {
+				str += line;
+			}
+			
+			jsonMap = JSON.parseObject(str, 
+					new TypeReference<LinkedHashMap<String, String>>() {});
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return jsonMap;
 	}
 }

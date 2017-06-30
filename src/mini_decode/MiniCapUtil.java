@@ -192,13 +192,10 @@ public class MiniCapUtil implements ScreenSubject{
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		dataQueue.clear();
-		String out1 = executeShellCommand("ps -x " + PID);
 		executeShellCommand("kill " + PID);
-		String out2 = executeShellCommand("ps -x " + PID);
 	}
 
 	/**

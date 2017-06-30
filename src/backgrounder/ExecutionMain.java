@@ -7,17 +7,16 @@ public class ExecutionMain {
 
 	public void RunTestCase() {
 		
-		AppiumInit init = new AppiumInit();
 		try {
-			init.setUp();
+//			AppiumInit.setUp();
 			
-			RunTestCase testCase = new RunTestCase("src/json/case_json.json", 0, init.getDriver());
+			RunTestCase testCase = new RunTestCase("/json/case_json.json", 0, AppiumInit.driver);
 			testCase.run();
 		}catch (Exception e) {
 			e.printStackTrace();
 		}finally {
 			try {
-				init.tearDown();
+				AppiumInit.driver.quit();
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}

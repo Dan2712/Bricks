@@ -16,7 +16,7 @@ import backgrounder.base.CusAction;
 import backgrounder.base.CusElement;
 import backgrounder.base.CusValidation;
 import io.appium.java_client.AppiumDriver;
-import tools.FileOperation;
+import tools.FileUtils;
 
 public class RunTestCase implements Runnable{
 
@@ -39,7 +39,7 @@ public class RunTestCase implements Runnable{
 	@Override
 	public void run() {
 		
-		LinkedHashMap<String, String> jsonMap = FileOperation.loadJson(this.path);
+		LinkedHashMap<String, String> jsonMap = FileUtils.loadJson(this.path);
 		if (this.runMode == 0) {
 			for (Map.Entry<String, String> entry : jsonMap.entrySet()) {
 				if (entry.getKey().endsWith("1")) {

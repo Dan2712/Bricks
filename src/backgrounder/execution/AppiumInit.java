@@ -1,31 +1,28 @@
 package backgrounder.execution;
 
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.remote.DesiredCapabilities;
-
+import com.alibaba.fastjson.JSONObject;
+import com.android.ddmlib.IDevice;
 import io.appium.java_client.AppiumDriver;
 
 public class AppiumInit {
 	
 	public static final int WAIT_TIME = 5;
-	private AppiumDriver driver; 
-	private Boolean isSTF = false;
+	public static AppiumDriver driver; 
 	
-	public void setUp() throws Exception {
+	public static void setUp(IDevice device, String appPackage, String launchActivity) throws Exception {
 		//init appium  
         DesiredCapabilities capabilities = new DesiredCapabilities();  
-        capabilities.setCapability("deviceName","XGC4C16530008053");  
-        capabilities.setCapability("platformName","Android");  
-        capabilities.setCapability("platformVersion","5.1.1");  
+        capabilities.setCapability("deviceName", device.getSerialNumber());  
+        capabilities.setCapability("platformName", "Android");  
+        capabilities.setCapability("platformVersion", device.getProperty(IDevice.PROP_BUILD_VERSION));  
           
        //configuration
-        capabilities.setCapability("appPackage", "dji.go.v4");  
-        capabilities.setCapability("appActivity", "dji.pilot.main.activity.DJILauncherActivity");  
+        capabilities.setCapability("appPackage", appPackage);  
+        capabilities.setCapability("appActivity", launchActivity);  
         capabilities.setCapability("noReset", true);
         capabilities.setCapability("sessionOverride", true);    //override session everytime， otherwise cannot start a new session second time 
 
@@ -33,12 +30,7 @@ public class AppiumInit {
         driver.manage().timeouts().implicitlyWait(5,TimeUnit.SECONDS);
 	}
 	
-	public AppiumDriver getDriver() {
-		return driver;
+	public static void setUp(JSONObject[] devices, String appPackage, String launchActivity, String url) throws Exception {
+		
 	}
-	
-    public void tearDown() throws Exception {  
-        driver.quit();
-    }
-	
 }

@@ -14,10 +14,10 @@
 	<classpathentry kind="lib" path="lib/pinyin4j-2.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/saxpath-dev_orbeon.jar"/>
 	<classpathentry kind="lib" path="lib/spring-security-core-3.2.7.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/sqljdbc4.jar"/>
 	<classpathentry kind="lib" path="lib/java-client-5.0.0-BETA9.jar"/>
 	<classpathentry kind="lib" path="lib/selenium-server-standalone-3.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/fastjson-1.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.5.3.jar"/>
+	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.19.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

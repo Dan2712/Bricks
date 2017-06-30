@@ -1,32 +1,21 @@
 package UI.panel;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.image.BufferedImage;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
 
 import com.android.ddmlib.IDevice;
 
 import UI.ConstantsUI;
-import UI.MyIconButton;
-import mini_decode.AndroidScreenObserver;
-import mini_decode.MiniCapUtil;
 import node_selection.RealTimeScreenUI;
 import tools.ADB;
-import tools.BricksDrag;
 import tools.PropertyUtil;
+
 /**
- * 
  *
  * @author DraLastat
  */
@@ -48,11 +37,12 @@ public class ElecrePanel extends JPanel{
 	 */
 	private void initialize() {
         ADB adb = new ADB();
-        if (adb.getDevices().length <= 0) {
-			LOG.error("无连接设备,请检查");
+        IDevice[] devices = adb.getDevices();
+        if (devices.length <= 0) {
+			LOG.error("ADB not connected, please check");
 			return;
 		}
-		device = adb.getDevices()[0];
+		device = devices[0];
 		
 		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		this.setLayout(new BorderLayout());

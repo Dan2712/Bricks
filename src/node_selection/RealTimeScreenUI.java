@@ -37,6 +37,7 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 	
 	private IDevice device;
     private MiniCapUtil minicap = null;
+
     private int width;
 	private int height;
 	
@@ -57,7 +58,6 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 		minicap.registerObserver(this);
 //		minicap.takeScreenShotOnce();
 		minicap.startScreenListener();
-		
 		
         mOrginialCursor = getCursor();
         mCrossCursor = new Cursor(Cursor.HAND_CURSOR);
@@ -154,6 +154,10 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
         // because Tree seems to like to hide the root node
         wrapper.addChild(mModel.getXmlRootNode());
     }
+    
+    public MiniCapUtil getMinicap() {
+		return minicap;
+	}
     
 	@Override
 	public void mouseClicked(MouseEvent e) {

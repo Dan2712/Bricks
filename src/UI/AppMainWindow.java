@@ -1,6 +1,8 @@
 package UI;
 
 import UI.panel.*;
+import backgrounder.execution.AppiumInit;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import tools.PropertyUtil;
@@ -63,7 +65,7 @@ public class AppMainWindow {
     }
 
     /**
-     * ��ʼ��frame����
+     * 
      */
     private void initialize() {
         PropertyConfigurator
@@ -86,7 +88,7 @@ public class AppMainWindow {
         	e.printStackTrace();
         }
 
-        // ��ʼ��������
+        // 
         frame = new JFrame();
         frame.setBounds(ConstantsUI.MAIN_WINDOW_X, ConstantsUI.MAIN_WINDOW_Y, ConstantsUI.MAIN_WINDOW_WIDTH,
                 ConstantsUI.MAIN_WINDOW_HEIGHT);
@@ -94,7 +96,7 @@ public class AppMainWindow {
         frame.setIconImage(ConstantsUI.IMAGE_ICON);
         frame.setBackground(ConstantsUI.MAIN_BACK_COLOR);
         
-        //���ڴ�С���ɵ� 
+        // 
         frame.setResizable(false);
            
         mainPanel = new JPanel(true);
@@ -148,11 +150,14 @@ public class AppMainWindow {
             @Override
             public void windowClosing(WindowEvent e) {
             	try {
+            		if (AppiumInit.driver != null)
+            			AppiumInit.driver.quit();
+            	
                 	stmt.close();
                     connection.close();
                 }catch(Exception e1) {
                 	e1.printStackTrace();
-                }
+                } 
             	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 logger.info("==================BricksEnd==================");
                  //Dan to adding here
@@ -170,6 +175,5 @@ public class AppMainWindow {
             }
         });
         
-    
     }
 }
