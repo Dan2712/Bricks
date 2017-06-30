@@ -1,5 +1,6 @@
 package mini_decode;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -67,6 +68,8 @@ public class MiniCapUtil implements ScreenSubject{
 	private int orientation_tag = 0;
 	private boolean isPad = false;
 	
+	private BufferedImage image_tmp = null;
+	
 	public MiniCapUtil(IDevice device) {
 		this.device = device;
 		this.init();
@@ -125,9 +128,7 @@ public class MiniCapUtil implements ScreenSubject{
 	 * @return 
 	 */  
 	private boolean isPad() {  
-	    // 屏幕宽度  
 	    int screenWidth = Integer.parseInt(size.split("x")[0]);  
-	    // 屏幕高度  
 	    int screenHeight = Integer.parseInt(size.split("x")[1]);
 	    int dpi = Integer.parseInt(executeShellCommand(GET_DPI).trim());
 	    double x = Math.pow(screenWidth / dpi, 2);  
@@ -243,7 +244,6 @@ public class MiniCapUtil implements ScreenSubject{
 		case 1:
 			return 90;
 		}
-		
 		return 0;
 	}
 	
@@ -255,19 +255,18 @@ public class MiniCapUtil implements ScreenSubject{
 	 */
 	private BufferedImage createImage(byte[] data) {
 		ByteArrayInputStream bais = new ByteArrayInputStream(data); 
-		BufferedImage image = null;
 		try {
-			image = ImageIO.read(bais);
+			image_tmp = ImageIO.read(bais);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		LOG.info("鍒涘缓鎴愬姛");
+//		LOG.info("image created");
 		try {
 			bais.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return image;
+		return image_tmp;
 	}
 	
 	/**
@@ -319,6 +318,8 @@ public class MiniCapUtil implements ScreenSubject{
 				e.printStackTrace();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+			} catch (StringIndexOutOfBoundsException e) {
+				LOG.error("No suitable .so file");
 			} finally {
 				if (input != null)
 					try {
@@ -337,13 +338,12 @@ public class MiniCapUtil implements ScreenSubject{
 			}
 			LOG.debug("stop receiving data");
 		}
-	
 	}
 	
 	/**
 	 * Thread class convert data to image byte[]
 	 * 
-	 * @author dan
+	 * @author Dan
 	 */
 	class ImageConvert implements Runnable {
 		
@@ -354,6 +354,8 @@ public class MiniCapUtil implements ScreenSubject{
 		private byte[] frameBody = new byte[0];
 		private volatile byte[] finalBytes = null;
 		private volatile byte[] imageByte_pre = null;
+		private volatile BufferedImage image_pre = null;
+		private BufferedImage image_notify = null;
 		
 		@Override
 		public void run() {
@@ -385,24 +387,25 @@ public class MiniCapUtil implements ScreenSubject{
 							}
 							finalBytes = subByteArray(frameBody,
 									0, frameBody.length);
-						
-							if (imageByte_pre == null || !compareByte(finalBytes, imageByte_pre)) {
-								imageByte_pre = finalBytes;
-								new Thread(new Runnable() {					// convert to bufferedimage
-	
-									@Override
-									public void run() {
-										// TODO Auto-generated method stub
-											BufferedImage image = createImage(finalBytes);
-											notifyObservers(image);
+							
+							new Thread(new Runnable() {					// convert to bufferedimage
+
+								@Override
+								public void run() {
+									// TODO Auto-generated method stub
+									Boolean re = false;
+									image_notify = createImage(finalBytes);
+									if (image_pre == null || !(re = compareImage(image_pre, image_notify))) {
+										image_pre = image_notify;
+										notifyObservers(image_notify);
 									}
-								}).start();
-							}
+								}
+							}).start();
 							cursor += frameLength;
 							restore();
 							
 						} else {
-							LOG.debug("鎵�闇�鏁版嵁澶у皬 : " + frameLength);
+//							LOG.debug("frame needed : " + frameLength);
 							byte[] subByte = subByteArray(buffer, cursor, buf_length);
 							frameBody = byteMerger(frameBody, subByte);
 							frameLength -= (buf_length - cursor);
@@ -501,6 +504,31 @@ public class MiniCapUtil implements ScreenSubject{
 		
 	}
 	
+	public static boolean compareImage(BufferedImage imgA, BufferedImage imgB) {        
+	    try {
+	        DataBuffer dbA = imgA.getData().getDataBuffer();
+	        int sizeA = dbA.getSize();                      
+	        DataBuffer dbB = imgB.getData().getDataBuffer();
+	        int sizeB = dbB.getSize();
+	        // compare data-buffer objects //
+	        if(sizeA == sizeB) {
+	            for(int i=0; i<sizeA; i++) { 
+	                if(dbA.getElem(i) != dbB.getElem(i)) {
+	                    return false;
+	                }
+	            }
+	            return true;
+	        }
+	        else {
+	            return false;
+	        }
+	    } 
+	    catch (Exception e) { 
+	        System.out.println("Failed to compare image files ...");
+	        return  false;
+	    }
+	}
+	
 	private Boolean compareByte(byte[] a, byte[] b) {
 		if (a.length != b.length)
 			return false;
@@ -538,7 +566,5 @@ public class MiniCapUtil implements ScreenSubject{
 		for (AndroidScreenObserver observer : observers) {
 			observer.frameImageChange(image);
 		}
-		// TODO Auto-generated method stub
-
 	}
 }

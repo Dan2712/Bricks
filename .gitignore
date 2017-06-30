@@ -7,4 +7,4 @@ gen/
 .settings/
 
 proguard/
-/bin/
+log/
