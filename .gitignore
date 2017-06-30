@@ -7,5 +7,7 @@ gen/
 .settings/
 
 proguard/
+log/
 *.log
 *.json
+/bin/
