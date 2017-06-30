@@ -544,7 +544,6 @@ public class MiniCapUtil implements ScreenSubject{
 	public void registerObserver(AndroidScreenObserver o) {
 		// TODO Auto-generated method stub
 		observers.add(o);
-
 	}
 	
 	public void removeObserver(AndroidScreenObserver o) {

@@ -49,7 +49,7 @@ public class ElecrePanel extends JPanel{
 	private void initialize() {
         ADB adb = new ADB();
         if (adb.getDevices().length <= 0) {
-			LOG.error("无连接设备,请检查");
+			LOG.error("Adb disconnected, please check");
 			return;
 		}
 		device = adb.getDevices()[0];
