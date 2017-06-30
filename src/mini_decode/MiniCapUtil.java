@@ -135,7 +135,6 @@ public class MiniCapUtil implements ScreenSubject{
 	    double y = Math.pow(screenHeight / dpi, 2); 
 	    
 	    double screenInches = Math.sqrt(x + y);  
-	    System.out.println(screenInches);
 	    // if the screen inches is larger than 6, it's a pad
 	    if (screenInches >= 6.0) {  
 	        return true;  
@@ -260,7 +259,7 @@ public class MiniCapUtil implements ScreenSubject{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-//		LOG.info("image created");
+		LOG.info("image created");
 		try {
 			bais.close();
 		} catch (IOException e) {
@@ -393,9 +392,8 @@ public class MiniCapUtil implements ScreenSubject{
 								@Override
 								public void run() {
 									// TODO Auto-generated method stub
-									Boolean re = false;
 									image_notify = createImage(finalBytes);
-									if (image_pre == null || !(re = compareImage(image_pre, image_notify))) {
+									if (image_pre == null || !compareImage(image_pre, image_notify)) {
 										image_pre = image_notify;
 										notifyObservers(image_notify);
 									}
@@ -405,7 +403,7 @@ public class MiniCapUtil implements ScreenSubject{
 							restore();
 							
 						} else {
-//							LOG.debug("frame needed : " + frameLength);
+							LOG.debug("frame needed : " + frameLength);
 							byte[] subByte = subByteArray(buffer, cursor, buf_length);
 							frameBody = byteMerger(frameBody, subByte);
 							frameLength -= (buf_length - cursor);
@@ -504,7 +502,7 @@ public class MiniCapUtil implements ScreenSubject{
 		
 	}
 	
-	public static boolean compareImage(BufferedImage imgA, BufferedImage imgB) {        
+	public boolean compareImage(BufferedImage imgA, BufferedImage imgB) {        
 	    try {
 	        DataBuffer dbA = imgA.getData().getDataBuffer();
 	        int sizeA = dbA.getSize();                      
@@ -524,21 +522,9 @@ public class MiniCapUtil implements ScreenSubject{
 	        }
 	    } 
 	    catch (Exception e) { 
-	        System.out.println("Failed to compare image files ...");
+	        LOG.error(("Failed to compare image files ..."));
 	        return  false;
 	    }
-	}
-	
-	private Boolean compareByte(byte[] a, byte[] b) {
-		if (a.length != b.length)
-			return false;
-		
-		for (int i=0; i<a.length; i++) {
-			if (a[i] != b[i])
-				return false;
-		}
-		
-		return true;
 	}
 	
 	public void registerObserver(AndroidScreenObserver o) {
