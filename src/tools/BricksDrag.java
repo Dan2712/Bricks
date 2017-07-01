@@ -8,7 +8,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 /**
- * ×©¿éÍÏ¶¯
+ * ×©ï¿½ï¿½ï¿½Ï¶ï¿½
  *
  * @author DraLastat
  */
@@ -22,14 +22,14 @@ public class BricksDrag extends MouseAdapter{
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-		//Èç¹û½øÈë²¢ÇÒÔÚ±ß¿òÄÚ£¬ÔòÏÔÊ¾µ÷Õû´óÐ¡ÐÎÌ¬
-		//Èç¹û½øÈëµ«²»ÔÚ±ß¿òÄÚ
-		//¼ÆËãÔ­µã¡£
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë²¢ï¿½ï¿½ï¿½Ú±ß¿ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½Ì¬
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ëµ«ï¿½ï¿½ï¿½Ú±ß¿ï¿½ï¿½ï¿½
+		//ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ã¡£
 		JComponent comp=(JComponent)e.getSource();
 		JComponent panel=(JComponent)comp.getParent();
 		Point p=comp.getLocationOnScreen();
-		SwingUtilities.convertPointFromScreen(p, panel);//»ñÈ¡×é¼þÔÚPanelÖÐµÄ×ø±ê
-		Point np=new Point(p.x+10, p.y+10);//ÐÂ¾ØÐÎµÄÔ­µã
+		SwingUtilities.convertPointFromScreen(p, panel);//ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Panelï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½
+		Point np=new Point(p.x+10, p.y+10);//ï¿½Â¾ï¿½ï¿½Îµï¿½Ô­ï¿½ï¿½
 		int nwidth=comp.getWidth()-20;
 		int nheight=comp.getHeight()-20;
 		super.mouseEntered(e);
@@ -65,17 +65,17 @@ public class BricksDrag extends MouseAdapter{
 	@Override
 	public void mouseDragged(MouseEvent e) {
 
-		//ÒÆ¶¯
+		//ï¿½Æ¶ï¿½
 		JComponent comp = (JComponent) e.getSource();
 		JPanel panel=(JPanel)comp.getParent();
 		Point p=e.getLocationOnScreen();
-		System.out.print("JButton×ÀÃæ×ø±ê£º"+"("+p.x+","+p.y+")\t");
+		System.out.print("JButton"+"("+p.x+","+p.y+")\t");
 		SwingUtilities.convertPointFromScreen(p, panel);
-		System.out.println("JButtonÔÚJPanel×ø±ê£º"+"("+p.x+","+p.y+")\t");
+		System.out.println("JButton JPanel"+"("+p.x+","+p.y+")\t");
 		p.x-=comp.getWidth()/2;
 		p.y-=comp.getHeight()/2;
 		comp.setLocation(p.x,p.y);
-		//µ÷Õû´óÐ¡
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡
 
 
 		//super.mouseDragged(e);

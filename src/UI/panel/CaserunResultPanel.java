@@ -108,7 +108,7 @@ public class CaserunResultPanel extends JPanel{
 		// ��ʼ�����
 		JLabel labelRunLogTitle = new JLabel(PropertyUtil.getProperty("bricks.ui.caserun.logprint"));
 		JLabel labellogprintNull = new JLabel();
-		JTextArea logprint = new JTextArea(12, 76);
+		JTextArea logprint = new JTextArea(12, 68);
 		logprint.setBorder(null);
 		logprint.setBorder(new EmptyBorder(0,0,0,0));
 		logprint.setLineWrap(true);

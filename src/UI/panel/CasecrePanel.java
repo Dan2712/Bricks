@@ -11,6 +11,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.io.Serializable;
+import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -39,7 +41,8 @@ public class CasecrePanel extends JPanel{
 	private static MyIconButton buttonEleAdd;
 	private static MyIconButton buttonActAdd;
 	private static MyIconButton buttonVerAdd;
-	private static MyIconButton bricksELE;
+	private int id;
+	private int type;
 	
 	/**
 	 * 
@@ -266,105 +269,173 @@ public class CasecrePanel extends JPanel{
 		panelDown.updateUI();
 		return panelDown;
 	}
-	
 
-
-	
-	  private void addListener() {
+	JButton butele;
+	JButton butact;
+	JButton butver;
+	int butclick = 1;
+	//private int id;
+    
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public int getType() {
+        return type;
+    }
+    public void setType(int id) {
+        this.type = type;
+    }
+	public void addListener() {
 		  buttonEleAdd.addActionListener(new ActionListener() {
-
-	            @Override
+			  @Override
 	            public void actionPerformed(ActionEvent e) {
-
 	                try {
 	                	
-	                	JButton btn1 = new JButton();
-	                	btn1.setBackground(Color.DARK_GRAY);
-	                	btn1.setPreferredSize(new Dimension(50, 20));
-	            		btn1.setBorder(null);
-	            		//btn.setLocation(200, 20);
-	                	panelDown.add(btn1);
+	                	id = butclick ++;
+	                	butele = new JButton();
+	                	butele.setBackground(Color.DARK_GRAY);
+	                	butele.setPreferredSize(new Dimension(50, 20));
+	                	butele.setBorder(null);
+	                	setId(id);
+	                	butele.addMouseListener(new PopClickListener(butele));
+	                	panelDown.add(butele);
 	                	panelDown.updateUI();
-	                	System.out.println("ele");
+	                	System.out.println("ele" + id);
 	                } catch (Exception e1) {
 	                    	                }
 
 	            }
 	        });
-		  buttonActAdd.addActionListener(new ActionListener() {
+		  	buttonActAdd.addActionListener(new ActionListener() {
 
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
 
 	                try {
-	                	
-	                	JButton btn2 = new JButton();
-	                	btn2.setBackground(Color.DARK_GRAY);
+	                	id = butclick ++;
+	                	butact = new JButton();
+	                	butact.setBackground(Color.DARK_GRAY);
 	                	//btn2.setForeground(Color.blue);
-	                	btn2.setPreferredSize(new Dimension(50, 20));
-	            		btn2.setBorder(null);
-	            		
-	                	panelDown.add(btn2);
+	                	butact.setPreferredSize(new Dimension(50, 20));
+	                	butact.setBorder(null);
+	                	setId(id);
+	                	butact.addMouseListener(new PopClickListener(butact));
+	                	panelDown.add(butact);
 	                	panelDown.updateUI();
-	                	System.out.println("act");
+	                	System.out.println("act" + id);
 	                } catch (Exception e1) {
 	                    	                }
 
 	            }
 	        });
-		  buttonVerAdd.addActionListener(new ActionListener() {
+		  	buttonVerAdd.addActionListener(new ActionListener() {
 
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
 
 	                try {
-	                	
-	                	JButton btn3 = new JButton();
-	                	btn3.setBackground(Color.DARK_GRAY);
+	                	id = butclick ++;
+	                	butver = new JButton();
+	                	butver.setBackground(Color.DARK_GRAY);
 	                	//btn3.setForeground(Color.pink);
-	                	btn3.setPreferredSize(new Dimension(50, 20));
-	            		btn3.setBorder(null);
-	            		btn3.addMouseListener(new PopClickListener());
-	            		
-	            		panelDown.add(btn3);
+	                	butver.setPreferredSize(new Dimension(50, 20));
+	                	butver.setBorder(null);
+	                	setId(id);
+	                	butver.addMouseListener(new PopClickListener(butver));
+	            		panelDown.add(butver);
 	                	panelDown.updateUI();
-	                	System.out.println("ver");
+	                	System.out.println("ver" + id);
 	                } catch (Exception e1) {
 	                    	                }
 
 	            }
 	        });
 	  }
+
 	  
 	  class RightMenu extends JPopupMenu {
 		    JMenuItem add_bricks;
 		    JMenuItem delete_bricks;
 		    JMenuItem modify_bricks;
-		    public RightMenu(){
+		    JButton jbtn;
+		    public RightMenu(JButton jbtn){
+		    	this.jbtn = jbtn;
 		    	add_bricks = new JMenuItem("Add");
 		    	delete_bricks = new JMenuItem("Delete");
 		    	modify_bricks = new JMenuItem("Modify");
 		        add(add_bricks);
 		        add(delete_bricks);
 		        add(modify_bricks);
+		        
+			    add_bricks.addActionListener(new ActionListener() {
+
+		            @Override
+		            public void actionPerformed(ActionEvent e) {
+
+		                try {
+		                	panelDown.add(jbtn);
+		                	panelDown.updateUI();
+		                	System.out.println("add event");
+		                } catch (Exception e1) {
+		                    	                }
+
+		            }
+		        });
+			    delete_bricks.addActionListener(new ActionListener() {
+
+		            @Override
+		            public void actionPerformed(ActionEvent e) {
+		            
+		            		try {
+		            			panelDown.remove(jbtn);
+		            			panelDown.updateUI();
+		            			System.out.println("delete event");
+		            		} catch (Exception e1) {
+		                    	                }
+
+		            }
+		            
+		        });
+			    modify_bricks.addActionListener(new ActionListener() {
+
+		            @Override
+		            public void actionPerformed(ActionEvent e) {
+
+		                try {
+		                	System.out.println("modify event");
+		                } catch (Exception e1) {
+		                    	                }
+
+		            }
+		        });
 		    }
+
 		}
+	  
 	  
 	  class PopClickListener extends MouseAdapter {
 		    public void mousePressed(MouseEvent e){
 		        if (e.isPopupTrigger())
 		            doPop(e);
 		    }
-
+		    private JButton jbtn;
+		    public PopClickListener(JButton jbtn){
+		    	super();
+		    	this.jbtn =jbtn;
+		    }
 		    public void mouseReleased(MouseEvent e){
 		        if (e.isPopupTrigger())
 		            doPop(e);
 		    }
 
 		    private void doPop(MouseEvent e){
-		    	RightMenu menu = new RightMenu();
+		    	RightMenu menu = new RightMenu(jbtn);
 		        menu.show(e.getComponent(), e.getX(), e.getY());
 		    }
 		}
 	  
+	
 }

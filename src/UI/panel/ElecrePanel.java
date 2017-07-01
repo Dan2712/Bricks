@@ -1,7 +1,9 @@
 package UI.panel;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -100,8 +102,28 @@ public class ElecrePanel extends JPanel{
 	 */
 	private JPanel getRightPanel() {
 		JPanel panelRight = new JPanel();
+		Dimension preferredSize = new Dimension(280, 20);
+		panelRight.setPreferredSize(preferredSize);
 		panelRight.setBackground(Color.BLACK);
-		panelRight.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
+		panelRight.setLayout(new GridLayout(3, 1));
+		
+		JPanel panelup = new JPanel();
+		Dimension preferredSizeUP = new Dimension(50, 10);
+		panelup.setPreferredSize(preferredSizeUP);
+		panelup.setBackground(Color.BLACK);
+		
+		JPanel panelcenter = new JPanel();
+		JLabel item1 = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.title"));
+		item1.setFont(ConstantsUI.FONT_NORMAL);
+		item1.setForeground(Color.black);
+		item1.setLayout(new FlowLayout(FlowLayout.LEFT));
+		panelcenter.add(item1);
+		
+		JPanel paneldown = new JPanel();
+		
+		panelRight.add(panelup);
+		panelRight.add(panelcenter);
+		panelRight.add(paneldown);
 		return panelRight;
 	}
 	
