@@ -54,7 +54,6 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
     
     private UiAutomatorModel mModel;
     private Boolean isSelected = false;
-    
     private Map node_info = new HashMap();
     
 	public RealTimeScreenUI(IDevice device) {
@@ -66,7 +65,6 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 		
         mOrginialCursor = getCursor();
         mCrossCursor = new Cursor(Cursor.HAND_CURSOR);
-        
     }
         
 	@Override
@@ -86,16 +84,15 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 	}
 	
 	public void paint(Graphics g) {
-		System.out.println("paint");
 		Graphics2D g2 = (Graphics2D) g;
 		try {
 			if (mScreenshot == null)
 				return;
 			
 			//setsize this view so that it won't be overlapping 
-			this.setSize(mScreenshot.getWidth(), mScreenshot.getHeight());
+//			this.setSize(mScreenshot.getWidth(), mScreenshot.getHeight());
 			g2.drawImage(mScreenshot, mDx, mDy, width, height, this);
-			this.setSize(panel_bounds, panel_bounds);
+//			this.setSize(panel_bounds, panel_bounds);
 			mScreenshot.flush();
 			//repaint this so that it could be more smooth
 //			this.repaint();
@@ -175,7 +172,6 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -202,7 +198,6 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

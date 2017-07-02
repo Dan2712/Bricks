@@ -60,7 +60,7 @@ public class ElecrePanel extends JPanel{
 	/**
 	 * 
 	 */
-	JPanel LiveviewPanel ;
+	JPanel LiveviewPanel;
 	private void addComponent() {
 		LiveviewPanel = getCenterPanel();
 		this.add(getUpPanel(), BorderLayout.NORTH);
@@ -132,7 +132,6 @@ public class ElecrePanel extends JPanel{
 		textFieldEleItem_1.setFont(ConstantsUI.FONT_NORMAL);
 		textFieldEleItem_2.setFont(ConstantsUI.FONT_NORMAL);
 		
-
 		ele_xpath.setPreferredSize(ConstantsUI.LABLE_SIZE_ELE_ITEM);				
 		checkable.setPreferredSize(ConstantsUI.LABLE_SIZE_ELE_ITEM);
 		textFieldEleItem_1.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
@@ -175,7 +174,6 @@ public class ElecrePanel extends JPanel{
 		panelGridSetting.add(ele_name);
 		panelGridSetting.add(textFieldEleItem_6);
 
-		
 		JPanel panelGridSave = new JPanel();
 		panelGridSave.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelGridSave.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
@@ -191,6 +189,4 @@ public class ElecrePanel extends JPanel{
 		panelRight.add(panelGridSave);
 		return panelRight;
 	}
-	
-	
 }
