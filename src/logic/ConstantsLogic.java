@@ -5,7 +5,7 @@ import java.io.File;
 import UI.ConstantsUI;
 
 /**
- * Logic²ãµÄ³£Á¿Àà
+ * Logic
  * 
  * @author DraLastat
  *
@@ -13,48 +13,48 @@ import UI.ConstantsUI;
 public class ConstantsLogic {
 
 	/**
-	 * ¸÷ÅäÖÃÎÄ¼şÂ·¾¶
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Â·ï¿½ï¿½
 	 */
-	// ±í-×Ö¶ÎÅäÖÃÎÄ¼ş Â·¾¶
+	// ï¿½ï¿½-ï¿½Ö¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ Â·ï¿½ï¿½
 	public final static String TABLE_FIELD_DIR = ConstantsUI.CURRENT_DIR + File.separator + "TableField";
-	// ±í-×Ö¶ÎÅäÖÃÎÄ¼ş Â·¾¶
+	// ï¿½ï¿½-ï¿½Ö¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ Â·ï¿½ï¿½
 	public final static String TABLE_FIELD_INIT_DIR = ConstantsUI.CURRENT_DIR + File.separator + "TableField"
 			+ File.separator + "init";
-	// TriggerÅäÖÃÎÄ¼ş
+	// Triggerï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
 	public final static String TRIGGER_FILE = ConstantsUI.CURRENT_DIR + File.separator + "Trigger" + File.separator
 			+ "Trigger.txt";
-	// ±í¿ìÕÕÎÄ¼ş Â·¾¶
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ Â·ï¿½ï¿½
 	public final static String SNAPS_DIR = ConstantsUI.CURRENT_DIR + File.separator + "snaps";
-	// ±í¿ìÕÕÎÄ¼ş±¸·İ Â·¾¶
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ Â·ï¿½ï¿½
 	public final static String SNAPS_BAK_DIR = ConstantsUI.CURRENT_DIR + File.separator + "snaps_bak";
-	// sqlÈÕÖ¾ÎÄ¼şÂ·¾¶
+	// sqlï¿½ï¿½Ö¾ï¿½Ä¼ï¿½Â·ï¿½ï¿½
 	public final static String LOG_SQL_DIR = ConstantsUI.CURRENT_DIR + File.separator + "log_SQL";
-	// sqlÈÕÖ¾ÎÄ¼ş
+	// sqlï¿½ï¿½Ö¾ï¿½Ä¼ï¿½
 	public final static String LOG_SQL = ConstantsUI.CURRENT_DIR + File.separator + "log_SQL" + File.separator
 			+ "log_sql.csv";
 
-	// mysqlÕû¿â±¸·İbatÎÄ¼şÂ·¾¶
+	// mysqlï¿½ï¿½ï¿½â±¸ï¿½ï¿½batï¿½Ä¼ï¿½Â·ï¿½ï¿½
 	public final static String BAT_DIR_MYSQL = ConstantsUI.CURRENT_DIR + File.separator + "DB_Backup" + File.separator
 			+ "mysql_backup.bat";
 
-	// mysql±í±¸·İsqlÎÄ¼şÂ·¾¶
+	// mysqlï¿½ï¿½ï¿½ï¿½sqlï¿½Ä¼ï¿½Â·ï¿½ï¿½
 	public final static String MYSQL_TABLE_BACKUP_SQL_FILE = ConstantsUI.CURRENT_DIR + File.separator + "DB_Backup"
 			+ File.separator + "mysql_table_backup.sql";
 
-	// mysql±¸·İsqlÎÄ¼şÂ·¾¶
+	// mysqlï¿½ï¿½ï¿½ï¿½sqlï¿½Ä¼ï¿½Â·ï¿½ï¿½
 	public final static String PATH_MYSQL_BAK = ConstantsUI.CURRENT_DIR + File.separator + "DB_Backup" + File.separator
 			+ "Target";
 
 	/**
-	 * ÕıÔò±í´ïÊ½
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½
 	 */
-	// triggerÅäÖÃÎÄ¼ş£¬½âÎö±íÃûµÄÕıÔò
+	// triggerï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	public final static String REGEX_TRIGGER_TABLE = "<([^<>]+)>";
-	// triggerÅäÖÃÎÄ¼ş£¬½âÎö±íÖ÷¼üµÄÕıÔò
+	// triggerï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	public final static String REGEX_TRIGGER_PRIM_KEY = "\\(([^()]+)\\)";
-	// triggerÅäÖÃÎÄ¼ş£¬½âÎö±í×Ö¶ÎµÄÕıÔò
+	// triggerï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¶Îµï¿½ï¿½ï¿½ï¿½ï¿½
 	public final static String REGEX_TRIGGER_FIELDS = "\\{([^{}]+)\\}";
-	// triggerÅäÖÃÎÄ¼ş£¬½âÎö¡°ÆäËûÌõ¼ş»ò±£Áô¡±µÄÕıÔò
+	// triggerï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	public final static String REGEX_TRIGGER_OTHER = "\\[([^\\[\\]]+)\\]";
 
 }

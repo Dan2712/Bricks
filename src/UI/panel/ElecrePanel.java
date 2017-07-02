@@ -1,12 +1,11 @@
 package UI.panel;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,9 +18,6 @@ import com.android.ddmlib.IDevice;
 import UI.ConstantsUI;
 import UI.MyIconButton;
 import node_selection.RealTimeScreenUI;
-import node_selection.UiAutomatorModel;
-import node_selection.tree.BasicTreeNode;
-import node_selection.tree.UiNode;
 import tools.ADB;
 import tools.PropertyUtil;
 
@@ -34,10 +30,9 @@ public class ElecrePanel extends JPanel{
 	private static final Logger LOG = Logger.getLogger("ElecrePanel.class");
 	private static MyIconButton CheckStatus;
 	private static MyIconButton buttonSave;
-
-
 	
 	private IDevice device;
+	
 	/**
 	 * 
 	 */
@@ -72,6 +67,7 @@ public class ElecrePanel extends JPanel{
 		this.add(LiveviewPanel, BorderLayout.CENTER);
 		this.add(getRightPanel(), BorderLayout.EAST);
 	}
+	public Map<String, String> getNode_info;
 	/**
 	 *
 	 * @return
@@ -112,6 +108,7 @@ public class ElecrePanel extends JPanel{
 	 * @return
 	 */
 	private JPanel getRightPanel() {
+		
 		JPanel panelRight = new JPanel();
 		Dimension preferredSize = new Dimension(280, 20);
 		panelRight.setPreferredSize(preferredSize);
@@ -128,13 +125,13 @@ public class ElecrePanel extends JPanel{
 		JLabel checkable = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item2"));
 		JTextField textFieldEleItem_1 = new JTextField();
 		JTextField textFieldEleItem_2 = new JTextField();
-		JButton chkimage = new JButton();
-/**/
-
+		textFieldEleItem_1.setEditable(false);
+		
 		ele_xpath.setFont(ConstantsUI.SEC_TITLE);
 		checkable.setFont(ConstantsUI.SEC_TITLE);
 		textFieldEleItem_1.setFont(ConstantsUI.FONT_NORMAL);
 		textFieldEleItem_2.setFont(ConstantsUI.FONT_NORMAL);
+		
 
 		ele_xpath.setPreferredSize(ConstantsUI.LABLE_SIZE_ELE_ITEM);				
 		checkable.setPreferredSize(ConstantsUI.LABLE_SIZE_ELE_ITEM);
