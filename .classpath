@@ -7,7 +7,6 @@
 	<classpathentry kind="lib" path="lib/jaxen-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-full.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
-	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.38-bin.jar"/>
 	<classpathentry kind="lib" path="lib/opencsv-3.6.jar"/>
 	<classpathentry kind="lib" path="lib/org-eclipse-core-commands-3.6.0.jar"/>
 	<classpathentry kind="lib" path="lib/org-eclipse-equinox-common-3.6.0.jar"/>

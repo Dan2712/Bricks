@@ -15,7 +15,7 @@ import node_selection.tree.BasicTreeNode;
  * @author DraLastat
  *
  */
-public class ConstantsTools {
+public class ConstantsUtils {
 
 	/**
 	 * �����ļ�

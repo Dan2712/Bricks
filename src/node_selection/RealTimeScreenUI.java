@@ -12,6 +12,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JPanel;
 
@@ -51,8 +53,11 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
     private BasicStroke s;
     
     private UiAutomatorModel mModel;
-
-    public RealTimeScreenUI(IDevice device) {
+    private Boolean isSelected = false;
+    
+    private Map node_info = new HashMap();
+    
+	public RealTimeScreenUI(IDevice device) {
     	this.device = device;
     	minicap = new MiniCapUtil(device);
 		minicap.registerObserver(this);
@@ -70,11 +75,10 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 		UiAutomatorResult result = null;
 		try {
 			result = UiAutomatorHelper.takeSnapshot(device, null, true, mScreenshot);
+			this.mModel = result.model;
 		} catch (UiAutomatorException e) {
-//			e.printStackTrace();
 			LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
 		}
-		this.mModel = result.model;
 		this.updateScreenshotTransformation();
 		this.repaint();
 	}
@@ -84,6 +88,7 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 		try {
 			if (mScreenshot == null)
 				return;
+			
 			//setsize this view so that it won't be overlapping 
 			this.setSize(mScreenshot.getWidth(), mScreenshot.getHeight());
 			g2.drawImage(mScreenshot, mDx, mDy, width, height, this);
@@ -208,11 +213,16 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
             	if (node != null) {
 	            	mModel.setSelectedNode(node);
 	            	UiNode node_sel = (UiNode) node;
-	            	System.out.println(node_sel.getXpath());
-	            	System.out.println("clickable: " + node_sel.getAttribute("clickable"));
+	            	node_info.put("xpath", node_sel.getXpath());
+	            	node_info.put("clickable", node_sel.getAttribute("clickable"));
+	            	node_info.put("scrollable", node_sel.getAttribute("scrollable"));
 	            	repaint();
             	}
             }
 		}
+	}
+	
+	public Map getNode_info() {
+		return node_info;
 	}
 }
