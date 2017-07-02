@@ -72,7 +72,7 @@ public class ConfigManager {
 		// ����XMLWriter����,ָ����д���ļ��������ʽ
 		XMLWriter writer = null;
 		writer = new XMLWriter(
-				new OutputStreamWriter(new FileOutputStream(new File(ConstantsTools.PATH_CONFIG)), "UTF-8"), format);
+				new OutputStreamWriter(new FileOutputStream(new File(ConstantsUtils.PATH_CONFIG)), "UTF-8"), format);
 
 		// д��
 		writer.write(document);
@@ -82,200 +82,200 @@ public class ConfigManager {
 	}
 
 	public String getLastSyncTime() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_LAST_SYNC_TIME).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_LAST_SYNC_TIME).getText();
 	}
 
 	public void setLastSyncTime(String lastSyncTime) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_LAST_SYNC_TIME).setText(lastSyncTime);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_LAST_SYNC_TIME).setText(lastSyncTime);
 		writeToXml();
 	}
 
 	public String getLastKeepTime() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_LAST_KEEP_TIME).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_LAST_KEEP_TIME).getText();
 	}
 
 	public void setLastKeepTime(String lastKeepTime) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_LAST_KEEP_TIME).setText(lastKeepTime);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_LAST_KEEP_TIME).setText(lastKeepTime);
 		writeToXml();
 	}
 
 	public String getSuccessTime() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_SUCCESS_TIME).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_SUCCESS_TIME).getText();
 	}
 
 	public void setSuccessTime(String successTime) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_SUCCESS_TIME).setText(successTime);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_SUCCESS_TIME).setText(successTime);
 		writeToXml();
 	}
 
 	public String getFailTime() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_FAIL_TIME).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_FAIL_TIME).getText();
 	}
 
 	public void setFailTime(String failTime) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_FAIL_TIME).setText(failTime);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_FAIL_TIME).setText(failTime);
 		writeToXml();
 	}
 
 	public String getTypeFrom() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_TYPE_FROM).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_TYPE_FROM).getText();
 	}
 
 	public void setTypeFrom(String typeFrom) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_TYPE_FROM).setText(typeFrom);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_TYPE_FROM).setText(typeFrom);
 		writeToXml();
 	}
 
 	public String getHostFrom() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_HOST_FROM).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_HOST_FROM).getText();
 	}
 
 	public void setHostFrom(String hostFrom) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_HOST_FROM).setText(hostFrom);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_HOST_FROM).setText(hostFrom);
 		writeToXml();
 	}
 
 	public String getNameFrom() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_NAME_FROM).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_NAME_FROM).getText();
 	}
 
 	public void setNameFrom(String nameFrom) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_NAME_FROM).setText(nameFrom);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_NAME_FROM).setText(nameFrom);
 		writeToXml();
 	}
 
 	public String getUserFrom() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_USER_FROM).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_USER_FROM).getText();
 	}
 
 	public void setUserFrom(String userFrom) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_USER_FROM).setText(userFrom);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_USER_FROM).setText(userFrom);
 		writeToXml();
 	}
 
 	public String getPasswordFrom() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_PASSWORD_FROM).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_PASSWORD_FROM).getText();
 	}
 
 	public void setPasswordFrom(String passwordFrom) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_PASSWORD_FROM).setText(passwordFrom);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_PASSWORD_FROM).setText(passwordFrom);
 		writeToXml();
 	}
 
 	public String getTypeTo() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_TYPE_TO).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_TYPE_TO).getText();
 	}
 
 	public void setTypeTo(String typeTo) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_TYPE_TO).setText(typeTo);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_TYPE_TO).setText(typeTo);
 		writeToXml();
 	}
 
 	public String getHostTo() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_HOST_TO).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_HOST_TO).getText();
 	}
 
 	public void setHostTo(String hostTo) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_HOST_TO).setText(hostTo);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_HOST_TO).setText(hostTo);
 		writeToXml();
 	}
 
 	public String getNameTo() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_NAME_TO).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_NAME_TO).getText();
 	}
 
 	public void setNameTo(String nameTo) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_NAME_TO).setText(nameTo);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_NAME_TO).setText(nameTo);
 		writeToXml();
 	}
 
 	public String getUserTo() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_USER_TO).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_USER_TO).getText();
 	}
 
 	public void setUserTo(String userTo) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_USER_TO).setText(userTo);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_USER_TO).setText(userTo);
 		writeToXml();
 	}
 
 	public String getPasswordTo() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_PASSWORD_TO).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_PASSWORD_TO).getText();
 	}
 
 	public void setPasswordTo(String passwordTo) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_PASSWORD_TO).setText(passwordTo);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_PASSWORD_TO).setText(passwordTo);
 		writeToXml();
 	}
 
 	public String getSchedule() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_SCHEDULE).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_SCHEDULE).getText();
 	}
 
 	public void setSchedule(String schedule) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_SCHEDULE).setText(schedule);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_SCHEDULE).setText(schedule);
 		writeToXml();
 	}
 
 	public String getScheduleFixTime() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_SCHEDULE_FIX_TIME).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_SCHEDULE_FIX_TIME).getText();
 	}
 
 	public void setScheduleFixTime(String fixTime) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_SCHEDULE_FIX_TIME).setText(fixTime);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_SCHEDULE_FIX_TIME).setText(fixTime);
 		writeToXml();
 	}
 
 	public String getAutoBak() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_AUTO_BAK).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_AUTO_BAK).getText();
 	}
 
 	public void setAutoBak(String autoBak) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_AUTO_BAK).setText(autoBak);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_AUTO_BAK).setText(autoBak);
 		writeToXml();
 	}
 
 	public String getDebugMode() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_DEBUG_MODE).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_DEBUG_MODE).getText();
 	}
 
 	public void setDebugMode(String debugMode) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_DEBUG_MODE).setText(debugMode);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_DEBUG_MODE).setText(debugMode);
 		writeToXml();
 	}
 
 	public String getStrictMode() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_STRICT_MODE).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_STRICT_MODE).getText();
 	}
 
 	public void setStrictMode(String strictMode) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_STRICT_MODE).setText(strictMode);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_STRICT_MODE).setText(strictMode);
 		writeToXml();
 	}
 
 	public String getMysqlPath() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_MYSQL_PATH).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_MYSQL_PATH).getText();
 	}
 
 	public void setMysqlPath(String mysqlPath) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_MYSQL_PATH).setText(mysqlPath);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_MYSQL_PATH).setText(mysqlPath);
 		writeToXml();
 	}
 
 	public String getProductName() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_PRODUCT_NAME).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_PRODUCT_NAME).getText();
 	}
 
 	public void setProductName(String productName) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_PRODUCT_NAME).setText(productName);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_PRODUCT_NAME).setText(productName);
 		writeToXml();
 	}
 
 	public String getPositionCode() {
-		return this.document.selectSingleNode(ConstantsTools.XPATH_POSITION_CODE).getText();
+		return this.document.selectSingleNode(ConstantsUtils.XPATH_POSITION_CODE).getText();
 	}
 
 	public void setPositionCode(String positionCode) throws Exception {
-		this.document.selectSingleNode(ConstantsTools.XPATH_POSITION_CODE).setText(positionCode);
+		this.document.selectSingleNode(ConstantsUtils.XPATH_POSITION_CODE).setText(positionCode);
 		writeToXml();
 	}
 }

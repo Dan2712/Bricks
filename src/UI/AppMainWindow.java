@@ -5,12 +5,9 @@ import backgrounder.execution.AppiumInit;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import tools.PropertyUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
@@ -19,7 +16,6 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 
 /**
- * ������ڣ�������Frame
  *
  * @author DraLastat
  */
@@ -82,10 +78,12 @@ public class AppMainWindow {
         //init sqlite
         try {
         	Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:test.db");
+            connection = DriverManager.getConnection("jdbc:sqlite:ElementInfo.db");
             stmt = connection.createStatement();
+            connection.setAutoCommit(true);
         } catch (Exception e) {
         	e.printStackTrace();
+        	System.exit(0);
         }
 
         // 

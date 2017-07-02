@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-public class StfUtil {
+public class StfUtils {
 	private final String URL = "http://10.81.3.34:7100/api/v1/devices";
 	private final String TOKEN = "f372dbecfb434ce69c95d9394d110192d0e5d9d6a6d5430181e34aa669435900";
 	

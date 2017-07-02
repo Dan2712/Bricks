@@ -19,7 +19,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import tools.ConstantsTools;
+import tools.ConstantsUtils;
 
 public class UiHierarchyXmlLoader {
 
@@ -148,7 +148,7 @@ public class UiHierarchyXmlLoader {
 //                        		String pXpath2 = ((UiNode)parent).getAttribute("xpath2");
 //                        		xpath2 = pXpath2 + myNode.getXpath2();
 //                        		System.out.println(xpath);
-                        		List<Element> list = UiHierarchyXmlLoader.getElementObjects(ConstantsTools.document, xpath.replaceAll("\\\\\"", "\""));
+                        		List<Element> list = UiHierarchyXmlLoader.getElementObjects(ConstantsUtils.document, xpath.replaceAll("\\\\\"", "\""));
                         		if(list.size()>1){
                         			xpath = getXpathByParent(mWorkingNode);
                         		}else{
@@ -189,7 +189,7 @@ public class UiHierarchyXmlLoader {
             				break;
             			}else{
             				xpathTemp = "/"+((UiNode)parent).getXpath()+xpath;
-            				if(UiHierarchyXmlLoader.getElementObjects(ConstantsTools.document, xpathTemp.replaceAll("\\\\\"", "\"")).size()==1){
+            				if(UiHierarchyXmlLoader.getElementObjects(ConstantsUtils.document, xpathTemp.replaceAll("\\\\\"", "\"")).size()==1){
             					return xpathTemp;
             				}else{
             					xpath = ((UiNode)parent).getIndexXpath()+xpath;

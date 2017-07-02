@@ -23,7 +23,7 @@ import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.SyncException;
 import com.android.ddmlib.TimeoutException;
 
-import tools.ConstantsTools;
+import tools.ConstantsUtils;
 
 /**
  * @author Dan
@@ -82,8 +82,8 @@ public class MiniCapUtil implements ScreenSubject{
 		
 		String abi = device.getProperty(ABI_COMMAND);
 		String sdk = device.getProperty(SDK_COMMAND);
-		File miniCapBin = new File(ConstantsTools.getMinicapBin(), abi + File.separator + MINICAP_BIN);
-		File miniCapSo = new File(ConstantsTools.getMinicapSo(), "android-" + sdk
+		File miniCapBin = new File(ConstantsUtils.getMinicapBin(), abi + File.separator + MINICAP_BIN);
+		File miniCapSo = new File(ConstantsUtils.getMinicapSo(), "android-" + sdk
 				+ File.separator + abi + File.separator + MINICAP_SO);
 		
 		// push .so and minicap file to specified path

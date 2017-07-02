@@ -33,7 +33,7 @@ import node_selection.tree.BasicTreeNode;
 import node_selection.tree.UiHierarchyXmlLoader;
 import node_selection.tree.UiNode;
 import node_selection.tree.BasicTreeNode.IFindNodeListener;
-import tools.ConstantsTools;
+import tools.ConstantsUtils;
 
 /**
  * @author Dan
@@ -56,10 +56,10 @@ public class UiAutomatorModel {
     public UiAutomatorModel(File xmlDumpFile) {
         mSearchKeySet.add("text");
         mSearchKeySet.add("content-desc");
-        ConstantsTools.document = null;
+        ConstantsUtils.document = null;
         UiHierarchyXmlLoader loader = new UiHierarchyXmlLoader();
-        ConstantsTools.document = loader.getDocument(xmlDumpFile.getAbsolutePath());
-        List<Element> list = ConstantsTools.document.selectNodes("//node");
+        ConstantsUtils.document = loader.getDocument(xmlDumpFile.getAbsolutePath());
+        List<Element> list = ConstantsUtils.document.selectNodes("//node");
         for(int i=0; i<list.size(); i++){
         	Element e = list.get(i);
         	e.setName(e.attributeValue("class"));
