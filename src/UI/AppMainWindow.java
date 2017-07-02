@@ -2,6 +2,7 @@ package UI;
 
 import UI.panel.*;
 import backgrounder.execution.AppiumInit;
+import tools.SQLUtils;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -36,6 +37,7 @@ public class AppMainWindow {
 	private Connection connection;
 	private Statement stmt;
 	
+	private SQLUtils sql;
     /**
      * 
      */
@@ -81,6 +83,9 @@ public class AppMainWindow {
             connection = DriverManager.getConnection("jdbc:sqlite:ElementInfo.db");
             stmt = connection.createStatement();
             connection.setAutoCommit(true);
+            
+            sql = new SQLUtils(stmt);
+            sql.creatTable();
         } catch (Exception e) {
         	e.printStackTrace();
         	System.exit(0);

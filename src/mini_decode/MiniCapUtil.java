@@ -58,7 +58,7 @@ public class MiniCapUtil implements ScreenSubject{
 	
 	private Banner banner = new Banner();
 	private String size;
-	private boolean isRunning = false;
+	private volatile boolean isRunning = false;
 	
 	private static final int PORT = 1717;
 	private IDevice device;

@@ -80,10 +80,13 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 			LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
 		}
 		this.updateScreenshotTransformation();
-		this.repaint();
+		
+		if (mModel.isExploreMode())
+			this.repaint();
 	}
 	
 	public void paint(Graphics g) {
+		System.out.println("paint");
 		Graphics2D g2 = (Graphics2D) g;
 		try {
 			if (mScreenshot == null)
@@ -95,7 +98,7 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 			this.setSize(panel_bounds, panel_bounds);
 			mScreenshot.flush();
 			//repaint this so that it could be more smooth
-			this.repaint();
+//			this.repaint();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

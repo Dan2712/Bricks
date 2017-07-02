@@ -18,7 +18,7 @@ public class SQLUtils {
 		boolean isTableExist = true;  
         try {
 			ResultSet rs = stmt.executeQuery("SELECT count(*) FROM sqlite_master WHERE type='table' AND name= '" + tableName + "'");
-			if (rs.getInt(0) == 0)
+			if (rs.getInt(1) == 0)
 				isTableExist = false;
 			
 			rs.close();
@@ -31,27 +31,46 @@ public class SQLUtils {
 	}
 	
 	public void creatTable() {
-		String createAppTable = "CREATE TABLE APP " +
-                "(ID INT PRIMARY KEY     AUTOINCREMENT," +
-                " NAME           TEXT    NOT NULL)" ;
-		String createActivityTable = "CREATE TABLE ACTIVITY " +
-				"(ID INT PRIMARY KEY     AUTOINCREMENT," +
-                " NAME           TEXT    NOT NULL)" ;;
-		String createElementTable = "CREATE TABLE ELEMENT ";
-		
+		try {
+			String createActivityTable = "CREATE TABLE ACTIVITY " +
+					"(ACTIVITY_NAME TEXT NOT NULL," +
+	                " APP_NAME TEXT NOT NULL)";
+			if (!isTableExist("ACTIVITY"))
+				stmt.executeUpdate(createActivityTable);
+			String createElementTable = "CREATE TABLE ELEMENT "
+					+ "(CUSTOM_NAME TEXT NOT NULL UNIQUE,"
+					+ "XPATH TEXT NOT NULL,"
+					+ "ACTIVITY_NAME TEXT NOT NULL)";
+			if (!isTableExist("ELEMENT"))
+				stmt.executeUpdate(createElementTable);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
 	public void insertEle(String tableName, ArrayList<Map<String, String>> patterns) {
-//		StringBuilder value = new StringBuilder();
-//		name.append(patterns.get(0).)
-//		for (int i=1; i<patterns.size(); i++) {
-//			if (i == 0) {
-//				
-//			}
-//		}
-		String app_sql = "INSERT INTO APP (ID,NAME,AGE,ADDRESS,SALARY) " +
-                "VALUES (1, 'Paul', 32, 'California', 20000.00 );";
+		String activity_name = "";
+		String app_name = "";
+		String custom_name = "";
+		String xpath = "";
+		for (int i=0; i<patterns.size(); i++) {
+			activity_name = patterns.get(i).get("ACTIVITY_NAME");
+			app_name = patterns.get(i).get("APP_NAME");
+			custom_name = patterns.get(i).get("CUSTOM_NAME");
+			xpath = patterns.get(i).get("XPATH");
+		}
+		
+		try {
+			String insert_act = "INSERT INTO ACTIVITY (ACTIVITY_NAME, APP_NAME) "
+					+ "VALUE (" + activity_name + "," + app_name + " );";
+			stmt.executeUpdate(insert_act);
+			String insert_ele = "INSERT INTO ELEMENT (CUSTOM_NAME, XPATH, ACTIVITY_NAME) "
+					+ "VALUE (" + custom_name + "," + xpath + "," + activity_name + ");";
+			stmt.executeUpdate(insert_ele);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void getElement() {
