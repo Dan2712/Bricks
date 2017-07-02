@@ -158,7 +158,6 @@ public class AppMainWindow {
                 } 
             	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 logger.info("==================BricksEnd==================");
-                 //Dan to adding here
                 
             }
 
