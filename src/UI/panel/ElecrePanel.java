@@ -128,6 +128,8 @@ public class ElecrePanel extends JPanel{
 		JLabel checkable = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item2"));
 		JTextField textFieldEleItem_1 = new JTextField();
 		JTextField textFieldEleItem_2 = new JTextField();
+		JButton chkimage = new JButton();
+/**/
 
 		ele_xpath.setFont(ConstantsUI.SEC_TITLE);
 		checkable.setFont(ConstantsUI.SEC_TITLE);

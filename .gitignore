@@ -10,3 +10,4 @@ proguard/
 log/
 *.log
 *.json
+/bin/
