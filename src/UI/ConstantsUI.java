@@ -69,6 +69,8 @@ public class ConstantsUI {
     public final static Font SEC_TITLE = new Font(PropertyUtil.getProperty("ds.ui.font.family"), 0, 16);
     // ��ͨ����
     public final static Font FONT_NORMAL = new Font(PropertyUtil.getProperty("ds.ui.font.family"), 0, 13);
+    // ��ͨ����
+    public final static Font FONT_ELE_NORMAL = new Font(PropertyUtil.getProperty("ds.ui.font.family"), 0, 16);
     // radio����
     public final static Font FONT_RADIO = new Font(PropertyUtil.getProperty("ds.ui.font.family"), 0, 15);
 
@@ -126,13 +128,23 @@ public class ConstantsUI {
     
     // ���ש�� Ĭ��
     public final static ImageIcon ICON_ELE_ADD = new ImageIcon(
-            CURRENT_DIR + File.separator + "icon" + File.separator + "AddEnable.png");
+            CURRENT_DIR + File.separator + "icon" + File.separator + "addenable.png");
     // ���ש�� ����
     public final static ImageIcon ICON_ELE_ADD_ENABLE = new ImageIcon(
-            CURRENT_DIR + File.separator + "icon" + File.separator + "Add.png");
+            CURRENT_DIR + File.separator + "icon" + File.separator + "add.png");
     // ���ש�� ʧЧ
     public final static ImageIcon ICON_ELE_ADD_DISABLE = new ImageIcon(
-            CURRENT_DIR + File.separator + "icon" + File.separator + "AddEnable.png");
+            CURRENT_DIR + File.separator + "icon" + File.separator + "addenable.png");
+    
+    // ���ש�� Ĭ��
+    public final static ImageIcon ICON_ELE_CHK = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "unknow.png");
+    // ���ש�� ����
+    public final static ImageIcon ICON_ELE_CHK_TRUE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "true.png");
+    // ���ש�� ʧЧ
+    public final static ImageIcon ICON_ELE_CHK_FALSE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "false.png");
     
     // ��ʼ Ĭ��
     public final static ImageIcon ICON_START = new ImageIcon(
@@ -246,14 +258,16 @@ public class ConstantsUI {
     public final static Dimension LABLE_SIZE = new Dimension(1300, 30);
     // Item Label ��С
     public final static Dimension LABLE_SIZE_ITEM = new Dimension(78, 30);
+    // Item Label ��С
+    public final static Dimension LABLE_SIZE_ELE_ITEM = new Dimension(100, 30);
     // Item Null Label ��С
-    public final static Dimension LABLE_SIZE_NULL_ITEM = new Dimension(20, 30);
+    public final static Dimension LABLE_SIZE_NULL_ITEM = new Dimension(320, 30);
     // Casecre Null Label ��С
     public final static Dimension LABLE_SIZE_CASECRE_NULL_ITEM = new Dimension(500, 30);
     // CASErun Null Label ��С
     public final static Dimension LABLE_SIZE_CASE_NULL_ITEM = new Dimension(350, 30);
     // Item text field ��С
-    public final static Dimension TEXT_FIELD_SIZE_ITEM = new Dimension(150, 24);
+    public final static Dimension TEXT_FIELD_SIZE_ITEM = new Dimension(190, 24);
     // Item Combox field ��С
     public final static Dimension TEXT_COMBOX_SIZE_ITEM = new Dimension(130, 24);
     // radio ��С

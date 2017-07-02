@@ -4,16 +4,24 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.io.File;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
 
 import com.android.ddmlib.IDevice;
 
 import UI.ConstantsUI;
+import UI.MyIconButton;
 import node_selection.RealTimeScreenUI;
+import node_selection.UiAutomatorModel;
+import node_selection.tree.BasicTreeNode;
+import node_selection.tree.UiNode;
 import tools.ADB;
 import tools.PropertyUtil;
 
@@ -24,7 +32,10 @@ import tools.PropertyUtil;
 public class ElecrePanel extends JPanel{
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger("ElecrePanel.class");
-	
+	private static MyIconButton CheckStatus;
+	private static MyIconButton buttonSave;
+
+
 	
 	private IDevice device;
 	/**
@@ -104,26 +115,81 @@ public class ElecrePanel extends JPanel{
 		JPanel panelRight = new JPanel();
 		Dimension preferredSize = new Dimension(280, 20);
 		panelRight.setPreferredSize(preferredSize);
-		panelRight.setBackground(Color.BLACK);
+		panelRight.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelRight.setLayout(new GridLayout(3, 1));
 		
-		JPanel panelup = new JPanel();
-		Dimension preferredSizeUP = new Dimension(50, 10);
-		panelup.setPreferredSize(preferredSizeUP);
-		panelup.setBackground(Color.BLACK);
+		JPanel panelinfo = new JPanel();
+/*		Dimension preferredSizeUP = new Dimension(10, 5);
+		panelup.setPreferredSize(preferredSizeUP);*/
+		panelinfo.setBackground(ConstantsUI.MAIN_BACK_COLOR);
+		panelinfo.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
 		
-		JPanel panelcenter = new JPanel();
-		JLabel item1 = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.title"));
-		item1.setFont(ConstantsUI.FONT_NORMAL);
-		item1.setForeground(Color.black);
-		item1.setLayout(new FlowLayout(FlowLayout.LEFT));
-		panelcenter.add(item1);
+		JLabel ele_xpath = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item1"));
+		JLabel checkable = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item2"));
+		JTextField textFieldEleItem_1 = new JTextField();
+		JTextField textFieldEleItem_2 = new JTextField();
+
+		ele_xpath.setFont(ConstantsUI.SEC_TITLE);
+		checkable.setFont(ConstantsUI.SEC_TITLE);
+		textFieldEleItem_1.setFont(ConstantsUI.FONT_NORMAL);
+		textFieldEleItem_2.setFont(ConstantsUI.FONT_NORMAL);
+
+		ele_xpath.setPreferredSize(ConstantsUI.LABLE_SIZE_ELE_ITEM);				
+		checkable.setPreferredSize(ConstantsUI.LABLE_SIZE_ELE_ITEM);
+		textFieldEleItem_1.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
+		textFieldEleItem_2.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
 		
-		JPanel paneldown = new JPanel();
+		panelinfo.add(ele_xpath);
+		panelinfo.add(textFieldEleItem_1);
+		panelinfo.add(checkable);
+		panelinfo.add(textFieldEleItem_2);
+
+		JPanel panelGridSetting = new JPanel();
+		panelGridSetting.setBackground(ConstantsUI.MAIN_BACK_COLOR);
+		panelGridSetting.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
+
+		JLabel app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item4"));
+		JLabel view_name = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item5"));
+		JLabel ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item6"));
+		JTextField textFieldEleItem_4 = new JTextField();
+		JTextField textFieldEleItem_5 = new JTextField();
+		JTextField textFieldEleItem_6 = new JTextField();
+
+		app_name.setFont(ConstantsUI.SEC_TITLE);
+		view_name.setFont(ConstantsUI.SEC_TITLE);
+		ele_name.setFont(ConstantsUI.SEC_TITLE);
+		textFieldEleItem_4.setFont(ConstantsUI.FONT_NORMAL);
+		textFieldEleItem_5.setFont(ConstantsUI.FONT_NORMAL);
+		textFieldEleItem_6.setFont(ConstantsUI.FONT_NORMAL);
+
+		app_name.setPreferredSize(ConstantsUI.LABLE_SIZE_ELE_ITEM);
+		view_name.setPreferredSize(ConstantsUI.LABLE_SIZE_ELE_ITEM);				
+		ele_name.setPreferredSize(ConstantsUI.LABLE_SIZE_ELE_ITEM);
+		textFieldEleItem_4.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
+		textFieldEleItem_5.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
+		textFieldEleItem_6.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
 		
-		panelRight.add(panelup);
-		panelRight.add(panelcenter);
-		panelRight.add(paneldown);
+		panelGridSetting.add(app_name);
+		panelGridSetting.add(textFieldEleItem_4);
+		panelGridSetting.add(view_name);
+		panelGridSetting.add(textFieldEleItem_5);
+		panelGridSetting.add(ele_name);
+		panelGridSetting.add(textFieldEleItem_6);
+
+		
+		JPanel panelGridSave = new JPanel();
+		panelGridSave.setBackground(ConstantsUI.MAIN_BACK_COLOR);
+		panelGridSave.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
+		JLabel labelEleItemNull_1 = new JLabel();
+		labelEleItemNull_1.setPreferredSize(ConstantsUI.LABLE_SIZE_NULL_ITEM);
+        buttonSave = new MyIconButton(ConstantsUI.ICON_SAVE, ConstantsUI.ICON_SAVE_ENABLE,
+                ConstantsUI.ICON_SAVE_DISABLE, "");
+        panelGridSave.add(labelEleItemNull_1);
+        panelGridSave.add(buttonSave);
+
+		panelRight.add(panelinfo);
+		panelRight.add(panelGridSetting);
+		panelRight.add(panelGridSave);
 		return panelRight;
 	}
 	

@@ -6,7 +6,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 /**
- * 自定义按钮类，支持自定义默认图标、激活图标、失效图标和tip提示
+ * 锟皆讹拷锟藉按钮锟洁，支锟斤拷锟皆讹拷锟斤拷默锟斤拷图锟疥、锟斤拷锟斤拷图锟疥、失效图锟斤拷锟絫ip锟斤拷示
  * 
  * @author DraLastat
  *
@@ -18,16 +18,16 @@ public class MyIconButton extends JButton {
 	private String tip;
 
 	/**
-	 * 构造
+	 * 
 	 * 
 	 * @param iconNormal
-	 *            默认图标
+	 *           
 	 * @param iconEnable
-	 *            激活图标
+	 *           
 	 * @param iconDisable
-	 *            失效图标
+	 *            
 	 * @param tip
-	 *            提示
+	 *            
 	 */
 	public MyIconButton(ImageIcon iconNormal, ImageIcon iconEnable, ImageIcon iconDisable, String tip) {
 		super(iconNormal);
@@ -41,7 +41,7 @@ public class MyIconButton extends JButton {
 	}
 
 	/**
-	 * 初始化，设置按钮属性：无边，无焦点渲染，无内容区，各边距0
+	 * 
 	 */
 	private void initialize() {
 		this.setBorderPainted(false);
@@ -52,7 +52,7 @@ public class MyIconButton extends JButton {
 	}
 
 	/**
-	 * 设置按钮图标：鼠标移过、按压、失效的图标 和设置按钮提示
+	 * 
 	 */
 	private void setUp() {
 		this.setRolloverIcon(iconEnable);
