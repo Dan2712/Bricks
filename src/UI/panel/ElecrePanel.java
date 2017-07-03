@@ -59,7 +59,8 @@ public class ElecrePanel extends JPanel implements Observer {
 	/**
 	 * 
 	 */
-	public ElecrePanel(VariableChangeObserve obs, SQLUtils sql) {
+	public ElecrePanel(VariableChangeObserve obs, SQLUtils sql, IDevice device) {
+		this.device = device;
 		this.obs = obs;
 		this.sql = sql;
 		initialize();
@@ -69,14 +70,6 @@ public class ElecrePanel extends JPanel implements Observer {
 	 * 
 	 */
 	private void initialize() {
-        ADB adb = new ADB();
-        IDevice[] devices = adb.getDevices();
-        if (devices.length <= 0) {
-			LOG.error("ADB not connected, please check");
-			return;
-		}
-		device = devices[0];
-		
 		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		this.setLayout(new BorderLayout());
 		addComponent();
@@ -187,10 +180,10 @@ public class ElecrePanel extends JPanel implements Observer {
 		
 		if(node_info != null && node_info.containsKey("clickable")){
 			if(node_info.get("clickable") == "true"){
-				System.out.println("click" + node_info.get("clickable"));
+//				System.out.println("click" + node_info.get("clickable"));
 				panelRight.updateUI();
 			}else{
-				System.out.println("click" + node_info.get("clickable"));
+//				System.out.println("click" + node_info.get("clickable"));
 				
 			}
 		}
@@ -293,12 +286,12 @@ public class ElecrePanel extends JPanel implements Observer {
 		if(node_info.get("focusable").equals("1")){
 			ClickStatus.setSelected(true);
 			Focustatus.setSelectedIcon(ConstantsUI.ICON_ELE_CHK_TRUE);
-			System.out.println("click" + node_info.get("clickable"));
+//			System.out.println("click" + node_info.get("clickable"));
 			panelRight.updateUI();
 		}else{
 			Focustatus.setSelectedIcon(ConstantsUI.ICON_ELE_CHK_FALSE);
 			ClickStatus.setSelected(false);
-			System.out.println("click" + node_info.get("clickable"));
+//			System.out.println("click" + node_info.get("clickable"));
 			panelRight.updateUI();
 		}
 	}
@@ -343,6 +336,9 @@ public class ElecrePanel extends JPanel implements Observer {
                 	sqllist.add(screen);
                 	
                 	sql.insertEle("ELEMENT", sqllist);
+                	
+                	textFieldEleItem_5.setText("");
+                	textFieldEleItem_6.setText("");
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }

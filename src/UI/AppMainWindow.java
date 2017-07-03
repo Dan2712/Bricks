@@ -1,21 +1,35 @@
 package UI;
 
-import UI.panel.*;
-import backgrounder.execution.AppiumInit;
-import node_selection.VariableChangeObserve;
-import tools.SQLUtils;
-
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Statement;
+
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+import com.android.ddmlib.IDevice;
+
+import UI.panel.CasecrePanel;
+import UI.panel.CaserunPanel;
+import UI.panel.ElecrePanel;
+import UI.panel.SettingPanel;
+import UI.panel.StatusPanel;
+import UI.panel.ToolBarPanel;
+import backgrounder.execution.AppiumInit;
+import node_selection.VariableChangeObserve;
+import tools.ADB;
+import tools.SQLUtils;
 
 /**
  *
@@ -23,7 +37,7 @@ import java.sql.Statement;
  */
 
 public class AppMainWindow {
-    private static Logger logger = Logger.getLogger(AppMainWindow.class);
+    private static Logger LOG = Logger.getLogger(AppMainWindow.class);
 
     private JFrame frame;
 
@@ -36,9 +50,9 @@ public class AppMainWindow {
     public static SettingPanel settingPanel;
     public static JDialog dialog;
 	private Connection connection;
-	private Statement stmt;
 	
 	private SQLUtils sql;
+	private IDevice device;
     /**
      * 
      */
@@ -60,7 +74,6 @@ public class AppMainWindow {
      */
     public AppMainWindow() {
         initialize();
-        //StatusPanel.buttonStartSchedule.doClick();
     }
 
     /**
@@ -69,7 +82,16 @@ public class AppMainWindow {
     private void initialize() {
         PropertyConfigurator
                 .configure(ConstantsUI.CURRENT_DIR + File.separator + "config" + File.separator + "log4j.properties");
-        logger.info("==================BricksInitStart====================");
+        LOG.info("==================BricksInitStart====================");
+        
+        ADB adb = new ADB();
+        IDevice[] devices = adb.getDevices();
+        if (devices.length <= 0) {
+			LOG.error("ADB not connected, please check");
+			return;
+		}
+		device = devices[0];
+		
         // 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -82,10 +104,9 @@ public class AppMainWindow {
         try {
         	Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:ElementInfo.db");
-            stmt = connection.createStatement();
             connection.setAutoCommit(true);
             
-            sql = new SQLUtils(stmt);
+            sql = new SQLUtils(connection);
             sql.creatTable();
         } catch (Exception e) {
         	e.printStackTrace();
@@ -110,9 +131,9 @@ public class AppMainWindow {
         ToolBarPanel toolbar = new ToolBarPanel();
         VariableChangeObserve obs = new VariableChangeObserve();
         statusPanel = new StatusPanel();
-        elecrePanel = new ElecrePanel(obs, sql);
+        elecrePanel = new ElecrePanel(obs, sql, device);
         casecrePanel = new CasecrePanel(sql);
-        caserunPanel = new CaserunPanel();
+        caserunPanel = new CaserunPanel(device);
         settingPanel = new SettingPanel();
 
         mainPanel.add(toolbar, BorderLayout.WEST);
@@ -158,13 +179,12 @@ public class AppMainWindow {
             		if (AppiumInit.driver != null)
             			AppiumInit.driver.quit();
             	
-                	stmt.close();
                     connection.close();
                 }catch(Exception e1) {
                 	e1.printStackTrace();
                 } 
             	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                logger.info("==================BricksEnd==================");
+                LOG.info("==================BricksEnd==================");
                 
             }
 

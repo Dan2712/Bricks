@@ -71,7 +71,7 @@ public class RunTestCase implements Runnable{
 		switch (action_name) {
 		case 1:
 			action.click(ele_sub);
-			logText.setText(this.ele_customName + " is clicked");
+			logText.append(this.ele_customName + " is clicked" + "\n");
 			break;
 		case 2:
 			action.longPress(ele_sub);
@@ -93,7 +93,7 @@ public class RunTestCase implements Runnable{
 			break;
 		case 10:
 			action.dragBar(ele_sub);
-			System.out.println(this.ele_customName + " is dragged");
+			logText.setText(this.ele_customName + " is dragged");
 			break;
 		case 11:
 			break;
@@ -102,7 +102,6 @@ public class RunTestCase implements Runnable{
 	}
 	
 	public void validationSwitch(JSONObject validation_info) {
-		System.out.println("text validation");
 		int validation_name = validation_info.getIntValue("validation_name");
 		String ele_name = validation_info.getString("ele_id");
 		int search_mode = 0;
@@ -116,9 +115,9 @@ public class RunTestCase implements Runnable{
 			
 			String except_text = validation_info.getString("expect_text");
 			if (validation.getText(ele_name, search_mode, except_text))
-				System.out.println("success");
+				logText.append("success" + "\n");
 			else
-				System.out.println("fail");
+				logText.append("fail" + "\n");
 			break;
 		case 2:
 			break;

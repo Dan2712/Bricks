@@ -1,5 +1,6 @@
 package tools;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -8,30 +9,35 @@ import java.util.Map;
 
 public class SQLUtils {
 	
-	private Statement stmt = null;
+	private Connection conn = null;
 	
-	public SQLUtils(Statement stmt) {
-		this.stmt = stmt;
+	public SQLUtils(Connection conn) {
+		this.conn = conn;
 	}
 	
 	public Boolean isTableExist(String tableName) {
 		boolean isTableExist = true;  
         try {
+        	Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT count(*) FROM sqlite_master WHERE type='table' AND name= '" + tableName + "'");
 			if (rs.getInt(1) == 0)
 				isTableExist = false;
 			
 			rs.close();
+			rs = null;
+			stmt.close();
+			stmt = null;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.exit(0);
-		}  
+		}
         
         return isTableExist;
 	}
 	
 	public void creatTable() {
 		try {
+			Statement stmt = conn.createStatement();
 			String createActivityTable = "CREATE TABLE ACTIVITY " +
 					"(ACTIVITY_NAME TEXT NOT NULL," +
 	                " APP_NAME TEXT NOT NULL)";
@@ -46,6 +52,8 @@ public class SQLUtils {
 					+ "SCREEN_PATH TEXT NOT NULL)";
 			if (!isTableExist("ELEMENT"))
 				stmt.executeUpdate(createElementTable);
+			
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -68,12 +76,15 @@ public class SQLUtils {
 		screen_path = patterns.get(5).get("SCREEN_PATH");
 		
 		try {
+			Statement stmt = conn.createStatement();
 			String insert_act = "INSERT INTO ACTIVITY (ACTIVITY_NAME, APP_NAME) "
 					+ "VALUES (\"" + activity_name + "\", \"" + app_name + "\");";
 			stmt.executeUpdate(insert_act);
 			String insert_ele = "INSERT INTO ELEMENT (CUSTOM_NAME, XPATH, ACTIVITY_NAME, APP_NAME, STATE, SCREEN_PATH) "
 					+ "VALUES (\"" + custom_name + "\", \"" + xpath + "\", \"" + activity_name + "\", \"" + app_name + "\", \"" + state + "\", \"" + screen_path + "\");";
 			stmt.executeUpdate(insert_ele);
+			
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -83,10 +94,11 @@ public class SQLUtils {
 		ResultSet rs = null;
 		String query = "";
 		if (tableName.equals("ACTIVITY"))
-			query = "SELECT * FROM " + tableName + " WHERE APP_NAME = \"" + appName + "\";";
+			query = "SELECT DISTINCT * FROM " + tableName + " WHERE APP_NAME = \"" + appName + "\";";
 		else if (tableName.equals("ELEMENT"))
 			query = "SELECT * FROM " + tableName + " WHERE CUSTOM_NAME = \"" + appName + "\";";
 		try {
+			Statement stmt = conn.createStatement();
 			rs = stmt.executeQuery(query);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -98,6 +110,7 @@ public class SQLUtils {
 		ResultSet rs = null;
 		String query = "SELECT * FROM " + tableName + " WHERE APP_NAME = \"" + appName + "\" AND ACTIVITY_NAME = \"" + viewName +  "\";";
 		try {
+			Statement stmt = conn.createStatement();
 			rs = stmt.executeQuery(query);
 		} catch (SQLException e) {
 			e.printStackTrace();

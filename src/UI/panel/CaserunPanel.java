@@ -4,25 +4,19 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
-import org.apache.log4j.Logger;
+import com.android.ddmlib.IDevice;
 
 import UI.AppMainWindow;
 import UI.ConstantsUI;
 import tools.PropertyUtil;
 /**
- * 用例运行
+ * 
  *
  * @author DraLastat
  */
@@ -33,28 +27,30 @@ public class CaserunPanel extends JPanel{
 	public static JPanel caserunPanelMain;
 	private static JPanel caserunPanelResult;
 	private static JPanel caserunPanelData;
+	private IDevice device;
 	
 	/**
-	 * 构造
+	 * 
 	 */
-	public CaserunPanel() {
+	public CaserunPanel(IDevice device) {
+		this.device = device;
 		initialize();
 		addComponent();
 		addListener();
 	}
 
 	/**
-	 * 初始化
+	 * 
 	 */
 	private void initialize() {
 		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		this.setLayout(new BorderLayout());
-		caserunPanelResult = new CaserunResultPanel();
+		caserunPanelResult = new CaserunResultPanel(device);
 		caserunPanelData = new CaserunDataPanel();
 	}
 
 	/**
-	 * 添加组件
+	 * 
 	 */
 	private void addComponent() {
 
@@ -64,7 +60,7 @@ public class CaserunPanel extends JPanel{
 	}
 	
 	/**
-	 * 上部面板
+	 * 
 	 * 
 	 * @return
 	 */
@@ -82,17 +78,17 @@ public class CaserunPanel extends JPanel{
 	}
 	
 	/**
-	 * 中部面板
+	 * 
 	 * 
 	 * @return
 	 */
 	private JPanel getCenterPanel() {
-		// 中间面板
+		//
 		JPanel panelCenter = new JPanel();
 		panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelCenter.setLayout(new BorderLayout());
 
-		// 列表Panel
+		//
 		JPanel panelList = new JPanel();
 		Dimension preferredSize = new Dimension(245, ConstantsUI.MAIN_WINDOW_HEIGHT);
 		panelList.setPreferredSize(preferredSize);
@@ -122,7 +118,7 @@ public class CaserunPanel extends JPanel{
 		panelList.add(panelResult);
 		panelList.add(panelData);
 
-		// 设置Panel
+		//
 		caserunPanelMain = new JPanel();
 		caserunPanelMain.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		caserunPanelMain.setLayout(new BorderLayout());
@@ -134,7 +130,7 @@ public class CaserunPanel extends JPanel{
 		return panelCenter;
 	}
 	/**
-	 * 为相关组件添加事件监听
+	 *
 	 */
 	private void addListener() {
 		panelResult.addMouseListener(new MouseListener() {

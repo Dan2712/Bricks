@@ -12,7 +12,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -24,6 +26,7 @@ import javax.swing.JPopupMenu;
 import UI.BrickBean;
 import UI.ConstantsUI;
 import UI.MyIconButton;
+import UI.ValidationBean;
 import tools.PropertyUtil;
 import tools.SQLUtils;
 
@@ -94,6 +97,7 @@ public class CasecrePanel extends JPanel{
 	private JComboBox<String> comboxViewName;
 	private JComboBox<String> comboxEleName;
 	private JComboBox<String> comboxActName;
+	private JComboBox<String> comboxVerName;
 	private String appName = "";
 	
 	private SQLUtils sql = null;
@@ -226,7 +230,6 @@ public class CasecrePanel extends JPanel{
 		panelGridActPick.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelGridActPick.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
 
-		
 		/**
 		 *
 		 * 
@@ -235,7 +238,6 @@ public class CasecrePanel extends JPanel{
 		JPanel panelGridVerPick = new JPanel();
 		panelGridVerPick.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelGridVerPick.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
-		
 		
 		JLabel labelActPick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.actpick"));
         buttonActAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
@@ -248,10 +250,40 @@ public class CasecrePanel extends JPanel{
                 ConstantsUI.ICON_ELE_ADD_DISABLE, "");
 		JLabel labelVerNull = new JLabel();
 		JLabel labelVerName = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.vername"));
-		JComboBox<String> comboxVerName = new JComboBox<String>();
-		comboxVerName.addItem("VER1");
-		comboxVerName.addItem("VER2");
+		
+		comboxVerName = new JComboBox<String>();
+		comboxVerName.addItem("Text Validation");
+		comboxVerName.addItem("Image Validation");
+		comboxVerName.addItem("Element Exist Validation");
 		comboxVerName.setEditable(false);
+		comboxVerName.setSelectedItem(null);
+		comboxVerName.addItemListener(new ItemListener() {
+			
+			//选择后，进入不同的case，比如进入text验证，需要这俩，就弹窗需要输入这两个。拿到回来后作为键值对存进Validation Bean
+			//validation name自定义。保存成Bean之后随便你放到哪儿，最后生成json文件时再读出来就好。
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					switch ((String) e.getItem()) {
+					case "Text Validation":
+						String ele_path = "";
+						String expect_text = "";
+						
+						ValidationBean validation = new ValidationBean();
+						validation.setValidation_name(1);
+						Map<String, String> path = new HashMap<>();
+						path.put("ele_path", ele_path);
+						Map<String, String> text = new HashMap<>();
+						text.put("expect_text", expect_text);
+						break;
+					case "Image Validation":
+						break;
+					case "Element Exist Validation":
+						break;
+					}
+				}
+			}
+		});
 		
 		labelActPick.setFont(ConstantsUI.SEC_TITLE);
 		labelActName.setFont(ConstantsUI.FONT_NORMAL);
@@ -279,16 +311,12 @@ public class CasecrePanel extends JPanel{
 		panelGridVerPick.add(labelVerNull);
 		panelGridVerPick.add(labelVerName);
 		panelGridVerPick.add(comboxVerName);
-			
 		
 		panelCenter.add(panelGridElePick);
 		panelCenter.add(panelGridActPick);
 		panelCenter.add(panelGridVerPick);
 		
 		return panelCenter;
-		
-		
-
 	}
 	
 	/**
@@ -413,10 +441,6 @@ public class CasecrePanel extends JPanel{
 //	            		panelDown.add(butver);
 //	                	panelDown.updateUI();
 	                	
-	                	for (int i=0; i<caseList.size(); i++) {
-	                		System.out.println(caseList.get(i).getCustom_name());
-	                		System.out.println(caseList.get(i).getAction_name());
-	                	}
 	                } catch (Exception e1) {
 	                	e1.printStackTrace();
 	                }
@@ -464,7 +488,8 @@ public class CasecrePanel extends JPanel{
 		            			panelDown.updateUI();
 		            			System.out.println("delete event");
 		            		} catch (Exception e1) {
-		                    	                }
+		            			e1.printStackTrace();
+		            		}
 
 		            }
 		            
@@ -518,7 +543,10 @@ public class CasecrePanel extends JPanel{
 				comboxEleName.removeAllItems();
 				comboxEleName.removeItemListener(elisten);
 				try {
-					if (rs.next()) {
+					rs.next();
+					String eleFirst = rs.getString(1);
+					comboxEleName.addItem(eleFirst);
+					while ((rs.next())) {
 						String eleName = rs.getString(1);
 						comboxEleName.addItem(eleName);
 					}
@@ -530,6 +558,7 @@ public class CasecrePanel extends JPanel{
 					if (rs != null) {
 						try {
 							rs.close();
+							rs = null;
 						} catch (SQLException e1) {
 							e1.printStackTrace();
 						}

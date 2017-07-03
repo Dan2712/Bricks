@@ -1,32 +1,27 @@
 package UI.panel;
 
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
-import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import org.apache.log4j.Logger;
+
+import com.android.ddmlib.IDevice;
 
 import UI.ConstantsUI;
 import UI.MyIconButton;
 import backgrounder.ExecutionMain;
-import logic.ConstantsLogic;
 import tools.PropertyUtil;
 
 public class CaserunResultPanel extends JPanel{
@@ -40,10 +35,12 @@ public class CaserunResultPanel extends JPanel{
 	
 	private String filepath;
 	private JTextArea logprint;
+	private IDevice device;
 	/**
 	 * 
 	 */
-	public CaserunResultPanel() {
+	public CaserunResultPanel(IDevice device) {
+		this.device = device;
 		initialize();
 		addComponent();
 		addListener();
@@ -159,11 +156,11 @@ public class CaserunResultPanel extends JPanel{
             }
         });
 		
-		this.buttonStart.addActionListener(new ActionListener() {
+		buttonStart.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				ExecutionMain.RunTestCase(filepath, logprint);
+				ExecutionMain.RunTestCase(filepath, logprint, device);
 			}
 		});
 	}

@@ -9,6 +9,8 @@ public class CusValidation {
 	
 	private AppiumDriver driver;
 	
+	private int[] validationList = new int[50];
+	
 	public CusValidation(AppiumDriver driver) {
 		this.driver = driver;
 	}
