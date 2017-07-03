@@ -3,6 +3,10 @@ package node_selection;
 import java.util.Map;
 import java.util.Observable;
 
+/**
+ * @author Dan
+ * @Description listener for updating node information
+ */
 public class VariableChangeObserve extends Observable {
 	private Map<String, String> node_info;
 	
@@ -14,7 +18,7 @@ public class VariableChangeObserve extends Observable {
 		notifyObservers();
 	}
 
-	public synchronized Map getInfo() {
+	public synchronized Map<String, String> getInfo() {
 		return node_info;
 	}
 }

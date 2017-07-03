@@ -73,7 +73,15 @@ public class SQLUtils {
 		}
 	}
 	
-	public void getElement() {
+	public ResultSet queryElement(String tableName, String key) {
+		ResultSet rs = null;
+		String query = "SELECT * FROM " + tableName + ";";
 		
+		try {
+			rs = stmt.executeQuery(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rs;
 	}
 }

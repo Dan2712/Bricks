@@ -2,6 +2,7 @@ package UI;
 
 import UI.panel.*;
 import backgrounder.execution.AppiumInit;
+import node_selection.VariableChangeObserve;
 import tools.SQLUtils;
 
 import org.apache.log4j.Logger;
@@ -107,8 +108,9 @@ public class AppMainWindow {
         mainPanel.setLayout(new BorderLayout());
 
         ToolBarPanel toolbar = new ToolBarPanel();
+        VariableChangeObserve obs = new VariableChangeObserve();
         statusPanel = new StatusPanel();
-        elecrePanel = new ElecrePanel();
+        elecrePanel = new ElecrePanel(obs);
         casecrePanel = new CasecrePanel();
         caserunPanel = new CaserunPanel();
         settingPanel = new SettingPanel();
@@ -123,7 +125,7 @@ public class AppMainWindow {
 
         frame.add(mainPanel);
 
-
+        obs.addObserver(elecrePanel);
         frame.addWindowListener(new WindowListener() {
 
             @Override

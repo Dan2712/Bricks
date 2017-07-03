@@ -33,11 +33,13 @@ public class ElecrePanel extends JPanel implements Observer {
 	private static MyIconButton buttonSave;
 	
 	private IDevice device;
+	private VariableChangeObserve obs;
 	
 	/**
 	 * 
 	 */
-	public ElecrePanel() {
+	public ElecrePanel(VariableChangeObserve obs) {
+		this.obs = obs;
 		initialize();
 	}
 
@@ -94,7 +96,7 @@ public class ElecrePanel extends JPanel implements Observer {
 		panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelCenter.setLayout(new BorderLayout());
 
-		RealTimeScreenUI mp = new RealTimeScreenUI(device);
+		RealTimeScreenUI mp = new RealTimeScreenUI(device, obs);
 		mp.addMouseListener(mp);
 		mp.addMouseMotionListener(mp);
 		
@@ -108,7 +110,8 @@ public class ElecrePanel extends JPanel implements Observer {
 	 * 
 	 * @return
 	 */
-	JTextField textFieldEleItem_1;
+	private JTextField textFieldEleItem_1;
+	private JTextField textFieldEleItem_4;
 	private JPanel getRightPanel() {
 		
 		JPanel panelRight = new JPanel();
@@ -151,7 +154,7 @@ public class ElecrePanel extends JPanel implements Observer {
 		JLabel app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item4"));
 		JLabel view_name = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item5"));
 		JLabel ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item6"));
-		JTextField textFieldEleItem_4 = new JTextField();
+		textFieldEleItem_4 = new JTextField();
 		JTextField textFieldEleItem_5 = new JTextField();
 		JTextField textFieldEleItem_6 = new JTextField();
 
@@ -194,12 +197,12 @@ public class ElecrePanel extends JPanel implements Observer {
 
 	public void observe(Observable o) {
 	    o.addObserver(this);
-	  }
+	    }
 
-	  @Override
-	  public void update(Observable o, Object arg) {
-	    Map<String, String> node_info = ((VariableChangeObserve) o).getInfo();
-	    System.out.println(node_info.get("xpath"));
-	    textFieldEleItem_1.setText(node_info.get("xpath"));
-	  }
+	@Override
+	public void update(Observable o, Object arg) {
+		Map<String, String> node_info = ((VariableChangeObserve) o).getInfo();
+		textFieldEleItem_1.setText(node_info.get("xpath"));
+		textFieldEleItem_4.setText(node_info.get("package"));
+	}
 }

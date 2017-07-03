@@ -13,10 +13,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observable;
-
 import javax.swing.JPanel;
-
 import org.apache.log4j.Logger;
 
 import com.android.ddmlib.IDevice;
@@ -54,10 +51,11 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
     private UiAutomatorModel mModel;
     private Boolean isSelected = false;
     private Map<String, String> node_info = new HashMap();
-    private VariableChangeObserve obs = new VariableChangeObserve();
+    private VariableChangeObserve obs = null;
     
-	public RealTimeScreenUI(IDevice device) {
+	public RealTimeScreenUI(IDevice device, VariableChangeObserve obs) {
     	this.device = device;
+    	this.obs = obs;
     	minicap = new MiniCapUtil(device);
 		minicap.registerObserver(this);
 //		minicap.takeScreenShotOnce();
@@ -215,6 +213,10 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 	            	node_info.put("xpath", node_sel.getXpath());
 	            	node_info.put("clickable", node_sel.getAttribute("clickable"));
 	            	node_info.put("scrollable", node_sel.getAttribute("scrollable"));
+	            	node_info.put("checkable", node_sel.getAttribute("checkable"));
+	            	node_info.put("focusable", node_sel.getAttribute("focusable"));
+	            	node_info.put("long-clickable", node_sel.getAttribute("long-clickable"));
+	            	node_info.put("package", node_sel.getAttribute("package"));
 	            	obs.setInfo(node_info);
 	            	repaint();
             	}
