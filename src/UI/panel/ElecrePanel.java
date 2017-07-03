@@ -3,10 +3,10 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -18,6 +18,7 @@ import com.android.ddmlib.IDevice;
 import UI.ConstantsUI;
 import UI.MyIconButton;
 import node_selection.RealTimeScreenUI;
+import node_selection.VariableChangeObserve;
 import tools.ADB;
 import tools.PropertyUtil;
 
@@ -25,7 +26,7 @@ import tools.PropertyUtil;
  *
  * @author DraLastat
  */
-public class ElecrePanel extends JPanel{
+public class ElecrePanel extends JPanel implements Observer {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger("ElecrePanel.class");
 	private static MyIconButton CheckStatus;
@@ -107,6 +108,7 @@ public class ElecrePanel extends JPanel{
 	 * 
 	 * @return
 	 */
+	JTextField textFieldEleItem_1;
 	private JPanel getRightPanel() {
 		
 		JPanel panelRight = new JPanel();
@@ -123,7 +125,7 @@ public class ElecrePanel extends JPanel{
 		
 		JLabel ele_xpath = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item1"));
 		JLabel checkable = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item2"));
-		JTextField textFieldEleItem_1 = new JTextField();
+		textFieldEleItem_1 = new JTextField();
 		JTextField textFieldEleItem_2 = new JTextField();
 		textFieldEleItem_1.setEditable(false);
 		
@@ -189,4 +191,15 @@ public class ElecrePanel extends JPanel{
 		panelRight.add(panelGridSave);
 		return panelRight;
 	}
+
+	public void observe(Observable o) {
+	    o.addObserver(this);
+	  }
+
+	  @Override
+	  public void update(Observable o, Object arg) {
+	    Map<String, String> node_info = ((VariableChangeObserve) o).getInfo();
+	    System.out.println(node_info.get("xpath"));
+	    textFieldEleItem_1.setText(node_info.get("xpath"));
+	  }
 }

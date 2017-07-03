@@ -11,9 +11,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
 
 import javax.swing.JPanel;
 
@@ -21,7 +21,6 @@ import org.apache.log4j.Logger;
 
 import com.android.ddmlib.IDevice;
 
-import UI.panel.ElecrePanel;
 import mini_decode.AndroidScreenObserver;
 import mini_decode.MiniCapUtil;
 import node_selection.UiAutomatorHelper.UiAutomatorException;
@@ -54,7 +53,8 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
     
     private UiAutomatorModel mModel;
     private Boolean isSelected = false;
-    private Map node_info = new HashMap();
+    private Map<String, String> node_info = new HashMap();
+    private VariableChangeObserve obs = new VariableChangeObserve();
     
 	public RealTimeScreenUI(IDevice device) {
     	this.device = device;
@@ -211,16 +211,15 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
             	if (node != null) {
 	            	mModel.setSelectedNode(node);
 	            	UiNode node_sel = (UiNode) node;
+	            	node_info.clear();
 	            	node_info.put("xpath", node_sel.getXpath());
 	            	node_info.put("clickable", node_sel.getAttribute("clickable"));
 	            	node_info.put("scrollable", node_sel.getAttribute("scrollable"));
+	            	obs.setInfo(node_info);
 	            	repaint();
             	}
             }
 		}
 	}
 	
-	public Map getNode_info() {
-		return node_info;
-	}
 }
