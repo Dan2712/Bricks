@@ -63,7 +63,7 @@ public class ElecrePanel extends JPanel implements Observer {
 	/**
 	 * 
 	 */
-	JPanel LiveviewPanel;
+	private JPanel LiveviewPanel;
 	private void addComponent() {
 		LiveviewPanel = getCenterPanel();
 		this.add(getUpPanel(), BorderLayout.NORTH);
@@ -96,7 +96,7 @@ public class ElecrePanel extends JPanel implements Observer {
 		panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelCenter.setLayout(new BorderLayout());
 
-		RealTimeScreenUI mp = new RealTimeScreenUI(device, obs);
+		RealTimeScreenUI mp = new RealTimeScreenUI(device, obs, this);
 		mp.addMouseListener(mp);
 		mp.addMouseMotionListener(mp);
 		

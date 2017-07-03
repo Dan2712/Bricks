@@ -52,10 +52,12 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
     private Boolean isSelected = false;
     private Map<String, String> node_info = new HashMap();
     private VariableChangeObserve obs = null;
+    private JPanel parentPanel = null;
     
-	public RealTimeScreenUI(IDevice device, VariableChangeObserve obs) {
+	public RealTimeScreenUI(IDevice device, VariableChangeObserve obs, JPanel parentPanel) {
     	this.device = device;
     	this.obs = obs;
+    	this.parentPanel = parentPanel;
     	minicap = new MiniCapUtil(device);
 		minicap.registerObserver(this);
 //		minicap.takeScreenShotOnce();
@@ -76,9 +78,11 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 			LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
 		}
 		this.updateScreenshotTransformation();
-		
-		if (mModel.isExploreMode())
-			this.repaint();
+		this.setSize(panel_bounds, panel_bounds);
+		if (mModel.isExploreMode()) {
+//			this.repaint();
+			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
+		}
 	}
 	
 	public void paint(Graphics g) {
@@ -177,6 +181,7 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 		// TODO Auto-generated method stub
 		if (mModel != null) {
             mModel.toggleExploreMode();
+            parentPanel.repaint();
             repaint();
         }
 	}
@@ -185,12 +190,14 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
 		setCursor(mCrossCursor);
+		parentPanel.repaint();
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		setCursor(mOrginialCursor);
+		parentPanel.repaint();
 	}
 
 	@Override
@@ -218,6 +225,7 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 	            	node_info.put("long-clickable", node_sel.getAttribute("long-clickable"));
 	            	node_info.put("package", node_sel.getAttribute("package"));
 	            	obs.setInfo(node_info);
+	            	parentPanel.repaint();
 	            	repaint();
             	}
             }
