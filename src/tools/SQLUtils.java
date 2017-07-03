@@ -40,7 +40,9 @@ public class SQLUtils {
 			String createElementTable = "CREATE TABLE ELEMENT "
 					+ "(CUSTOM_NAME TEXT NOT NULL UNIQUE,"
 					+ "XPATH TEXT NOT NULL,"
-					+ "ACTIVITY_NAME TEXT NOT NULL)";
+					+ "ACTIVITY_NAME TEXT NOT NULL,"
+					+ "STATE TEXT NOT NULL,"
+					+ "SCREEN_PATH TEXT NOT NULL)";
 			if (!isTableExist("ELEMENT"))
 				stmt.executeUpdate(createElementTable);
 		} catch (SQLException e) {
@@ -54,19 +56,23 @@ public class SQLUtils {
 		String app_name = "";
 		String custom_name = "";
 		String xpath = "";
+		String state = "";
+		String screen_path = "";
 		for (int i=0; i<patterns.size(); i++) {
 			activity_name = patterns.get(i).get("ACTIVITY_NAME");
 			app_name = patterns.get(i).get("APP_NAME");
 			custom_name = patterns.get(i).get("CUSTOM_NAME");
 			xpath = patterns.get(i).get("XPATH");
+			state = patterns.get(i).get("STATE");
+			screen_path = patterns.get(i).get("SCREEN_PATH");
 		}
 		
 		try {
 			String insert_act = "INSERT INTO ACTIVITY (ACTIVITY_NAME, APP_NAME) "
 					+ "VALUE (" + activity_name + "," + app_name + " );";
 			stmt.executeUpdate(insert_act);
-			String insert_ele = "INSERT INTO ELEMENT (CUSTOM_NAME, XPATH, ACTIVITY_NAME) "
-					+ "VALUE (" + custom_name + "," + xpath + "," + activity_name + ");";
+			String insert_ele = "INSERT INTO ELEMENT (CUSTOM_NAME, XPATH, ACTIVITY_NAME, STATE, SCREEN_PATH) "
+					+ "VALUE (" + custom_name + "," + xpath + "," + activity_name + "," + state + "," + screen_path + ");";
 			stmt.executeUpdate(insert_ele);
 		} catch (SQLException e) {
 			e.printStackTrace();

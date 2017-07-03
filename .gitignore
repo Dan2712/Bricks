@@ -11,4 +11,4 @@ log/
 *.log
 *.json
 *.db
-/bin/
+screenShot/

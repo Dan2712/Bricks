@@ -1,5 +1,6 @@
 package node_selection;
 
+import java.awt.AWTException;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -7,13 +8,20 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+
 import org.apache.log4j.Logger;
 
 import com.android.ddmlib.IDevice;
@@ -53,6 +61,7 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
     private Map<String, String> node_info = new HashMap();
     private VariableChangeObserve obs = null;
     private JPanel parentPanel = null;
+    private String screenPath = "";
     
 	public RealTimeScreenUI(IDevice device, VariableChangeObserve obs, JPanel parentPanel) {
     	this.device = device;
@@ -81,6 +90,7 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 		this.setSize(panel_bounds, panel_bounds);
 		if (mModel.isExploreMode()) {
 //			this.repaint();
+			parentPanel.repaint();
 			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
 		}
 	}
@@ -183,6 +193,25 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
             mModel.toggleExploreMode();
             parentPanel.repaint();
             repaint();
+            
+            new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+						RealTimeScreenUI.this.paint(image.getGraphics());
+						screenPath = "screenshot/" + System.currentTimeMillis() + ".jpg";
+						File screenShot = new File(screenPath);
+						if (!screenShot.getParentFile().exists())
+							screenShot.getParentFile().mkdirs();
+						
+						ImageIO.write(image, "jpg", screenShot);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}  
+				}
+			}).start();
         }
 	}
 
@@ -224,6 +253,7 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 	            	node_info.put("focusable", node_sel.getAttribute("focusable"));
 	            	node_info.put("long-clickable", node_sel.getAttribute("long-clickable"));
 	            	node_info.put("package", node_sel.getAttribute("package"));
+	            	node_info.put("screenPath", screenPath);
 	            	obs.setInfo(node_info);
 	            	parentPanel.repaint();
 	            	repaint();
