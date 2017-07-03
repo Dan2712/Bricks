@@ -111,7 +111,7 @@ public class AppMainWindow {
         VariableChangeObserve obs = new VariableChangeObserve();
         statusPanel = new StatusPanel();
         elecrePanel = new ElecrePanel(obs);
-        casecrePanel = new CasecrePanel();
+        casecrePanel = new CasecrePanel(sql);
         caserunPanel = new CaserunPanel();
         settingPanel = new SettingPanel();
 

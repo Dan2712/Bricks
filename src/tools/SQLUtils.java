@@ -41,6 +41,7 @@ public class SQLUtils {
 					+ "(CUSTOM_NAME TEXT NOT NULL UNIQUE,"
 					+ "XPATH TEXT NOT NULL,"
 					+ "ACTIVITY_NAME TEXT NOT NULL,"
+					+ "APP_NAME TEXT NOT NULL,"
 					+ "STATE TEXT NOT NULL,"
 					+ "SCREEN_PATH TEXT NOT NULL)";
 			if (!isTableExist("ELEMENT"))
@@ -69,20 +70,36 @@ public class SQLUtils {
 		
 		try {
 			String insert_act = "INSERT INTO ACTIVITY (ACTIVITY_NAME, APP_NAME) "
-					+ "VALUE (" + activity_name + "," + app_name + " );";
+					+ "VALUES (" + activity_name + "," + app_name + " );";
 			stmt.executeUpdate(insert_act);
-			String insert_ele = "INSERT INTO ELEMENT (CUSTOM_NAME, XPATH, ACTIVITY_NAME, STATE, SCREEN_PATH) "
-					+ "VALUE (" + custom_name + "," + xpath + "," + activity_name + "," + state + "," + screen_path + ");";
+			String insert_ele = "INSERT INTO ELEMENT (CUSTOM_NAME, XPATH, ACTIVITY_NAME, APP_NAME, STATE, SCREEN_PATH) "
+					+ "VALUES (" + custom_name + "," + xpath + "," + activity_name + "," + app_name + "," + state + "," + screen_path + ");";
 			stmt.executeUpdate(insert_ele);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public ResultSet queryElement(String tableName, String key) {
+	public ResultSet queryElement(String tableName, String appName) {
 		ResultSet rs = null;
-		String query = "SELECT * FROM " + tableName + ";";
-		
+		String query = "";
+		if (tableName.equals("ACTIVITY"))
+			query = "SELECT * FROM " + tableName + " WHERE APP_NAME = \"" + appName + "\";";
+		else if (tableName.equals("ELEMENT"))
+			query = "SELECT * FROM " + tableName + " WHERE CUSTOM_NAME = \"" + appName + "\";";
+System.out.println(query);
+		try {
+			rs = stmt.executeQuery(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rs;
+	}
+	
+	public ResultSet queryElement(String tableName, String appName, String viewName) {
+		ResultSet rs = null;
+		String query = "SELECT * FROM " + tableName + " WHERE APP_NAME = \"" + appName + "\" AND ACTIVITY_NAME = \"" + viewName +  "\";";
+System.out.println(query);
 		try {
 			rs = stmt.executeQuery(query);
 		} catch (SQLException e) {
