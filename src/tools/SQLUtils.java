@@ -59,21 +59,20 @@ public class SQLUtils {
 		String xpath = "";
 		String state = "";
 		String screen_path = "";
-		for (int i=0; i<patterns.size(); i++) {
-			activity_name = patterns.get(i).get("ACTIVITY_NAME");
-			app_name = patterns.get(i).get("APP_NAME");
-			custom_name = patterns.get(i).get("CUSTOM_NAME");
-			xpath = patterns.get(i).get("XPATH");
-			state = patterns.get(i).get("STATE");
-			screen_path = patterns.get(i).get("SCREEN_PATH");
-		}
+		
+		activity_name = patterns.get(2).get("ACTIVITY_NAME");
+		app_name = patterns.get(0).get("APP_NAME");
+		custom_name = patterns.get(1).get("CUSTOM_NAME");
+		xpath = patterns.get(3).get("XPATH");
+		state = patterns.get(4).get("STATE");
+		screen_path = patterns.get(5).get("SCREEN_PATH");
 		
 		try {
 			String insert_act = "INSERT INTO ACTIVITY (ACTIVITY_NAME, APP_NAME) "
-					+ "VALUES (" + activity_name + "," + app_name + " );";
+					+ "VALUES (\"" + activity_name + "\", \"" + app_name + "\");";
 			stmt.executeUpdate(insert_act);
 			String insert_ele = "INSERT INTO ELEMENT (CUSTOM_NAME, XPATH, ACTIVITY_NAME, APP_NAME, STATE, SCREEN_PATH) "
-					+ "VALUES (" + custom_name + "," + xpath + "," + activity_name + "," + app_name + "," + state + "," + screen_path + ");";
+					+ "VALUES (\"" + custom_name + "\", \"" + xpath + "\", \"" + activity_name + "\", \"" + app_name + "\", \"" + state + "\", \"" + screen_path + "\");";
 			stmt.executeUpdate(insert_ele);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -87,7 +86,6 @@ public class SQLUtils {
 			query = "SELECT * FROM " + tableName + " WHERE APP_NAME = \"" + appName + "\";";
 		else if (tableName.equals("ELEMENT"))
 			query = "SELECT * FROM " + tableName + " WHERE CUSTOM_NAME = \"" + appName + "\";";
-System.out.println(query);
 		try {
 			rs = stmt.executeQuery(query);
 		} catch (SQLException e) {
@@ -99,7 +97,6 @@ System.out.println(query);
 	public ResultSet queryElement(String tableName, String appName, String viewName) {
 		ResultSet rs = null;
 		String query = "SELECT * FROM " + tableName + " WHERE APP_NAME = \"" + appName + "\" AND ACTIVITY_NAME = \"" + viewName +  "\";";
-System.out.println(query);
 		try {
 			rs = stmt.executeQuery(query);
 		} catch (SQLException e) {

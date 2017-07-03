@@ -65,4 +65,10 @@ public class MyIconButton extends JButton {
 		}
 
 	}
+	public void isTrue(){
+		this.setIcon(iconEnable);
+	}
+	public void isFalse(){
+		this.setIcon(iconDisable);
+	}
 }

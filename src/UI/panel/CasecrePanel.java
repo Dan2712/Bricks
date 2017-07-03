@@ -12,6 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -20,6 +21,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
+import UI.BrickBean;
 import UI.ConstantsUI;
 import UI.MyIconButton;
 import tools.PropertyUtil;
@@ -36,7 +38,11 @@ public class CasecrePanel extends JPanel{
 	private static MyIconButton buttonVerAdd;
 	private int id;
 	private int type;
+	private LinkedList<BrickBean> caseList = new LinkedList<>();
 	
+	private String xpath = "";
+	private String cus_name = "";
+	private int action;
 	/**
 	 * 
 	 */
@@ -58,7 +64,7 @@ public class CasecrePanel extends JPanel{
 	/**
 	 * 
 	 */
-	JPanel CaseCre;
+	private JPanel CaseCre;
 	private void addComponent() {
 		CaseCre = getDownPanel();
 		this.add(getUpPanel(), BorderLayout.NORTH);
@@ -139,6 +145,12 @@ public class CasecrePanel extends JPanel{
 		comboxActName = new JComboBox<String>();
 		comboxActName.setEditable(false);
 		comboxActName.setSelectedItem(null);
+		comboxActName.addItem("click");
+		comboxActName.addItem("longPress");
+		comboxActName.addItem("setText");
+		comboxActName.addItem("dragBar");
+		comboxActName.setSelectedItem(null);
+		comboxActName.addItemListener(new ActListener());
 		
 		// App selection change listener
 		comboxAppName.addItemListener(new ItemListener() {
@@ -151,7 +163,6 @@ public class CasecrePanel extends JPanel{
 					
 					comboxViewName.removeAllItems();
 					comboxEleName.removeAllItems();
-					comboxActName.removeAllItems();
 					comboxViewName.removeItemListener(vlisten);
 					try {
 						while (rs.next()) {
@@ -231,14 +242,6 @@ public class CasecrePanel extends JPanel{
                 ConstantsUI.ICON_ELE_ADD_DISABLE, "");
 		JLabel labelActNull = new JLabel();
 		JLabel labelActName = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.actname"));
-		
-		comboxActName.addItemListener(new ItemListener() {
-			
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				
-			}
-		});
 		
 		JLabel labelVerPick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.verpick"));
         buttonVerAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
@@ -353,9 +356,16 @@ public class CasecrePanel extends JPanel{
 	                	butele.addMouseListener(new PopClickListener(butele));
 	                	panelDown.add(butele);
 	                	panelDown.updateUI();
-	                	System.out.println("ele" + id);
+	                	
+	                	BrickBean brick = new BrickBean();
+	                	brick.setEle_xpath(xpath);
+	                	brick.setCustom_name(cus_name);
+	                	brick.setEle(true);
+	                	
+	                	caseList.add(brick);
 	                } catch (Exception e1) {
-	                    	                }
+	                	e1.printStackTrace();
+	                }
 
 	            }
 	        });
@@ -375,7 +385,12 @@ public class CasecrePanel extends JPanel{
 	                	butact.addMouseListener(new PopClickListener(butact));
 	                	panelDown.add(butact);
 	                	panelDown.updateUI();
-	                	System.out.println("act" + id);
+	                	
+	                	BrickBean brick = new BrickBean();
+	                	brick.setAction_name(action);
+	                	brick.setEle(false);
+	                	
+	                	caseList.add(brick);
 	                } catch (Exception e1) {
 	                    	                }
 
@@ -387,19 +402,24 @@ public class CasecrePanel extends JPanel{
 	            public void actionPerformed(ActionEvent e) {
 
 	                try {
-	                	id = butclick ++;
-	                	butver = new JButton();
-	                	butver.setBackground(Color.DARK_GRAY);
-	                	//btn3.setForeground(Color.pink);
-	                	butver.setPreferredSize(new Dimension(50, 20));
-	                	butver.setBorder(null);
-	                	setId(id);
-	                	butver.addMouseListener(new PopClickListener(butver));
-	            		panelDown.add(butver);
-	                	panelDown.updateUI();
-	                	System.out.println("ver" + id);
+//	                	id = butclick ++;
+//	                	butver = new JButton();
+//	                	butver.setBackground(Color.DARK_GRAY);
+//	                	//btn3.setForeground(Color.pink);
+//	                	butver.setPreferredSize(new Dimension(50, 20));
+//	                	butver.setBorder(null);
+//	                	setId(id);
+//	                	butver.addMouseListener(new PopClickListener(butver));
+//	            		panelDown.add(butver);
+//	                	panelDown.updateUI();
+	                	
+	                	for (int i=0; i<caseList.size(); i++) {
+	                		System.out.println(caseList.get(i).getCustom_name());
+	                		System.out.println(caseList.get(i).getAction_name());
+	                	}
 	                } catch (Exception e1) {
-	                    	                }
+	                	e1.printStackTrace();
+	                }
 
 	            }
 	        });
@@ -496,7 +516,6 @@ public class CasecrePanel extends JPanel{
 				ResultSet rs = sql.queryElement("ELEMENT", appName, viewName);
 				
 				comboxEleName.removeAllItems();
-				comboxActName.removeAllItems();
 				comboxEleName.removeItemListener(elisten);
 				try {
 					if (rs.next()) {
@@ -532,28 +551,30 @@ public class CasecrePanel extends JPanel{
 			
 			try {
 				while (xpathSet.next()) {
-					String state = xpathSet.getString(5);
-					for (int i = 0; i < state.length(); i++) {
-						if (state.charAt(i) == '1') {
-					        switch (i) {
-					        case 0:
-					        	comboxActName.addItem("click");
-					        	break;
-					        case 1:
-					        	comboxActName.addItem("scroll");
-					        	break;
-					        case 2:
-					        	comboxActName.addItem("check");
-					        	break;
-					        case 3:
-					        	comboxActName.addItem("focus");
-					        	break;
-					        case 4:
-					        	comboxActName.addItem("long-click");
-					        	break;
-					        }
-						}
-				    }
+					xpath = xpathSet.getString("XPATH");
+					cus_name = xpathSet.getString("CUSTOM_NAME");
+//					String state = xpathSet.getString(5);
+//					for (int i = 0; i < state.length(); i++) {
+//						if (state.charAt(i) == '1') {
+//					        switch (i) {
+//					        case 0:
+//					        	comboxActName.addItem("click");
+//					        	break;
+//					        case 1:
+//					        	comboxActName.addItem("scroll");
+//					        	break;
+//					        case 2:
+//					        	comboxActName.addItem("check");
+//					        	break;
+//					        case 3:
+//					        	comboxActName.addItem("focus");
+//					        	break;
+//					        case 4:
+//					        	comboxActName.addItem("long-click");
+//					        	break;
+//					        }
+//						}
+//				    }
 				}
 			} catch (SQLException e1) {
 				e1.printStackTrace();
@@ -568,7 +589,23 @@ public class CasecrePanel extends JPanel{
 
 		@Override
 		public void itemStateChanged(ItemEvent e) {
+			if (e.getStateChange() == ItemEvent.SELECTED) {
+				String action_name = (String) e.getItem();
+				switch (action_name) {
+				case "click":
+					action = 1;
+					break;
+				case "longPress":
+					action = 2;
+					break;
+				case "setText":
+					action = 3;
+					break;
+				case "dragBar":
+					action = 10;
+					break;
+				}
+			}
 		}
-		
 	}
 }

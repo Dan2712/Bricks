@@ -7,14 +7,14 @@ import java.awt.*;
 import java.io.File;
 
 /**
- * UI��صĳ���
+ * 
  *
  * @author DraLastat
  */
 public class ConstantsUI {
 
     /**
-     * �������,�汾
+     * 
      */
     public final static String APP_NAME = "BRICKS";
     public final static String APP_VERSION = "v_1.00_170630";
@@ -270,6 +270,8 @@ public class ConstantsUI {
     public final static Dimension LABLE_SIZE_ELE_ITEM = new Dimension(100, 30);
     // Item Null Label ��С
     public final static Dimension LABLE_SIZE_NULL_ITEM = new Dimension(320, 30);
+    // Item Null Label ��С
+    public final static Dimension LABLE_NULL_ITEM = new Dimension(80, 30);
     // Casecre Null Label ��С
     public final static Dimension LABLE_SIZE_CASECRE_NULL_ITEM = new Dimension(500, 30);
     // CASErun Null Label ��С

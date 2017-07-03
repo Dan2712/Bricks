@@ -1,16 +1,18 @@
 package backgrounder;
 
+import javax.swing.JTextArea;
+
 import backgrounder.execution.AppiumInit;
 import backgrounder.execution.RunTestCase;
 
 public class ExecutionMain {
 
-	public void RunTestCase() {
+	public static void RunTestCase(String path, JTextArea logText) {
 		
 		try {
 //			AppiumInit.setUp();
 			
-			RunTestCase testCase = new RunTestCase("/json/case_json.json", 0, AppiumInit.driver);
+			RunTestCase testCase = new RunTestCase(path, 0, AppiumInit.driver, logText);
 			testCase.run();
 		}catch (Exception e) {
 			e.printStackTrace();

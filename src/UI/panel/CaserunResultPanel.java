@@ -25,17 +25,21 @@ import org.apache.log4j.Logger;
 
 import UI.ConstantsUI;
 import UI.MyIconButton;
+import backgrounder.ExecutionMain;
 import logic.ConstantsLogic;
 import tools.PropertyUtil;
 
 public class CaserunResultPanel extends JPanel{
+	
 	private static final long serialVersionUID = 1L;
 	private static MyIconButton buttonCaseFind;
 	private static MyIconButton buttonStart;
 	private static MyIconButton buttonStop;
 
 	private static Logger logger = Logger.getLogger(CaserunResultPanel.class);
-
+	
+	private String filepath;
+	private JTextArea logprint;
 	/**
 	 * 
 	 */
@@ -115,7 +119,7 @@ public class CaserunResultPanel extends JPanel{
 
 		JLabel labelRunLogTitle = new JLabel(PropertyUtil.getProperty("bricks.ui.caserun.logprint"));
 		JLabel labellogprintNull = new JLabel();
-		JTextArea logprint = new JTextArea(12, 68);
+		logprint = new JTextArea(12, 68);
 		logprint.setBorder(null);
 		logprint.setBorder(new EmptyBorder(0,0,0,0));
 		logprint.setLineWrap(true);
@@ -145,7 +149,7 @@ public class CaserunResultPanel extends JPanel{
                     jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES );  
                     jfc.showDialog(new JLabel(), "选择");  
                     File file=jfc.getSelectedFile();
-                    String filepath = jfc.getSelectedFile().getPath();
+                    filepath = jfc.getSelectedFile().getPath();
                     case_name.setText(filepath);
                 } catch (Exception e1) {
                     logger.error("open table_field file fail:" + e1.toString());
@@ -154,6 +158,14 @@ public class CaserunResultPanel extends JPanel{
 
             }
         });
+		
+		this.buttonStart.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				ExecutionMain.RunTestCase(filepath, logprint);
+			}
+		});
 	}
 
 }

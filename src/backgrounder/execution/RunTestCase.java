@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.swing.JTextArea;
+
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -27,11 +29,13 @@ public class RunTestCase implements Runnable{
 	private AppiumDriver driver;
 	private CusAction action;
 	private CusValidation validation;
+	private JTextArea logText;
 	
-	public RunTestCase(String path, int runMode, AppiumDriver driver) {
+	public RunTestCase(String path, int runMode, AppiumDriver driver, JTextArea logText) {
 		this.path = path;
 		this.runMode = runMode;
 		this.driver = driver;
+		this.logText = logText;
 		action = new CusAction(driver);
 		validation = new CusValidation(driver);
 	}
@@ -67,7 +71,7 @@ public class RunTestCase implements Runnable{
 		switch (action_name) {
 		case 1:
 			action.click(ele_sub);
-			System.out.println(this.ele_customName + " is clicked");
+			logText.setText(this.ele_customName + " is clicked");
 			break;
 		case 2:
 			action.longPress(ele_sub);

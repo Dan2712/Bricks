@@ -10,5 +10,6 @@ proguard/
 log/
 *.log
 *.json
+
 *.db
 screenShot/

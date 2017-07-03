@@ -110,7 +110,7 @@ public class AppMainWindow {
         ToolBarPanel toolbar = new ToolBarPanel();
         VariableChangeObserve obs = new VariableChangeObserve();
         statusPanel = new StatusPanel();
-        elecrePanel = new ElecrePanel(obs);
+        elecrePanel = new ElecrePanel(obs, sql);
         casecrePanel = new CasecrePanel(sql);
         caserunPanel = new CaserunPanel();
         settingPanel = new SettingPanel();
