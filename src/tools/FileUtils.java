@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.opencsv.CSVReader;
 
@@ -272,10 +274,11 @@ public class FileUtils {
 		return fileSizeString;
 	}
 	
-	public static LinkedHashMap<String, String> loadJson(String path) {
+	public static JSONArray loadJson(String path) {
 		
 		BufferedReader reader;
-		LinkedHashMap<String, String> jsonMap = null;
+//		LinkedHashMap<String, String> jsonMap = null;
+		JSONArray jArray = null;
 		
 		try {
 			reader = new BufferedReader(new FileReader(path));
@@ -285,15 +288,15 @@ public class FileUtils {
 				str += line;
 			}
 			
-			jsonMap = JSON.parseObject(str, 
-					new TypeReference<LinkedHashMap<String, String>>() {});
-			
+//			jsonMap = JSON.parseObject(str, 
+//					new TypeReference<LinkedHashMap<String, String>>() {});
+			jArray = JSON.parseArray(str);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		return jsonMap;
+		return jArray;
 	}
 }

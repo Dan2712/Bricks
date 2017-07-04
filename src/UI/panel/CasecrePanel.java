@@ -23,6 +23,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
 import UI.BrickBean;
 import UI.ConstantsUI;
 import UI.MyIconButton;
@@ -388,7 +392,7 @@ public class CasecrePanel extends JPanel{
 	                	BrickBean brick = new BrickBean();
 	                	brick.setEle_xpath(xpath);
 	                	brick.setCustom_name(cus_name);
-	                	brick.setEle(true);
+	                	brick.setProperty("ele");
 	                	
 	                	caseList.add(brick);
 	                } catch (Exception e1) {
@@ -416,11 +420,12 @@ public class CasecrePanel extends JPanel{
 	                	
 	                	BrickBean brick = new BrickBean();
 	                	brick.setAction_name(action);
-	                	brick.setEle(false);
+	                	brick.setProperty("act");
 	                	
 	                	caseList.add(brick);
 	                } catch (Exception e1) {
-	                    	                }
+	                	e1.printStackTrace();
+	                }
 
 	            }
 	        });
@@ -441,6 +446,10 @@ public class CasecrePanel extends JPanel{
 //	            		panelDown.add(butver);
 //	                	panelDown.updateUI();
 	                	
+	                	String str = JSON.toJSONString(caseList);
+	                	JSONArray obj = JSON.parseArray(str);
+	                	System.out.println(JSON.toJSONString(obj.getJSONObject(0)));
+	                	System.out.println(obj.getJSONObject(0).getString("ele_xpath"));
 	                } catch (Exception e1) {
 	                	e1.printStackTrace();
 	                }
