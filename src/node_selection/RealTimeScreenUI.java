@@ -1,6 +1,5 @@
 package node_selection;
 
-import java.awt.AWTException;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -8,8 +7,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.Robot;
-import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -88,7 +85,7 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 		}
 		this.updateScreenshotTransformation();
 		this.setSize(panel_bounds, panel_bounds);
-		if (mModel.isExploreMode()) {
+		if (mModel != null && mModel.isExploreMode()) {
 //			this.repaint();
 			parentPanel.repaint();
 			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
@@ -246,12 +243,12 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 	            	mModel.setSelectedNode(node);
 	            	UiNode node_sel = (UiNode) node;
 	            	node_info.clear();
-	            	node_info.put("xpath", node_sel.getXpath());
-	            	node_info.put("clickable", Boolean.parseBoolean(node_sel.getAttribute("clickable")) ? "1" : "0");
-	            	node_info.put("scrollable", Boolean.parseBoolean(node_sel.getAttribute("scrollable")) ? "1" : "0");
-	            	node_info.put("checkable", Boolean.parseBoolean(node_sel.getAttribute("checkable")) ? "1" : "0");
-	            	node_info.put("focusable", Boolean.parseBoolean(node_sel.getAttribute("focusable")) ? "1" : "0");
-	            	node_info.put("long-clickable", Boolean.parseBoolean(node_sel.getAttribute("long-clickable")) ? "1" : "0");
+	            	node_info.put("xpath", "/" + node_sel.getXpath());
+	            	node_info.put("clickable", node_sel.getAttribute("clickable").equals("true") ? "1" : "0");
+	            	node_info.put("scrollable", node_sel.getAttribute("scrollable").equals("true") ? "1" : "0");
+	            	node_info.put("checkable", node_sel.getAttribute("checkable").equals("true") ? "1" : "0");
+	            	node_info.put("focusable", node_sel.getAttribute("focusable").equals("true") ? "1" : "0");
+	            	node_info.put("long-clickable", node_sel.getAttribute("long-clickable").equals("true") ? "1" : "0");
 	            	node_info.put("package", node_sel.getAttribute("package"));
 	            	node_info.put("screenPath", screenPath);
 	            	obs.setInfo(node_info);

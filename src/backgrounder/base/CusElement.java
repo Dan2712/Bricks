@@ -19,28 +19,17 @@ public class CusElement {
 		this.driver = driver;
 	}
 
-	public WebElement explicitlyWait(int searchMode, String ele) {
+	public WebElement explicitlyWait(String ele) {
 		WebDriverWait wait = new WebDriverWait(driver, wait_time);
 		
-		if (searchMode == 0) {
-			element = wait.until(new ExpectedCondition<WebElement>() {
+		element = wait.until(new ExpectedCondition<WebElement>() {
 
-				@Override
-				public WebElement apply(WebDriver d) {
-					return d.findElement(By.id(ele));
-				}
-			});
-		} else if (searchMode == 1) {
-			element = wait.until(new ExpectedCondition<WebElement>() {
-
-				@Override
-				public WebElement apply(WebDriver d) {
-					System.out.println(ele);
-					return d.findElement(By.xpath(ele));
-				}
-			});
-		}
-		
+			@Override
+			public WebElement apply(WebDriver d) {
+				System.out.println(ele);
+				return d.findElement(By.xpath(ele));
+			}
+		});
 		return element;
 	}
 }

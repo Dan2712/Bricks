@@ -49,7 +49,7 @@ public class RunTestCase implements Runnable{
 			for (int i=0; i<jsonFile.size(); i++) {
 				JSONObject obj = jsonFile.getJSONObject(i);
 				if (obj.getString("property").equals("ele")) {
-					ele_sub = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(1, obj.getString("ele_xpath"));
+					ele_sub = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(obj.getString("ele_xpath"));
 					this.ele_customName = obj.getString("custom_name");
 				} else if (obj.getString("property").equals("act")) {
 					this.actionSwitch(obj);
@@ -87,7 +87,7 @@ public class RunTestCase implements Runnable{
 			break;
 		case 10:
 			action.dragBar(ele_sub);
-			logText.setText(this.ele_customName + " is dragged");
+			logText.setText(this.ele_customName + " is dragged" + "\n");
 			break;
 		case 11:
 			break;
@@ -97,18 +97,13 @@ public class RunTestCase implements Runnable{
 	
 	public void validationSwitch(JSONObject validation_info) {
 		int validation_name = validation_info.getIntValue("validation_name");
-		String ele_name = validation_info.getString("ele_id");
-		int search_mode = 0;
-		if (validation_info.containsKey("ele_id"))
-			search_mode = 0;
-		else if (validation_info.containsKey("ele_xpath"))
-			search_mode = 1;
+		JSONObject params = validation_info.getJSONObject("params");
 		
 		switch (validation_name) {
 		case 1:
-			
-			String except_text = validation_info.getString("expect_text");
-			if (validation.getText(ele_name, search_mode, except_text))
+			String ele_name = params.getString("ele_path");
+			String except_text = params.getString("expect_text");
+			if (validation.getText(ele_name, except_text))
 				logText.append("success" + "\n");
 			else
 				logText.append("fail" + "\n");

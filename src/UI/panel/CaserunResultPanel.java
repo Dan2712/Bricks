@@ -164,6 +164,7 @@ public class CaserunResultPanel extends JPanel{
 					
 					@Override
 					public void run() {
+						logprint.setText("");
 						ExecutionMain.RunTestCase(filepath, logprint, device);
 					}
 				}).start();

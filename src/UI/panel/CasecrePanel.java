@@ -32,7 +32,6 @@ import com.alibaba.fastjson.JSON;
 import UI.BrickBean;
 import UI.ConstantsUI;
 import UI.MyIconButton;
-import UI.ValidationBean;
 import tools.PropertyUtil;
 import tools.SQLUtils;
 
@@ -269,22 +268,22 @@ public class CasecrePanel extends JPanel{
 		comboxVerName.setSelectedItem(null);
 		comboxVerName.addItemListener(new ItemListener() {
 			
-			//选择后，进入不同的case，比如进入text验证，需要这俩，就弹窗需要输入这两个。拿到回来后作为键值对存进Validation Bean
-			//validation name自定义。保存成Bean之后随便你放到哪儿，最后生成json文件时再读出来就好。
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					switch ((String) e.getItem()) {
 					case "Text Validation":
-						String ele_path = "";
-						String expect_text = "";
+						String ele_path = "//android.widget.TextView[@resource-id='dji.go.v4:id/fpv_error_pop_item_title_tv']";
+						String expect_text = "自动起飞操作失败";
 						
-						ValidationBean validation = new ValidationBean();
-						validation.setValidation_name(1);
-						Map<String, String> path = new HashMap<>();
-						path.put("ele_path", ele_path);
-						Map<String, String> text = new HashMap<>();
-						text.put("expect_text", expect_text);
+						BrickBean brick = new BrickBean();
+						brick.setProperty("val");
+						brick.setValidation_name(1);
+						Map<String, String> params = new HashMap<>();
+						params.put("ele_path", ele_path);
+						params.put("expect_text", expect_text);
+						brick.setParams(params);
+						caseList.add(brick);
 						break;
 					case "Image Validation":
 						break;

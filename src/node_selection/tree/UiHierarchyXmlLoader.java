@@ -174,7 +174,7 @@ public class UiHierarchyXmlLoader {
             }
             public String getXpathByParent(BasicTreeNode mWorkingNode){
             	
-            	//当前节点不可能是根节点，调用方已经保证；
+            	//the current node cannot be root when this called
             	if(RootWindowNode.class.isInstance(mWorkingNode)){
             		return "";
             	}else{

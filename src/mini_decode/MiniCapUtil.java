@@ -382,18 +382,31 @@ public class MiniCapUtil implements ScreenSubject{
 							finalBytes = subByteArray(frameBody,
 									0, frameBody.length);
 							
-							new Thread(new Runnable() {					// convert to bufferedimage
-
-								@Override
-								public void run() {
-									// TODO Auto-generated method stub
-									image_notify = createImage(finalBytes);
-									if (image_pre == null || !compareImage(image_pre, image_notify)) {
-										image_pre = image_notify;
-										notifyObservers(image_notify);
+//							new Thread(new Runnable() {					// convert to bufferedimage
+//
+//								@Override
+//								public void run() {
+//									// TODO Auto-generated method stub
+//									image_notify = createImage(finalBytes);
+//									if (image_pre == null || !compareImage(image_pre, image_notify)) {
+//										image_pre = image_notify;
+//										notifyObservers(image_notify);
+//									}
+//								}
+//							}).start();
+							
+							if (imageByte_pre == null || !compareByte(finalBytes, imageByte_pre)) {
+								imageByte_pre = finalBytes;
+								new Thread(new Runnable() {					// convert to bufferedimage
+	
+									@Override
+									public void run() {
+										// TODO Auto-generated method stub
+											BufferedImage image = createImage(finalBytes);
+											notifyObservers(image);
 									}
-								}
-							}).start();
+								}).start();
+							}
 							cursor += frameLength;
 							restore();
 							
@@ -495,6 +508,18 @@ public class MiniCapUtil implements ScreenSubject{
 			return cursor;
 		}
 		
+	}
+	
+	private Boolean compareByte(byte[] a, byte[] b) {
+		if (a.length != b.length)
+			return false;
+		
+		for (int i=0; i<a.length; i++) {
+			if (a[i] != b[i])
+				return false;
+		}
+		
+		return true;
 	}
 	
 	public boolean compareImage(BufferedImage imgA, BufferedImage imgB) {        

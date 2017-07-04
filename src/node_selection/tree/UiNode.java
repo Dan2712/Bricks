@@ -119,7 +119,7 @@ public class UiNode extends BasicTreeNode {
 
 	public String getXpath() {
 		String className = getNodeClassAttribute();
-		String xpath = "/" + className;
+		String xpath = "/" + className + "[@index=\'" + getAttribute("index") + "\']";
 		boolean flag = false;
 
 		String resourceid = getAttribute("resource-id");

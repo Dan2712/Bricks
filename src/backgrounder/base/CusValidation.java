@@ -15,8 +15,8 @@ public class CusValidation {
 		this.driver = driver;
 	}
 	
-	public Boolean getText(String eleName, int searchMode, String expectText) {
-		WebElement ele = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(searchMode, eleName);
+	public Boolean getText(String eleName, String expectText) {
+		WebElement ele = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(eleName);
 		String text = ele.getAttribute("text");
 		
 		if (text.equals(expectText))

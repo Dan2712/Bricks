@@ -1,10 +1,27 @@
 package UI;
 
+import java.util.Map;
+
 public class BrickBean {
 	private String ele_xpath;
 	private String custom_name;
 	private int action_name;
 	private String property;
+	private Map<String, String> params;
+	private int validation_name;
+	
+	public Map<String, String> getParams() {
+		return params;
+	}
+	public void setParams(Map<String, String> params) {
+		this.params = params;
+	}
+	public int getValidation_name() {
+		return validation_name;
+	}
+	public void setValidation_name(int validation_name) {
+		this.validation_name = validation_name;
+	}
 	
 	public String getProperty() {
 		return property;
