@@ -10,6 +10,10 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -24,8 +28,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 
 import UI.BrickBean;
 import UI.ConstantsUI;
@@ -43,6 +45,7 @@ public class CasecrePanel extends JPanel{
 	private static MyIconButton buttonEleAdd;
 	private static MyIconButton buttonActAdd;
 	private static MyIconButton buttonVerAdd;
+	private static MyIconButton buttonSave;
 	private int id;
 	private int type;
 	private LinkedList<BrickBean> caseList = new LinkedList<>();
@@ -254,6 +257,9 @@ public class CasecrePanel extends JPanel{
                 ConstantsUI.ICON_ELE_ADD_DISABLE, "");
 		JLabel labelVerNull = new JLabel();
 		JLabel labelVerName = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.vername"));
+        buttonSave = new MyIconButton(ConstantsUI.ICON_SAVE, ConstantsUI.ICON_SAVE_ENABLE,
+                ConstantsUI.ICON_SAVE_DISABLE, "");
+        JLabel labelNull_2 = new JLabel();
 		
 		comboxVerName = new JComboBox<String>();
 		comboxVerName.addItem("Text Validation");
@@ -304,6 +310,7 @@ public class CasecrePanel extends JPanel{
 		labelVerNull.setPreferredSize(ConstantsUI.LABLE_SIZE_CASECRE_NULL_ITEM);
 		labelVerName.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
 		comboxVerName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
+		labelNull_2.setPreferredSize(ConstantsUI.LABLE_SIZE_CASECRE_NULL_SEC_ITEM);
 		
 		panelGridVerPick.add(labelActPick);
 		panelGridVerPick.add(buttonActAdd);
@@ -315,6 +322,8 @@ public class CasecrePanel extends JPanel{
 		panelGridVerPick.add(labelVerNull);
 		panelGridVerPick.add(labelVerName);
 		panelGridVerPick.add(comboxVerName);
+		panelGridVerPick.add(labelNull_2);
+		panelGridVerPick.add(buttonSave);
 		
 		panelCenter.add(panelGridElePick);
 		panelCenter.add(panelGridActPick);
@@ -445,11 +454,27 @@ public class CasecrePanel extends JPanel{
 //	                	butver.addMouseListener(new PopClickListener(butver));
 //	            		panelDown.add(butver);
 //	                	panelDown.updateUI();
+	                } catch (Exception e1) {
+	                	e1.printStackTrace();
+	                }
+
+	            }
+	        });
+		  	buttonSave.addActionListener(new ActionListener() {
+
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+
+	                try {
+	                	File json = new File("json/file1.json");
+	                	if (!json.getParentFile().exists())
+	                		json.getParentFile().mkdirs();
 	                	
 	                	String str = JSON.toJSONString(caseList);
-	                	JSONArray obj = JSON.parseArray(str);
-	                	System.out.println(JSON.toJSONString(obj.getJSONObject(0)));
-	                	System.out.println(obj.getJSONObject(0).getString("ele_xpath"));
+	                	PrintWriter pw = new PrintWriter(new FileWriter(json));
+	                    pw.print(str);
+	                    pw.flush();
+	                    pw.close();
 	                } catch (Exception e1) {
 	                	e1.printStackTrace();
 	                }

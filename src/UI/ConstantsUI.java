@@ -274,6 +274,8 @@ public class ConstantsUI {
     public final static Dimension LABLE_NULL_ITEM = new Dimension(80, 30);
     // Casecre Null Label ��С
     public final static Dimension LABLE_SIZE_CASECRE_NULL_ITEM = new Dimension(500, 30);
+    // Casecre Null Label ��С
+    public final static Dimension LABLE_SIZE_CASECRE_NULL_SEC_ITEM = new Dimension(130, 30);
     // CASErun Null Label ��С
     public final static Dimension LABLE_SIZE_CASE_NULL_ITEM = new Dimension(350, 30);
     // Item text field ��С
