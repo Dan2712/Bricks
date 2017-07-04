@@ -393,6 +393,7 @@ public class CasecrePanel extends JPanel{
 	                	butele.setBackground(Color.DARK_GRAY);
 	                	butele.setPreferredSize(new Dimension(50, 20));
 	                	butele.setBorder(null);
+	                	butele.setText(cus_name);
 	                	setId(id);
 	                	butele.addMouseListener(new PopClickListener(butele));
 	                	panelDown.add(butele);
@@ -422,6 +423,15 @@ public class CasecrePanel extends JPanel{
 	                	//btn2.setForeground(Color.blue);
 	                	butact.setPreferredSize(new Dimension(50, 20));
 	                	butact.setBorder(null);
+	                	if(action == 1){
+	                		butact.setText("CK");
+	                	}else if(action == 2){
+	                		butact.setText("LP");
+	                	}else if(action == 3){
+	                		butact.setText("ST");
+	                	}else if(action == 10){
+	                		butact.setText("DB");
+	                	}
 	                	setId(id);
 	                	butact.addMouseListener(new PopClickListener(butact));
 	                	panelDown.add(butact);
@@ -444,16 +454,6 @@ public class CasecrePanel extends JPanel{
 	            public void actionPerformed(ActionEvent e) {
 
 	                try {
-//	                	id = butclick ++;
-//	                	butver = new JButton();
-//	                	butver.setBackground(Color.DARK_GRAY);
-//	                	//btn3.setForeground(Color.pink);
-//	                	butver.setPreferredSize(new Dimension(50, 20));
-//	                	butver.setBorder(null);
-//	                	setId(id);
-//	                	butver.addMouseListener(new PopClickListener(butver));
-//	            		panelDown.add(butver);
-//	                	panelDown.updateUI();
 	                } catch (Exception e1) {
 	                	e1.printStackTrace();
 	                }
