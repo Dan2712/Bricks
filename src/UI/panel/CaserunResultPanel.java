@@ -160,7 +160,13 @@ public class CaserunResultPanel extends JPanel{
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				ExecutionMain.RunTestCase(filepath, logprint, device);
+				new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						ExecutionMain.RunTestCase(filepath, logprint, device);
+					}
+				}).start();
 			}
 		});
 	}

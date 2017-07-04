@@ -10,7 +10,7 @@ import io.appium.java_client.AppiumDriver;
 
 public class AppiumInit {
 	
-	public static final int WAIT_TIME = 5;
+	public static final int WAIT_TIME = 30;
 	public static AppiumDriver driver; 
 	
 	public static void setUp(IDevice device, String appPackage, String launchActivity) throws Exception {

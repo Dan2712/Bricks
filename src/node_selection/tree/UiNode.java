@@ -180,7 +180,7 @@ public class UiNode extends BasicTreeNode {
 	}
 	public String getIndexXpath() {
 		String className = getNodeClassAttribute();
-		String xpath = "/" + className;
+		String xpath = "//" + className;
 		xpath = xpath+"["+this.classNameIndex+"]";
 		return xpath;
 	}

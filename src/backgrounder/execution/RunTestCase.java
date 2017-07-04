@@ -46,23 +46,6 @@ public class RunTestCase implements Runnable{
 		
 		JSONArray jsonFile = FileUtils.loadJson(this.path);
 		if (this.runMode == 0) {
-//			for (Map.Entry<String, String> entry : jsonMap.entrySet()) {
-//				if (entry.getKey().endsWith("1")) {
-//					JSONObject obj = JSON.parseObject(entry.getValue());
-//					if (obj.containsKey("ele_id"))
-//						ele_sub = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(0, obj.getString("ele_id")); 
-//					else if (obj.containsKey("ele_xpath"))
-//						ele_sub = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(1, obj.getString("ele_xpath"));
-//					
-//					this.ele_customName = obj.getString("custom_name");
-//				} else if (entry.getKey().endsWith("2")) {
-//					JSONObject obj = JSON.parseObject(entry.getValue());
-//					this.actionSwitch(obj);
-//				} else if (entry.getKey().endsWith("3")) {
-//					JSONObject obj = JSON.parseObject(entry.getValue());
-//					this.validationSwitch(obj);
-//				}
-//			}
 			for (int i=0; i<jsonFile.size(); i++) {
 				JSONObject obj = jsonFile.getJSONObject(i);
 				if (obj.getString("property").equals("ele")) {

@@ -112,7 +112,7 @@ public class AppMainWindow {
         	e.printStackTrace();
         	System.exit(0);
         }
-
+        
         // 
         frame = new JFrame();
         frame.setBounds(ConstantsUI.MAIN_WINDOW_X, ConstantsUI.MAIN_WINDOW_Y, ConstantsUI.MAIN_WINDOW_WIDTH,
