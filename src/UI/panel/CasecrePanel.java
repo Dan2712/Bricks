@@ -10,7 +10,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -22,6 +21,7 @@ import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -51,6 +51,7 @@ public class CasecrePanel extends JPanel{
 	
 	private String xpath = "";
 	private String cus_name = "";
+	private String val = "";
 	private int action;
 	/**
 	 * 
@@ -273,6 +274,7 @@ public class CasecrePanel extends JPanel{
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					switch ((String) e.getItem()) {
 					case "Text Validation":
+						val = "TV";
 						String ele_path = "//android.widget.TextView[@resource-id='dji.go.v4:id/fpv_error_pop_item_title_tv']";
 						String expect_text = "自动起飞操作失败";
 						
@@ -286,8 +288,10 @@ public class CasecrePanel extends JPanel{
 						caseList.add(brick);
 						break;
 					case "Image Validation":
+						val = "IV";
 						break;
 					case "Element Exist Validation":
+						val = "EEV";
 						break;
 					}
 				}
@@ -453,6 +457,23 @@ public class CasecrePanel extends JPanel{
 	            public void actionPerformed(ActionEvent e) {
 
 	                try {
+	                	id = butclick ++;
+	                	butver = new JButton();
+	                	butver.setBackground(Color.DARK_GRAY);
+	                	//btn2.setForeground(Color.blue);
+	                	butver.setPreferredSize(new Dimension(50, 20));
+	                	butver.setBorder(null);
+	                	if(val.equals("TV")){
+	                		butver.setText("TV");
+	                	}else if(val.equals("IV")){
+	                		butver.setText("IV");
+	                	}else if(val.equals("EEV")){
+	                		butver.setText("EEV");
+	                	}
+	                	setId(id);
+	                	butver.addMouseListener(new PopClickListener(butver));
+	                	panelDown.add(butver);
+	                	panelDown.updateUI();
 	                } catch (Exception e1) {
 	                	e1.printStackTrace();
 	                }
@@ -465,6 +486,8 @@ public class CasecrePanel extends JPanel{
 	            public void actionPerformed(ActionEvent e) {
 
 	                try {
+	                	JDialog savewindow = new JDialog();
+	                	
 	                	File json = new File("json/file1.json");
 	                	if (!json.getParentFile().exists())
 	                		json.getParentFile().mkdirs();
