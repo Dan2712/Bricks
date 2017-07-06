@@ -1,6 +1,7 @@
 package backgrounder.base;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -19,7 +20,7 @@ public class CusElement {
 		this.driver = driver;
 	}
 
-	public WebElement explicitlyWait(String ele) {
+	public WebElement explicitlyWait(String ele) throws NoSuchElementException{
 		WebDriverWait wait = new WebDriverWait(driver, wait_time);
 		
 		element = wait.until(new ExpectedCondition<WebElement>() {

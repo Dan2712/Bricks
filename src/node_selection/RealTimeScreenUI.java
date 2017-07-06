@@ -54,7 +54,7 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
     private BasicStroke s;
     
     private UiAutomatorModel mModel;
-    private Boolean isSelected = false;
+    private volatile Boolean isSelected = false;
     private Map<String, String> node_info = new HashMap();
     private VariableChangeObserve obs = null;
     private JPanel parentPanel = null;
@@ -74,7 +74,7 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
     }
         
 	@Override
-	public void frameImageChange(BufferedImage image) {
+	public  void frameImageChange(BufferedImage image) {
 		this.mScreenshot = image;
 		UiAutomatorResult result = null;
 		try {
@@ -85,14 +85,16 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 		}
 		this.updateScreenshotTransformation();
 		this.setSize(panel_bounds, panel_bounds);
-		if (mModel != null && mModel.isExploreMode()) {
+		if (!isSelected) {
 //			this.repaint();
+			System.out.println("I'm repaint by frame change");
 			parentPanel.repaint();
 			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
 		}
 	}
 	
 	public void paint(Graphics g) {
+		System.out.println("I'm repaint");
 		Graphics2D g2 = (Graphics2D) g;
 		try {
 			if (mScreenshot == null)
@@ -188,6 +190,7 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 		// TODO Auto-generated method stub
 		if (mModel != null) {
             mModel.toggleExploreMode();
+            isSelected = !isSelected;
             parentPanel.repaint();
             repaint();
             

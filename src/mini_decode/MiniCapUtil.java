@@ -86,6 +86,7 @@ public class MiniCapUtil implements ScreenSubject{
 		
 		// push .so and minicap file to specified path
 		try {
+			//need to debug
 			device.pushFile(miniCapBin.getAbsolutePath(), REMOTE_PATH + "/" + MINICAP_BIN);
 			device.pushFile(miniCapSo.getAbsolutePath(), REMOTE_PATH + "/" + MINICAP_SO);
 			executeShellCommand(String.format(MINICAP_CHMOD_COMMAND,

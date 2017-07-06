@@ -1,19 +1,11 @@
 package backgrounder.execution;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import javax.swing.JTextArea;
 
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.gargoylesoftware.htmlunit.javascript.host.Element;
 
 import backgrounder.base.CusAction;
 import backgrounder.base.CusElement;
@@ -49,8 +41,13 @@ public class RunTestCase implements Runnable{
 			for (int i=0; i<jsonFile.size(); i++) {
 				JSONObject obj = jsonFile.getJSONObject(i);
 				if (obj.getString("property").equals("ele")) {
-					ele_sub = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(obj.getString("ele_xpath"));
-					this.ele_customName = obj.getString("custom_name");
+					try {
+						ele_sub = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(obj.getString("ele_xpath"));
+						this.ele_customName = obj.getString("custom_name");
+					} catch (NoSuchElementException e) {
+						logText.append("No such element: " + this.ele_customName);
+						break;
+					}
 				} else if (obj.getString("property").equals("act")) {
 					this.actionSwitch(obj);
 				} else if (obj.getString("property").equals("val")) {
