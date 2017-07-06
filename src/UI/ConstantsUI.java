@@ -7,14 +7,14 @@ import java.awt.*;
 import java.io.File;
 
 /**
- * UI��صĳ���
+ * 
  *
  * @author DraLastat
  */
 public class ConstantsUI {
 
     /**
-     * �������,�汾
+     * 
      */
     public final static String APP_NAME = "BRICKS";
     public final static String APP_VERSION = "v_1.00_170630";
@@ -69,6 +69,8 @@ public class ConstantsUI {
     public final static Font SEC_TITLE = new Font(PropertyUtil.getProperty("ds.ui.font.family"), 0, 16);
     // ��ͨ����
     public final static Font FONT_NORMAL = new Font(PropertyUtil.getProperty("ds.ui.font.family"), 0, 13);
+    // ��ͨ����
+    public final static Font FONT_ELE_NORMAL = new Font(PropertyUtil.getProperty("ds.ui.font.family"), 0, 16);
     // radio����
     public final static Font FONT_RADIO = new Font(PropertyUtil.getProperty("ds.ui.font.family"), 0, 15);
 
@@ -123,16 +125,34 @@ public class ConstantsUI {
     // ���ƻ�ִ�� ʧЧ
     public final static ImageIcon ICON_START_SCHEDULE_DISABLE = new ImageIcon(
             CURRENT_DIR + File.separator + "icon" + File.separator + "startScheduleDisable.png");
-    
+    // ���ƻ�ִ�� Ĭ��
+    public final static ImageIcon ICON_FINDCASE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "findcase.png");
+    // ���ƻ�ִ�� ����
+    public final static ImageIcon ICON_FINDCASE_ENABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "findcaseenable.png");
+    // ���ƻ�ִ�� ʧЧ
+    public final static ImageIcon ICON_FINDCASE_DISABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "findcaseenable.png");
     // ���ש�� Ĭ��
     public final static ImageIcon ICON_ELE_ADD = new ImageIcon(
-            CURRENT_DIR + File.separator + "icon" + File.separator + "AddEnable.png");
+            CURRENT_DIR + File.separator + "icon" + File.separator + "add.png");
     // ���ש�� ����
     public final static ImageIcon ICON_ELE_ADD_ENABLE = new ImageIcon(
-            CURRENT_DIR + File.separator + "icon" + File.separator + "Add.png");
+            CURRENT_DIR + File.separator + "icon" + File.separator + "addenable.png");
     // ���ש�� ʧЧ
     public final static ImageIcon ICON_ELE_ADD_DISABLE = new ImageIcon(
-            CURRENT_DIR + File.separator + "icon" + File.separator + "AddEnable.png");
+            CURRENT_DIR + File.separator + "icon" + File.separator + "addenable.png");
+    
+    // ���ש�� Ĭ��
+    public final static ImageIcon ICON_ELE_CHK = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "unknow.png");
+    // ���ש�� ����
+    public final static ImageIcon ICON_ELE_CHK_TRUE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "true.png");
+    // ���ש�� ʧЧ
+    public final static ImageIcon ICON_ELE_CHK_FALSE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "false.png");
     
     // ��ʼ Ĭ��
     public final static ImageIcon ICON_START = new ImageIcon(
@@ -246,14 +266,20 @@ public class ConstantsUI {
     public final static Dimension LABLE_SIZE = new Dimension(1300, 30);
     // Item Label ��С
     public final static Dimension LABLE_SIZE_ITEM = new Dimension(78, 30);
+    // Item Label ��С
+    public final static Dimension LABLE_SIZE_ELE_ITEM = new Dimension(100, 30);
     // Item Null Label ��С
-    public final static Dimension LABLE_SIZE_NULL_ITEM = new Dimension(20, 30);
+    public final static Dimension LABLE_SIZE_NULL_ITEM = new Dimension(320, 30);
+    // Item Null Label ��С
+    public final static Dimension LABLE_NULL_ITEM = new Dimension(80, 30);
     // Casecre Null Label ��С
     public final static Dimension LABLE_SIZE_CASECRE_NULL_ITEM = new Dimension(500, 30);
+    // Casecre Null Label ��С
+    public final static Dimension LABLE_SIZE_CASECRE_NULL_SEC_ITEM = new Dimension(130, 30);
     // CASErun Null Label ��С
     public final static Dimension LABLE_SIZE_CASE_NULL_ITEM = new Dimension(350, 30);
     // Item text field ��С
-    public final static Dimension TEXT_FIELD_SIZE_ITEM = new Dimension(150, 24);
+    public final static Dimension TEXT_FIELD_SIZE_ITEM = new Dimension(190, 24);
     // Item Combox field ��С
     public final static Dimension TEXT_COMBOX_SIZE_ITEM = new Dimension(130, 24);
     // radio ��С

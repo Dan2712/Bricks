@@ -5,7 +5,7 @@ import UI.ConstantsUI;
 import UI.MyIconButton;
 //import logic.ConstantsLogic;
 import org.apache.log4j.Logger;
-import tools.ConstantsTools;
+import tools.ConstantsUtils;
 import tools.PropertyUtil;
 
 import javax.swing.*;
@@ -17,7 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * ¸ß¼¶Ñ¡ÏîÃæ°å
+ * ï¿½ß¼ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½
  *
  * @author DraLastat
  */
@@ -44,7 +44,7 @@ public class SettingPanelOption extends JPanel {
     private static Logger logger = Logger.getLogger(SettingPanelOption.class);
 
     /**
-     * ¹¹Ôì
+     * ï¿½ï¿½ï¿½ï¿½
      */
     public SettingPanelOption() {
         initialize();
@@ -54,7 +54,7 @@ public class SettingPanelOption extends JPanel {
     }
 
     /**
-     * ³õÊ¼»¯
+     * ï¿½ï¿½Ê¼ï¿½ï¿½
      */
     private void initialize() {
         this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
@@ -62,7 +62,7 @@ public class SettingPanelOption extends JPanel {
     }
 
     /**
-     * Ìí¼Ó×é¼þ
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      */
     private void addComponent() {
 
@@ -72,22 +72,22 @@ public class SettingPanelOption extends JPanel {
     }
 
     /**
-     * ÖÐ²¿Ãæ°å
+     * ï¿½Ð²ï¿½ï¿½ï¿½ï¿½
      *
      * @return
      */
     private JPanel getCenterPanel() {
-        // ÖÐ¼äÃæ°å
+        // ï¿½Ð¼ï¿½ï¿½ï¿½ï¿½
         JPanel panelCenter = new JPanel();
         panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
         panelCenter.setLayout(new GridLayout(1, 1));
 
-        // ÉèÖÃGrid
+        // ï¿½ï¿½ï¿½ï¿½Grid
         JPanel panelGridOption = new JPanel();
         panelGridOption.setBackground(ConstantsUI.MAIN_BACK_COLOR);
         panelGridOption.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
 
-        // ³õÊ¼»¯×é¼þ
+        // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½
         JPanel panelItem1 = new JPanel(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
         JPanel panelItem2 = new JPanel(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
         JPanel panelItem3 = new JPanel(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
@@ -112,7 +112,7 @@ public class SettingPanelOption extends JPanel {
         panelItem6.setPreferredSize(ConstantsUI.PANEL_ITEM_SIZE);
         panelItem7.setPreferredSize(ConstantsUI.PANEL_ITEM_SIZE);
 
-        // ¸÷Item
+        // ï¿½ï¿½Item
 /*        buttionTableFiled = new MyIconButton(ConstantsUI.ICON_TABLE_FIELD, ConstantsUI.ICON_TABLE_FIELD_ENABLE,
                 ConstantsUI.ICON_TABLE_FIELD_DISABLE, "");
         panelItem1.add(buttionTableFiled);
@@ -150,7 +150,7 @@ public class SettingPanelOption extends JPanel {
         checkBoxDebug.setFont(ConstantsUI.FONT_RADIO);
         panelItem7.add(checkBoxDebug);*/
 
-        // ×éºÏÔªËØ
+        // ï¿½ï¿½ï¿½Ôªï¿½ï¿½
         panelGridOption.add(panelItem1);
         panelGridOption.add(panelItem2);
         panelGridOption.add(panelItem3);
@@ -164,7 +164,7 @@ public class SettingPanelOption extends JPanel {
     }
 
     /**
-     * µ×²¿Ãæ°å
+     * ï¿½×²ï¿½ï¿½ï¿½ï¿½
      *
      * @return
      */
@@ -181,7 +181,7 @@ public class SettingPanelOption extends JPanel {
     }
 
 /*    *//**
-     * ÉèÖÃµ±Ç°comboxÑ¡Ïî×´Ì¬
+     * ï¿½ï¿½ï¿½Ãµï¿½Ç°comboxÑ¡ï¿½ï¿½×´Ì¬
      *//*
     public static void setCurrentOption() {
         checkBoxAutoBak.setSelected(Boolean.parseBoolean(ConstantsTools.CONFIGER.getAutoBak()));
@@ -191,7 +191,7 @@ public class SettingPanelOption extends JPanel {
     }*/
 
     /**
-     * ÎªÏà¹Ø×é¼þÌí¼ÓÊÂ¼þ¼àÌý
+     * Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½
      */
 /*    private void addListener() {
         buttonSave.addActionListener(new ActionListener() {

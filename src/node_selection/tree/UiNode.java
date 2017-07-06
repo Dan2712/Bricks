@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import tools.ConstantsTools;
+import tools.ConstantsUtils;
 
 public class UiNode extends BasicTreeNode {
 	private static final Pattern BOUNDS_PATTERN = Pattern
@@ -118,15 +118,14 @@ public class UiNode extends BasicTreeNode {
 	}
 
 	public String getXpath() {
-		Document document;
 		String className = getNodeClassAttribute();
-		String xpath = "/" + className;
+		String xpath = "/" + className + "[@index=\'" + getAttribute("index") + "\']";
 		boolean flag = false;
-		//------------------------------
+
 		String resourceid = getAttribute("resource-id");
 		if(resourceid != null && !resourceid.equals("")){
 			String idxpath = "//"+ className + "[@resource-id=\'" + resourceid + "\']";
-			List<Element> list = UiHierarchyXmlLoader.getElementObjects(ConstantsTools.document, idxpath.replaceAll("\\\\\"", "\""));
+			List<Element> list = UiHierarchyXmlLoader.getElementObjects(ConstantsUtils.document, idxpath.replaceAll("\\\\\"", "\""));
 			if(list.size()==1){
 				xpath = idxpath.substring(1);
 				return xpath;
@@ -181,10 +180,8 @@ public class UiNode extends BasicTreeNode {
 	}
 	public String getIndexXpath() {
 		String className = getNodeClassAttribute();
-		String xpath = "/" + className;
-//		int index = this.classNameIndex;
-//		if(index!=1)
-			xpath = xpath+"["+this.classNameIndex+"]";
+		String xpath = "//" + className;
+		xpath = xpath+"["+this.classNameIndex+"]";
 		return xpath;
 	}
 	public String getNodeClassAttribute() {

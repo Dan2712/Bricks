@@ -3,8 +3,11 @@ package UI.panel;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
-import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -14,30 +17,37 @@ import javax.swing.border.EmptyBorder;
 
 import org.apache.log4j.Logger;
 
+import com.android.ddmlib.IDevice;
+
 import UI.ConstantsUI;
 import UI.MyIconButton;
+import backgrounder.ExecutionMain;
 import tools.PropertyUtil;
 
 public class CaserunResultPanel extends JPanel{
+	
 	private static final long serialVersionUID = 1L;
 	private static MyIconButton buttonCaseFind;
 	private static MyIconButton buttonStart;
 	private static MyIconButton buttonStop;
 
 	private static Logger logger = Logger.getLogger(CaserunResultPanel.class);
-
+	
+	private String filepath;
+	private JTextArea logprint;
+	private IDevice device;
 	/**
-	 * ����
+	 * 
 	 */
-	public CaserunResultPanel() {
+	public CaserunResultPanel(IDevice device) {
+		this.device = device;
 		initialize();
 		addComponent();
-		//setContent();
-		//addListener();
+		addListener();
 	}
 
 	/**
-	 * ��ʼ��
+	 * 
 	 */
 	private void initialize() {
 		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
@@ -45,7 +55,7 @@ public class CaserunResultPanel extends JPanel{
 	}
 
 	/**
-	 * ������
+	 * 
 	 */
 	private void addComponent() {
 		this.add(getCenterPanel(), BorderLayout.CENTER);
@@ -53,22 +63,18 @@ public class CaserunResultPanel extends JPanel{
 	}
 
 	/**
-	 * �в����
 	 * 
 	 * @return
 	 */
+	JTextField case_name;
 	private JPanel getCenterPanel() {
-		// �м����
 		JPanel panelCenter = new JPanel();
 		panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelCenter.setLayout(new GridLayout(2, 1));
 		
 		/**
-		 * ѡ������
-		 * ��ʼִ��/ִֹͣ��
 		 *
 		 */
-		// ����Grid
 		JPanel panelGridCaseFind = new JPanel();
 		panelGridCaseFind.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelGridCaseFind.setLayout(new GridLayout(2, 1));
@@ -79,16 +85,22 @@ public class CaserunResultPanel extends JPanel{
         JPanel panelGrid2 = new JPanel();
         panelGrid2.setBackground(ConstantsUI.MAIN_BACK_COLOR);
         panelGrid2.setLayout(new FlowLayout(FlowLayout.RIGHT, ConstantsUI.MAIN_H_GAP, 15));
+        
+		case_name = new JTextField();
+		case_name.setEditable(false);
+		case_name.setFont(ConstantsUI.FONT_NORMAL);
+		case_name.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
 
-        buttonCaseFind = new MyIconButton(ConstantsUI.ICON_START_SCHEDULE, ConstantsUI.ICON_START_SCHEDULE_ENABLE,
-                ConstantsUI.ICON_START_SCHEDULE_DISABLE, "");
+        buttonCaseFind = new MyIconButton(ConstantsUI.ICON_FINDCASE, ConstantsUI.ICON_FINDCASE_ENABLE,
+                ConstantsUI.ICON_FINDCASE_DISABLE, "");
         buttonStart = new MyIconButton(ConstantsUI.ICON_START, ConstantsUI.ICON_START_ENABLE,
                 ConstantsUI.ICON_START_DISABLE, "");
-        buttonStart.setEnabled(false);
+        //buttonStart.setEnabled(false);
         buttonStop = new MyIconButton(ConstantsUI.ICON_STOP, ConstantsUI.ICON_STOP_ENABLE,
                 ConstantsUI.ICON_STOP_DISABLE, "");
-        buttonStop.setEnabled(false);
+        //buttonStop.setEnabled(false);
         panelGrid1.add(buttonCaseFind);
+        panelGrid1.add(case_name);
         panelGrid2.add(buttonStart);
         panelGrid2.add(buttonStop);
 
@@ -96,31 +108,24 @@ public class CaserunResultPanel extends JPanel{
         panelGridCaseFind.add(panelGrid2);
 		
 		/**
-		 * ִ�н����ӡ
 		 * 
-		 *
 		 */
-		// ����Grid
 		JPanel panelGridLog = new JPanel();
 		panelGridLog.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelGridLog.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
 
-		// ��ʼ�����
 		JLabel labelRunLogTitle = new JLabel(PropertyUtil.getProperty("bricks.ui.caserun.logprint"));
 		JLabel labellogprintNull = new JLabel();
-		JTextArea logprint = new JTextArea(12, 76);
+		logprint = new JTextArea(12, 68);
 		logprint.setBorder(null);
 		logprint.setBorder(new EmptyBorder(0,0,0,0));
 		logprint.setLineWrap(true);
         logprint.setWrapStyleWord(true);
         logprint.setForeground(ConstantsUI.MAIN_BACK_COLOR);
         logprint.setBackground(ConstantsUI.TABLE_BACK_COLOR);
-		// ����
 		labelRunLogTitle.setFont(ConstantsUI.FONT_NORMAL);
-		// ��С
 		labelRunLogTitle.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
 		labellogprintNull.setPreferredSize(ConstantsUI.LABLE_SIZE_CASE_NULL_ITEM);
-		// ���Ԫ��
 		panelGridLog.add(labelRunLogTitle);
 		panelGridLog.add(labellogprintNull);
 		panelGridLog.add(new JScrollPane(logprint));
@@ -130,6 +135,41 @@ public class CaserunResultPanel extends JPanel{
 		panelCenter.add(panelGridLog);
 		return panelCenter;
 	}
+	public void addListener() {
+		
+		buttonCaseFind.addActionListener(new ActionListener() {
 
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    JFileChooser jfc=new JFileChooser();  
+                    jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES );  
+                    jfc.showDialog(new JLabel(), "选择");  
+                    File file=jfc.getSelectedFile();
+                    filepath = jfc.getSelectedFile().getPath();
+                    case_name.setText(filepath);
+                } catch (Exception e1) {
+                    logger.error("open table_field file fail:" + e1.toString());
+                    e1.printStackTrace();
+                }
+
+            }
+        });
+		
+		buttonStart.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						logprint.setText("");
+						ExecutionMain.RunTestCase(filepath, logprint, device);
+					}
+				}).start();
+			}
+		});
+	}
 
 }

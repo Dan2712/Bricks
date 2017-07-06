@@ -13,20 +13,18 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 public class StfUtils {
+	private final String URL = "http://10.81.3.34:7100/api/v1/devices";
+	private final String TOKEN = "f372dbecfb434ce69c95d9394d110192d0e5d9d6a6d5430181e34aa669435900";
 	
 	private ArrayList<JSONObject> devices_pre = null;
 	
-	public ArrayList<JSONObject> getPresentDevices(String target_url, String token) {
-		if (target_url.equals("") || token.equals("")) {
-			System.out.println("info empty");
-		}
-		
+	public ArrayList<JSONObject> getPresentDevices() {
 		try {
-			URL url = new URL(target_url);
+			URL url = new URL(URL);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
 			connection.setDoOutput(true);
-			connection.setRequestProperty("Authorization", "Bearer " + token);
+			connection.setRequestProperty("Authorization", "Bearer " + TOKEN);
 			
 			InputStream content = (InputStream)connection.getInputStream();
             BufferedReader in   = 

@@ -14,14 +14,14 @@ import java.util.Properties;
 public class PropertyUtil {
 
     /**
-     * »ñÈ¡property
+     * ï¿½ï¿½È¡property
      * @param key
      * @return
      */
     public static String getProperty(String key){
         Properties pps = new Properties();
         try {
-            InputStream in = new BufferedInputStream (new FileInputStream(ConstantsTools.PATH_PROPERTY));
+            InputStream in = new BufferedInputStream (new FileInputStream(ConstantsUtils.PATH_PROPERTY));
             pps.load(in);
             String value = pps.getProperty(key);
             return value;

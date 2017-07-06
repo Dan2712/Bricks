@@ -12,14 +12,17 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
 import com.android.ddmlib.IDevice;
 
-import UI.panel.ElecrePanel;
 import mini_decode.AndroidScreenObserver;
 import mini_decode.MiniCapUtil;
 import node_selection.UiAutomatorHelper.UiAutomatorException;
@@ -37,6 +40,7 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 	
 	private IDevice device;
     private MiniCapUtil minicap = null;
+
     private int width;
 	private int height;
 	
@@ -50,18 +54,23 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
     private BasicStroke s;
     
     private UiAutomatorModel mModel;
-
-    public RealTimeScreenUI(IDevice device) {
+    private Boolean isSelected = false;
+    private Map<String, String> node_info = new HashMap();
+    private VariableChangeObserve obs = null;
+    private JPanel parentPanel = null;
+    private String screenPath = "";
+    
+	public RealTimeScreenUI(IDevice device, VariableChangeObserve obs, JPanel parentPanel) {
     	this.device = device;
+    	this.obs = obs;
+    	this.parentPanel = parentPanel;
     	minicap = new MiniCapUtil(device);
 		minicap.registerObserver(this);
 //		minicap.takeScreenShotOnce();
 		minicap.startScreenListener();
 		
-		
         mOrginialCursor = getCursor();
         mCrossCursor = new Cursor(Cursor.HAND_CURSOR);
-        
     }
         
 	@Override
@@ -70,13 +79,17 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 		UiAutomatorResult result = null;
 		try {
 			result = UiAutomatorHelper.takeSnapshot(device, null, true, mScreenshot);
+			this.mModel = result.model;
 		} catch (UiAutomatorException e) {
-//			e.printStackTrace();
 			LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
 		}
-		this.mModel = result.model;
 		this.updateScreenshotTransformation();
-		this.repaint();
+		this.setSize(panel_bounds, panel_bounds);
+		if (mModel != null && mModel.isExploreMode()) {
+//			this.repaint();
+			parentPanel.repaint();
+			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
+		}
 	}
 	
 	public void paint(Graphics g) {
@@ -84,13 +97,14 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 		try {
 			if (mScreenshot == null)
 				return;
+			
 			//setsize this view so that it won't be overlapping 
-			this.setSize(mScreenshot.getWidth(), mScreenshot.getHeight());
+//			this.setSize(mScreenshot.getWidth(), mScreenshot.getHeight());
 			g2.drawImage(mScreenshot, mDx, mDy, width, height, this);
-			this.setSize(panel_bounds, panel_bounds);
+//			this.setSize(panel_bounds, panel_bounds);
 			mScreenshot.flush();
 			//repaint this so that it could be more smooth
-			this.repaint();
+//			this.repaint();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -155,6 +169,10 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
         wrapper.addChild(mModel.getXmlRootNode());
     }
     
+    public MiniCapUtil getMinicap() {
+		return minicap;
+	}
+    
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -163,7 +181,6 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -171,7 +188,27 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 		// TODO Auto-generated method stub
 		if (mModel != null) {
             mModel.toggleExploreMode();
+            parentPanel.repaint();
             repaint();
+            
+            new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+						RealTimeScreenUI.this.paint(image.getGraphics());
+						screenPath = "screenshot/" + System.currentTimeMillis() + ".jpg";
+						File screenShot = new File(screenPath);
+						if (!screenShot.getParentFile().exists())
+							screenShot.getParentFile().mkdirs();
+						
+						ImageIO.write(image, "jpg", screenShot);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}  
+				}
+			}).start();
         }
 	}
 
@@ -179,18 +216,19 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
 		setCursor(mCrossCursor);
+		parentPanel.repaint();
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		setCursor(mOrginialCursor);
+		parentPanel.repaint();
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -204,11 +242,21 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
             	if (node != null) {
 	            	mModel.setSelectedNode(node);
 	            	UiNode node_sel = (UiNode) node;
-	            	System.out.println(node_sel.getXpath());
-	            	System.out.println("clickable: " + node_sel.getAttribute("clickable"));
+	            	node_info.clear();
+	            	node_info.put("xpath", "/" + node_sel.getXpath());
+	            	node_info.put("clickable", node_sel.getAttribute("clickable").equals("true") ? "1" : "0");
+	            	node_info.put("scrollable", node_sel.getAttribute("scrollable").equals("true") ? "1" : "0");
+	            	node_info.put("checkable", node_sel.getAttribute("checkable").equals("true") ? "1" : "0");
+	            	node_info.put("focusable", node_sel.getAttribute("focusable").equals("true") ? "1" : "0");
+	            	node_info.put("long-clickable", node_sel.getAttribute("long-clickable").equals("true") ? "1" : "0");
+	            	node_info.put("package", node_sel.getAttribute("package"));
+	            	node_info.put("screenPath", screenPath);
+	            	obs.setInfo(node_info);
+	            	parentPanel.repaint();
 	            	repaint();
             	}
             }
 		}
 	}
+	
 }
