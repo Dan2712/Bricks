@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
@@ -21,6 +23,8 @@ import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.SyncException;
 import com.android.ddmlib.TimeoutException;
 
+import net.coobird.thumbnailator.Thumbnailator;
+import net.coobird.thumbnailator.Thumbnails;
 import tools.ConstantsUtils;
 
 /**
@@ -30,6 +34,7 @@ import tools.ConstantsUtils;
 
 public class MiniCapUtil implements ScreenSubject{
 	private static final Logger LOG = Logger.getLogger(MiniCapUtil.class);
+	private ExecutorService cachedThreadPool = null;
 	
 	public static final String ABIS_ARM64_V8A = "arm64-v8a";
 	public static final String ABIS_ARMEABI_V7A = "armeabi-v7a";
@@ -67,19 +72,31 @@ public class MiniCapUtil implements ScreenSubject{
 	private boolean isPad = false;
 	
 	private BufferedImage image_tmp = null;
+	private float mScale = 1.0f;
+    private int panel_bounds = 550;
+    private int newW, newH;
 	
 	public MiniCapUtil(IDevice device) {
 		this.device = device;
-		this.init();
+		try {
+			this.init();
+		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
 	 * start minicap service, and push necessary files
+	 * @throws IOException 
+	 * @throws ShellCommandUnresponsiveException 
+	 * @throws AdbCommandRejectedException 
+	 * @throws TimeoutException 
 	 */
-	private void init() {
+	private void init() throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
 		
-		String abi = device.getProperty(ABI_COMMAND);
-		String sdk = device.getProperty(SDK_COMMAND);
+		cachedThreadPool = Executors.newFixedThreadPool(500);
+		String abi = device.getPropertySync(ABI_COMMAND);
+		String sdk = device.getPropertySync(SDK_COMMAND);
 		File miniCapBin = new File(ConstantsUtils.getMinicapBin(), abi + File.separator + MINICAP_BIN);
 		File miniCapSo = new File(ConstantsUtils.getMinicapSo(), "android-" + sdk
 				+ File.separator + abi + File.separator + MINICAP_SO);
@@ -178,9 +195,9 @@ public class MiniCapUtil implements ScreenSubject{
 	public void startScreenListener() {
 		isRunning = true;
 		Thread frame = new Thread(new DataFrameCollector());
-		frame.start();
+		cachedThreadPool.submit(frame);
 		Thread convert = new Thread(new ImageConvert());
-		convert.start();
+		cachedThreadPool.submit(convert);
 	}
 
 	/**
@@ -189,7 +206,7 @@ public class MiniCapUtil implements ScreenSubject{
 	public void stopScreenListener() {
 		isRunning = false;
 		try {
-			Thread.sleep(500);
+			Thread.sleep(700);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -251,7 +268,9 @@ public class MiniCapUtil implements ScreenSubject{
 	private BufferedImage createImage(byte[] data) {
 		ByteArrayInputStream bais = new ByteArrayInputStream(data); 
 		try {
-			image_tmp = ImageIO.read(bais);
+			BufferedImage bi = ImageIO.read(bais);
+			updateScreenshotTransformation(bi);
+			image_tmp = Thumbnails.of(bi).size(newW, newH).asBufferedImage();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -284,14 +303,14 @@ public class MiniCapUtil implements ScreenSubject{
 					start_command = String.format(MINICAP_START_COMMAND, size, size, orientation_tag);
 				
 				// start the minicap in background
-				new Thread(new Runnable() {
+				cachedThreadPool.submit(new Runnable() {
 					
 					@Override
 					public void run() {
 						LOG.info("minicap start: " + start_command);
 						executeShellCommand(start_command);
 					}
-				}).start();
+				});
 				
 				Thread.sleep(1000);
 				
@@ -349,8 +368,6 @@ public class MiniCapUtil implements ScreenSubject{
 		private byte[] frameBody = new byte[0];
 		private volatile byte[] finalBytes = null;
 		private volatile byte[] imageByte_pre = null;
-		private volatile BufferedImage image_pre = null;
-		private BufferedImage image_notify = null;
 		
 		@Override
 		public void run() {
@@ -398,15 +415,17 @@ public class MiniCapUtil implements ScreenSubject{
 							
 							if (imageByte_pre == null || !compareByte(finalBytes, imageByte_pre)) {
 								imageByte_pre = finalBytes;
-								new Thread(new Runnable() {					// convert to bufferedimage
+								cachedThreadPool.submit(new Thread(new Runnable() {					// convert to bufferedimage
 	
 									@Override
 									public void run() {
 										// TODO Auto-generated method stub
 											BufferedImage image = createImage(finalBytes);
+											System.out.println("w: "+image.getWidth()+" h: "+image.getHeight());
+											image_tmp = null;
 											notifyObservers(image);
 									}
-								}).start();
+								}));
 							}
 							cursor += frameLength;
 							restore();
@@ -548,6 +567,27 @@ public class MiniCapUtil implements ScreenSubject{
 	    }
 	}
 	
+	private int getScaledSize(int size) {
+        if (mScale == 1.0f) {
+            return size;
+        } else {
+            return new Double(Math.floor((size * mScale))).intValue();
+        }
+    }
+	
+	/**
+     * according to screen size, get the scaled size
+     */
+    private void updateScreenshotTransformation(BufferedImage image) {
+        float scaleX = this.panel_bounds / (float) image.getWidth();
+        float scaleY = this.panel_bounds / (float) image.getHeight();
+
+        // use the smaller scale here so that we can fit the entire screenshot
+        mScale = Math.min(scaleX, scaleY);
+        this.newW = getScaledSize(image.getWidth());
+        this.newH = getScaledSize(image.getHeight());
+    }
+    
 	public void registerObserver(AndroidScreenObserver o) {
 		// TODO Auto-generated method stub
 		observers.add(o);
