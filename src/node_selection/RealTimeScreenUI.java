@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -23,6 +24,7 @@ import org.apache.log4j.Logger;
 
 import com.android.ddmlib.IDevice;
 
+import UI.AppMainWindow;
 import mini_decode.AndroidScreenObserver;
 import mini_decode.MiniCapUtil;
 import node_selection.UiAutomatorHelper.UiAutomatorException;
@@ -37,6 +39,7 @@ import node_selection.tree.UiNode;
 
 public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, MouseListener, MouseMotionListener {
 	private static final Logger LOG = Logger.getLogger("ReakTimeScreenUI.class");
+	private ExecutorService cachedThreadPool = null;
 	
 	private IDevice device;
     private MiniCapUtil minicap = null;
@@ -54,11 +57,14 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
     private BasicStroke s;
     
     private UiAutomatorModel mModel;
+    private UiAutomatorResult result;
     private volatile Boolean isSelected = false;
-    private Map<String, String> node_info = new HashMap();
+    private Map<String, String> node_info = new HashMap<String, String>();
     private VariableChangeObserve obs = null;
     private JPanel parentPanel = null;
     private String screenPath = "";
+    
+    public static Boolean isRuncase = false;
     
 	public RealTimeScreenUI(IDevice device, VariableChangeObserve obs, JPanel parentPanel) {
     	this.device = device;
@@ -71,42 +77,44 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 		
         mOrginialCursor = getCursor();
         mCrossCursor = new Cursor(Cursor.HAND_CURSOR);
+        cachedThreadPool = AppMainWindow.cachedThreadPool;
     }
         
 	@Override
-	public  void frameImageChange(BufferedImage image) {
+	public void frameImageChange(BufferedImage image) {
 		this.mScreenshot = image;
-		UiAutomatorResult result = null;
-		try {
-			result = UiAutomatorHelper.takeSnapshot(device, null, true, mScreenshot);
-			this.mModel = result.model;
-		} catch (UiAutomatorException e) {
-			LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
+		if (!isRuncase) {
+			cachedThreadPool.submit((new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						mModel = null;
+						result = UiAutomatorHelper.takeSnapshot(device, null, true, mScreenshot);
+						mModel = result.model;
+					} catch (UiAutomatorException e) {
+						LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
+					}
+				}
+			}));
 		}
+		
 		this.updateScreenshotTransformation();
 		this.setSize(panel_bounds, panel_bounds);
 		if (!isSelected) {
-//			this.repaint();
-			System.out.println("I'm repaint by frame change");
 			parentPanel.repaint();
 			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
 		}
 	}
 	
 	public void paint(Graphics g) {
-		System.out.println("I'm repaint");
 		Graphics2D g2 = (Graphics2D) g;
 		try {
 			if (mScreenshot == null)
 				return;
 			
-			//setsize this view so that it won't be overlapping 
-//			this.setSize(mScreenshot.getWidth(), mScreenshot.getHeight());
 			g2.drawImage(mScreenshot, mDx, mDy, width, height, this);
-//			this.setSize(panel_bounds, panel_bounds);
 			mScreenshot.flush();
-			//repaint this so that it could be more smooth
-//			this.repaint();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -199,14 +207,14 @@ public class RealTimeScreenUI extends JPanel implements AndroidScreenObserver, M
 				@Override
 				public void run() {
 					try {
-						BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+						BufferedImage image = new BufferedImage(panel_bounds, panel_bounds, BufferedImage.TYPE_INT_RGB);
 						RealTimeScreenUI.this.paint(image.getGraphics());
 						screenPath = "screenshot/" + System.currentTimeMillis() + ".jpg";
 						File screenShot = new File(screenPath);
 						if (!screenShot.getParentFile().exists())
 							screenShot.getParentFile().mkdirs();
 						
-						ImageIO.write(image, "jpg", screenShot);
+						ImageIO.write(image.getSubimage(mDx, mDy, width, height), "jpg", screenShot);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}  

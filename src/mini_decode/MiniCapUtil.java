@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
@@ -19,12 +18,12 @@ import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.IDevice.DeviceUnixSocketNamespace;
+
+import UI.AppMainWindow;
+
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.SyncException;
 import com.android.ddmlib.TimeoutException;
-
-import net.coobird.thumbnailator.Thumbnailator;
-import net.coobird.thumbnailator.Thumbnails;
 import tools.ConstantsUtils;
 
 /**
@@ -72,9 +71,6 @@ public class MiniCapUtil implements ScreenSubject{
 	private boolean isPad = false;
 	
 	private BufferedImage image_tmp = null;
-	private float mScale = 1.0f;
-    private int panel_bounds = 550;
-    private int newW, newH;
 	
 	public MiniCapUtil(IDevice device) {
 		this.device = device;
@@ -94,7 +90,7 @@ public class MiniCapUtil implements ScreenSubject{
 	 */
 	private void init() throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
 		
-		cachedThreadPool = Executors.newFixedThreadPool(500);
+		cachedThreadPool = AppMainWindow.cachedThreadPool;
 		String abi = device.getPropertySync(ABI_COMMAND);
 		String sdk = device.getPropertySync(SDK_COMMAND);
 		File miniCapBin = new File(ConstantsUtils.getMinicapBin(), abi + File.separator + MINICAP_BIN);
@@ -268,9 +264,7 @@ public class MiniCapUtil implements ScreenSubject{
 	private BufferedImage createImage(byte[] data) {
 		ByteArrayInputStream bais = new ByteArrayInputStream(data); 
 		try {
-			BufferedImage bi = ImageIO.read(bais);
-			updateScreenshotTransformation(bi);
-			image_tmp = Thumbnails.of(bi).size(newW, newH).asBufferedImage();
+			image_tmp = ImageIO.read(bais);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -400,30 +394,14 @@ public class MiniCapUtil implements ScreenSubject{
 							finalBytes = subByteArray(frameBody,
 									0, frameBody.length);
 							
-//							new Thread(new Runnable() {					// convert to bufferedimage
-//
-//								@Override
-//								public void run() {
-//									// TODO Auto-generated method stub
-//									image_notify = createImage(finalBytes);
-//									if (image_pre == null || !compareImage(image_pre, image_notify)) {
-//										image_pre = image_notify;
-//										notifyObservers(image_notify);
-//									}
-//								}
-//							}).start();
-							
 							if (imageByte_pre == null || !compareByte(finalBytes, imageByte_pre)) {
 								imageByte_pre = finalBytes;
 								cachedThreadPool.submit(new Thread(new Runnable() {					// convert to bufferedimage
 	
 									@Override
 									public void run() {
-										// TODO Auto-generated method stub
-											BufferedImage image = createImage(finalBytes);
-											System.out.println("w: "+image.getWidth()+" h: "+image.getHeight());
+											notifyObservers(createImage(finalBytes));
 											image_tmp = null;
-											notifyObservers(image);
 									}
 								}));
 							}
@@ -567,27 +545,6 @@ public class MiniCapUtil implements ScreenSubject{
 	    }
 	}
 	
-	private int getScaledSize(int size) {
-        if (mScale == 1.0f) {
-            return size;
-        } else {
-            return new Double(Math.floor((size * mScale))).intValue();
-        }
-    }
-	
-	/**
-     * according to screen size, get the scaled size
-     */
-    private void updateScreenshotTransformation(BufferedImage image) {
-        float scaleX = this.panel_bounds / (float) image.getWidth();
-        float scaleY = this.panel_bounds / (float) image.getHeight();
-
-        // use the smaller scale here so that we can fit the entire screenshot
-        mScale = Math.min(scaleX, scaleY);
-        this.newW = getScaledSize(image.getWidth());
-        this.newH = getScaledSize(image.getHeight());
-    }
-    
 	public void registerObserver(AndroidScreenObserver o) {
 		// TODO Auto-generated method stub
 		observers.add(o);

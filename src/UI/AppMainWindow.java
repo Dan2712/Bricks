@@ -8,6 +8,8 @@ import java.awt.event.WindowListener;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -53,7 +55,9 @@ public class AppMainWindow {
 	
 	private SQLUtils sql;
 	private IDevice device;
-    /**
+	public static ExecutorService cachedThreadPool = Executors.newFixedThreadPool(500);
+	
+	/**
      * 
      */
     public static void main(String[] args) {
@@ -147,6 +151,7 @@ public class AppMainWindow {
         frame.add(mainPanel);
 
         obs.addObserver(elecrePanel);
+        
         frame.addWindowListener(new WindowListener() {
 
             @Override

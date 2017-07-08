@@ -1,8 +1,11 @@
 package node_selection.tree;
 
 import java.awt.Rectangle;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,9 +15,8 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -31,20 +33,37 @@ public class UiHierarchyXmlLoader {
     }
     
     public Document getDocument(String filePath){
-    	Document document = null;
-    	File file = new File(filePath);
-        if (file.exists()) {
-            SAXReader saxReader = new SAXReader();
-            try {
-                document = saxReader.read(file);
-            } catch (DocumentException e) {    
-                System.out.println("文件加载异常：" + filePath);       
-                e.printStackTrace();
-            }
-        } else{
-            System.out.println("文件不存在 : " + filePath);
-        }  
-        return document;
+//    	Document document = null;
+//    	File file = new File(filePath);
+//        if (file.exists()) {
+//            SAXReader saxReader = new SAXReader();
+//            try {
+//                document = saxReader.read(file);
+//            } catch (DocumentException e) {    
+//                System.out.println("文件加载异常：" + filePath);       
+//                e.printStackTrace();
+//            }
+//        } else{
+//            System.out.println("文件不存在 : " + filePath);
+//        }  
+//        return document;
+    	Document dom = null;
+
+    	try{
+			StringBuffer content = new StringBuffer();
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath),"UTF-8"));
+			String line = null;
+			while((line = br.readLine()) != null ) {
+				content.append(line+"\n");
+			}
+			br.close();
+			dom = DocumentHelper.parseText(content.toString());
+    	}catch(Exception e){
+    		System.out.println("File loading error：" + filePath);
+    		e.printStackTrace();
+    	}
+    	
+    	return dom;
     }
     
     @SuppressWarnings("unchecked")

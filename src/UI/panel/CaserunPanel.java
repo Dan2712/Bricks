@@ -16,7 +16,6 @@ import UI.AppMainWindow;
 import UI.ConstantsUI;
 import tools.PropertyUtil;
 /**
- * 
  *
  * @author DraLastat
  */

@@ -22,6 +22,7 @@ import com.android.ddmlib.IDevice;
 import UI.ConstantsUI;
 import UI.MyIconButton;
 import backgrounder.ExecutionMain;
+import node_selection.RealTimeScreenUI;
 import tools.PropertyUtil;
 
 public class CaserunResultPanel extends JPanel{
@@ -145,7 +146,6 @@ public class CaserunResultPanel extends JPanel{
                     JFileChooser jfc=new JFileChooser();  
                     jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES );  
                     jfc.showDialog(new JLabel(), "选择");  
-                    File file=jfc.getSelectedFile();
                     filepath = jfc.getSelectedFile().getPath();
                     case_name.setText(filepath);
                 } catch (Exception e1) {
@@ -166,6 +166,7 @@ public class CaserunResultPanel extends JPanel{
 					public void run() {
 						logprint.setText("");
 						ExecutionMain.RunTestCase(filepath, logprint, device);
+						RealTimeScreenUI.isRuncase = true;
 					}
 				}).start();
 			}
