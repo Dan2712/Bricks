@@ -53,6 +53,7 @@ public class MiniCapUtil implements SubjectForListener{
 	private String ADB_GET_ORIENTATION = "dumpsys display | grep 'mDefaultViewport'";
 	private String GET_PID = "ps | grep /data/local/tmp/minicap";
 	private String GET_DPI = "getprop ro.sf.lcd_density";
+	private String GET_CRYSTAL = "cat /system/build.prop | grep \"product.model\"";
 	private String start_command = "";
 	
 	private Queue<byte[]> dataQueue = new LinkedBlockingQueue<byte[]>();
@@ -291,7 +292,7 @@ public class MiniCapUtil implements SubjectForListener{
 			LOG.debug("start receiving data");
 			
 			try {
-				if (isPad)
+				if (isPad && !executeShellCommand(GET_CRYSTAL).substring(17, 23).equals("ZS600B"))
 					start_command = String.format(MINICAP_START_COMMAND, size, size, 90);
 				else
 					start_command = String.format(MINICAP_START_COMMAND, size, size, orientation_tag);
@@ -569,7 +570,6 @@ public class MiniCapUtil implements SubjectForListener{
 				stopScreenListener();
 				startScreenListener();
 			}
-			System.out.println(observers.size());
 			for (ScreenObserver observer : observers) {
 				observer.frameImageChange(image);
 			}

@@ -1,6 +1,4 @@
 package com.dji.bricks;
-import java.awt.image.BufferedImage;
-
 import com.dji.bricks.mini_decode.ScreenObserver;
 
 /**

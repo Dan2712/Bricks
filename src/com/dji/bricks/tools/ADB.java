@@ -76,19 +76,16 @@ public class ADB implements SubjectForListener {
 
 	@Override
 	public void registerObserver(ScreenObserver o) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void removeObserver(ScreenObserver o) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void notifyObservers(Object obj) {
-		// TODO Auto-generated method stub
 		
 	}
 }
