@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -38,7 +39,7 @@ import com.dji.bricks.tools.SQLUtils;
  * @author DraLastat
  */
 
-public class MainEntry {
+public class MainEntry implements GlobalObserver {
     private static Logger LOG = Logger.getLogger(MainEntry.class);
 
     private JFrame frame;
@@ -125,7 +126,6 @@ public class MainEntry {
         frame.setIconImage(ConstantsUI.IMAGE_ICON);
         frame.setBackground(ConstantsUI.MAIN_BACK_COLOR);
         
-        // 
         frame.setResizable(false);
            
         mainPanel = new JPanel(true);
@@ -205,4 +205,16 @@ public class MainEntry {
         });
         
     }
+
+	@Override
+	public void frameImageChange(BufferedImage image) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void ADBChange(IDevice[] devices) {
+		// TODO Auto-generated method stub
+		
+	}
 }

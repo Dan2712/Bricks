@@ -3,8 +3,8 @@ import java.io.File;
 
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
+import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.SubjectForListener;
-import com.dji.bricks.mini_decode.ScreenObserver;
 
 public class ADB implements SubjectForListener {
 	
@@ -75,13 +75,13 @@ public class ADB implements SubjectForListener {
 	}
 
 	@Override
-	public void registerObserver(ScreenObserver o) {
+	public void registerObserver(GlobalObserver o) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void removeObserver(ScreenObserver o) {
+	public void removeObserver(GlobalObserver o) {
 		// TODO Auto-generated method stub
 		
 	}

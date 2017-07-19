@@ -23,6 +23,7 @@ import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.SyncException;
 import com.android.ddmlib.TimeoutException;
 import com.dji.bricks.MainEntry;
+import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.SubjectForListener;
 import com.dji.bricks.tools.ConstantsUtils;
 
@@ -56,7 +57,7 @@ public class MiniCapUtil implements SubjectForListener{
 	private String start_command = "";
 	
 	private Queue<byte[]> dataQueue = new LinkedBlockingQueue<byte[]>();
-	private List<ScreenObserver> observers = new ArrayList<ScreenObserver>();
+	private List<GlobalObserver> observers = new ArrayList<GlobalObserver>();
 	
 	private Banner banner = new Banner();
 	private String size;
@@ -545,13 +546,13 @@ public class MiniCapUtil implements SubjectForListener{
 	    }
 	}
 	
-	public void registerObserver(ScreenObserver o) {
+	public void registerObserver(GlobalObserver o) {
 		// TODO Auto-generated method stub
 		observers.add(o);
 
 	}
 	
-	public void removeObserver(ScreenObserver o) {
+	public void removeObserver(GlobalObserver o) {
 		// TODO Auto-generated method stub
 		int index = observers.indexOf(o);
 		if (index != -1) {
@@ -570,7 +571,7 @@ public class MiniCapUtil implements SubjectForListener{
 				startScreenListener();
 			}
 			System.out.println(observers.size());
-			for (ScreenObserver observer : observers) {
+			for (GlobalObserver observer : observers) {
 				observer.frameImageChange(image);
 			}
 		}
