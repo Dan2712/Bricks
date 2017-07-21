@@ -1,23 +1,33 @@
 package com.dji.bricks.tools;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
+import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.SubjectForListener;
-import com.dji.bricks.mini_decode.ScreenObserver;
 
-public class ADB implements SubjectForListener {
+/**
+*
+* @author Dan
+*/
+
+public class ADB implements IDeviceChangeListener, SubjectForListener {
 	
 	private AndroidDebugBridge mAndroidDebugBridge = null;
 	private String adbPath = null;
 	private String adbPlatformTools = "platform-tools";
 	
 	public static boolean hasInitAdb = false;
+	private List<GlobalObserver> observers = new ArrayList<GlobalObserver>();
+	private IDevice[] devices = new IDevice[10];
 	
-	public ADB() {
-		init();
-	}
-	
+//	public ADB() {
+//		init();
+//	}
+//	
 	//get adb tools path
 	private String getAdbPath() {
 		if (adbPath == null) {
@@ -34,7 +44,7 @@ public class ADB implements SubjectForListener {
 	}
 	
 	//init adb
-	private void init() {
+	public void init() {
 		boolean connect_success = false;
 		if (!hasInitAdb) {
 			String adbPath = getAdbPath();
@@ -42,6 +52,7 @@ public class ADB implements SubjectForListener {
 			if (adbPath != null) {
 				AndroidDebugBridge.init(false);
 				mAndroidDebugBridge = AndroidDebugBridge.createBridge(adbPath, true);
+				mAndroidDebugBridge.addDeviceChangeListener(this);
 				if (mAndroidDebugBridge != null) {
 					hasInitAdb = true;
 					connect_success = true;
@@ -65,27 +76,49 @@ public class ADB implements SubjectForListener {
 			}	
 		}
 	}
-	
-	public IDevice[] getDevices() {
-		IDevice[] devices = null;
-		if (mAndroidDebugBridge != null)
-			devices = mAndroidDebugBridge.getDevices();
-		
-		return devices;
+
+	@Override
+	public void deviceChanged(IDevice arg0, int arg1) {
 	}
 
 	@Override
-	public void registerObserver(ScreenObserver o) {
-		
+	public void deviceConnected(IDevice device) {
+		System.out.println("connect");
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		devices[0] = device;
+		notifyObservers(devices);
 	}
 
 	@Override
-	public void removeObserver(ScreenObserver o) {
-		
+	public void deviceDisconnected(IDevice device) {
+		System.out.println("disconnect");
+		devices[0] = null;
+	}
+
+	@Override
+	public void registerObserver(GlobalObserver o) {
+		observers.add(o);
+	}
+
+	@Override
+	public void removeObserver(GlobalObserver o) {
+		int index = observers.indexOf(o);
+		if (index != -1) {
+			observers.remove(o);
+		}
 	}
 
 	@Override
 	public void notifyObservers(Object obj) {
-		
+		if (obj instanceof IDevice[]) {
+			IDevice[] devices = (IDevice[]) obj;
+			for (GlobalObserver observer : observers) {
+				observer.ADBChange(devices);
+			}
+		}
 	}
 }

@@ -23,6 +23,7 @@ import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.SyncException;
 import com.android.ddmlib.TimeoutException;
 import com.dji.bricks.MainEntry;
+import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.SubjectForListener;
 import com.dji.bricks.tools.ConstantsUtils;
 
@@ -57,7 +58,7 @@ public class MiniCapUtil implements SubjectForListener{
 	private String start_command = "";
 	
 	private Queue<byte[]> dataQueue = new LinkedBlockingQueue<byte[]>();
-	private List<ScreenObserver> observers = new ArrayList<ScreenObserver>();
+	private List<GlobalObserver> observers = new ArrayList<GlobalObserver>();
 	
 	private Banner banner = new Banner();
 	private String size;
@@ -168,13 +169,10 @@ public class MiniCapUtil implements SubjectForListener{
 		return receiver.getOutput();
 	}
 	
-	private byte[] subByteArray(byte[] byte1, int start, int end) {
+	private byte[] subByteArray(byte[] byte1, int start, int end) throws NegativeArraySizeException {
 		byte[] byte2 = new byte[0];
-		try {
-			byte2 = new byte[end - start];
-		} catch (NegativeArraySizeException e) {
-			e.printStackTrace();
-		}
+		byte2 = new byte[end - start];
+		
 		System.arraycopy(byte1, start, byte2, 0, end - start);
 		return byte2;
 	}
@@ -319,14 +317,22 @@ public class MiniCapUtil implements SubjectForListener{
 					byte[] buffer = new byte[len];
 					int realLen = input.read(buffer);
 					if (buffer.length != realLen) {
-						buffer = subByteArray(buffer, 0, realLen);
+						if (realLen > 0) {
+							buffer = subByteArray(buffer, 0, realLen);
+							dataQueue.add(buffer);
+						} else {
+							dataQueue.clear();
+							isRunning = false;
+						}
 					}
-					dataQueue.add(buffer);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+			} catch (NegativeArraySizeException e) {
+				e.printStackTrace();
+				LOG.error("No data transmission");
 			} catch (StringIndexOutOfBoundsException e) {
 				LOG.error("No suitable .so file");
 			} finally {
@@ -546,13 +552,12 @@ public class MiniCapUtil implements SubjectForListener{
 	    }
 	}
 	
-	public void registerObserver(ScreenObserver o) {
+	public void registerObserver(GlobalObserver o) {
 		// TODO Auto-generated method stub
 		observers.add(o);
-
 	}
 	
-	public void removeObserver(ScreenObserver o) {
+	public void removeObserver(GlobalObserver o) {
 		// TODO Auto-generated method stub
 		int index = observers.indexOf(o);
 		if (index != -1) {
@@ -570,7 +575,7 @@ public class MiniCapUtil implements SubjectForListener{
 				stopScreenListener();
 				startScreenListener();
 			}
-			for (ScreenObserver observer : observers) {
+			for (GlobalObserver observer : observers) {
 				observer.frameImageChange(image);
 			}
 		}

@@ -23,8 +23,8 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 
 import com.android.ddmlib.IDevice;
-import com.dji.bricks.mini_decode.ScreenObserver;
 import com.dji.bricks.MainEntry;
+import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.mini_decode.MiniCapUtil;
 import com.dji.bricks.node_selection.UiAutomatorHelper.UiAutomatorException;
 import com.dji.bricks.node_selection.UiAutomatorHelper.UiAutomatorResult;
@@ -36,7 +36,7 @@ import com.dji.bricks.node_selection.tree.UiNode;
  * @Description canvas show real-time screen, and response to mouse action
  */
 
-public class RealTimeScreenUI extends JPanel implements ScreenObserver, MouseListener, MouseMotionListener {
+public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseListener, MouseMotionListener {
 	private static final Logger LOG = Logger.getLogger("ReakTimeScreenUI.class");
 	private ExecutorService cachedThreadPool = null;
 	
@@ -178,8 +178,9 @@ public class RealTimeScreenUI extends JPanel implements ScreenObserver, MouseLis
         wrapper.addChild(mModel.getXmlRootNode());
     }
     
-    public MiniCapUtil getMinicap() {
-		return minicap;
+    public void stopGetXml() {
+		mScreenshot = null;
+		mModel = null;
 	}
     
 	@Override
@@ -267,6 +268,12 @@ public class RealTimeScreenUI extends JPanel implements ScreenObserver, MouseLis
             	}
             }
 		}
+	}
+
+	@Override
+	public void ADBChange(IDevice[] devices) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

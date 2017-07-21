@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +24,7 @@ import javax.swing.JTextField;
 import org.apache.log4j.Logger;
 
 import com.android.ddmlib.IDevice;
-
+import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.UI.CheckButton;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
@@ -37,7 +38,7 @@ import com.dji.bricks.tools.SQLUtils;
  *
  * @author DraLastat
  */
-public class ElecrePanel extends JPanel implements Observer {
+public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger("ElecrePanel.class");
 	private static MyIconButton ClickStatus;
@@ -46,11 +47,10 @@ public class ElecrePanel extends JPanel implements Observer {
 	private static MyIconButton Focustatus;
 	private static MyIconButton LongClickStatus;
 	private static MyIconButton buttonSave;
-	private static ImageIcon chktrue;
-	private static ImageIcon chkfalse;
-	
 	private static CheckButton chkbtn;
+	private JPanel panelCenter;
 	
+	private RealTimeScreenUI realTimeScreen;
 	private IDevice device;
 	private VariableChangeObserve obs;
 	public final static String CURRENT_DIR = System.getProperty("user.dir");
@@ -59,8 +59,7 @@ public class ElecrePanel extends JPanel implements Observer {
 	/**
 	 * 
 	 */
-	public ElecrePanel(VariableChangeObserve obs, SQLUtils sql, IDevice device) {
-		this.device = device;
+	public ElecrePanel(VariableChangeObserve obs, SQLUtils sql) {
 		this.obs = obs;
 		this.sql = sql;
 		initialize();
@@ -108,15 +107,9 @@ public class ElecrePanel extends JPanel implements Observer {
 	 * @return
 	 */
 	private JPanel getCenterPanel() {
-		JPanel panelCenter = new JPanel();
+		panelCenter = new JPanel();
 		panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelCenter.setLayout(new BorderLayout());
-
-		RealTimeScreenUI mp = new RealTimeScreenUI(device, obs, this);
-		mp.addMouseListener(mp);
-		mp.addMouseMotionListener(mp);
-		
-		panelCenter.add(mp, BorderLayout.CENTER);
 		panelCenter.updateUI();
 
 		return panelCenter;
@@ -130,13 +123,8 @@ public class ElecrePanel extends JPanel implements Observer {
 	private JTextField textFieldEleItem_4;
 	private JTextField textFieldEleItem_5;
 	private JTextField textFieldEleItem_6;
-	private ImageIcon chkimage;
-	private ImageIcon icon;
-	//private String click_chkstatus = null;
 	private JPanel panelRight;
 	
-
-
 	private JPanel getRightPanel() {
 		
 		panelRight = new JPanel();
@@ -345,5 +333,29 @@ public class ElecrePanel extends JPanel implements Observer {
 
             }
         });
+	}
+
+	@Override
+	public void frameImageChange(BufferedImage image) {
+		
+	}
+
+	@Override
+	public void ADBChange(IDevice[] devices) {
+		if (devices[0] != null) {
+			device = devices[0];
+			realTimeScreen = new RealTimeScreenUI(device, obs, this);
+			realTimeScreen.addMouseListener(realTimeScreen);
+			realTimeScreen.addMouseMotionListener(realTimeScreen);
+			panelCenter.add(realTimeScreen, BorderLayout.CENTER);
+			panelCenter.updateUI();
+		} else {
+			realTimeScreen.stopGetXml();
+			realTimeScreen.removeMouseListener(realTimeScreen);
+			realTimeScreen.removeMouseMotionListener(realTimeScreen);
+			panelCenter.remove(realTimeScreen);
+			panelCenter.updateUI();
+			realTimeScreen = null;
+		} 
 	}
 }

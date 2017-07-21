@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -38,11 +39,11 @@ import com.dji.bricks.tools.SQLUtils;
  * @author DraLastat
  */
 
-public class MainEntry {
+public class MainEntry implements GlobalObserver {
     private static Logger LOG = Logger.getLogger(MainEntry.class);
 
     private JFrame frame;
-
+    private ToolBarPanel toolbar;
     private static JPanel mainPanel;
     public static JPanel mainPanelCenter;
     public static StatusPanel statusPanel;
@@ -54,8 +55,9 @@ public class MainEntry {
 	private Connection connection;
 	
 	private SQLUtils sql;
-	private IDevice device;
+	private ADB adb;
 	public static ExecutorService cachedThreadPool = Executors.newFixedThreadPool(500);
+	private VariableChangeObserve obs = new VariableChangeObserve();
 	
 	/**
      * 
@@ -88,15 +90,9 @@ public class MainEntry {
                 .configure(ConstantsUI.CURRENT_DIR + File.separator + "config" + File.separator + "log4j.properties");
         LOG.info("==================BricksInitStart====================");
         
-        ADB adb = new ADB();
-        IDevice[] devices = adb.getDevices();
-        if (devices.length <= 0) {
-			LOG.error("ADB not connected, please check");
-			return;
-		}
-		device = devices[0];
-		
-        // 
+		adb = new ADB();
+		adb.registerObserver(MainEntry.this);
+
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
@@ -132,12 +128,13 @@ public class MainEntry {
         mainPanel.setBackground(Color.white);
         mainPanel.setLayout(new BorderLayout());
 
-        ToolBarPanel toolbar = new ToolBarPanel();
-        VariableChangeObserve obs = new VariableChangeObserve();
+        toolbar = new ToolBarPanel();
         statusPanel = new StatusPanel();
-        elecrePanel = new ElecrePanel(obs, sql, device);
+        elecrePanel = new ElecrePanel(obs, sql);
+        adb.registerObserver(elecrePanel);
         casecrePanel = new CasecrePanel(sql);
-        caserunPanel = new CaserunPanel(device);
+        caserunPanel = new CaserunPanel();
+//        adb.registerObserver(casecrePanel);
         settingPanel = new SettingPanel();
 
         mainPanel.add(toolbar, BorderLayout.WEST);
@@ -151,7 +148,7 @@ public class MainEntry {
         frame.add(mainPanel);
 
         obs.addObserver(elecrePanel);
-        
+        adb.init();
         frame.addWindowListener(new WindowListener() {
 
             @Override
@@ -205,4 +202,13 @@ public class MainEntry {
         });
         
     }
+
+	@Override
+	public void frameImageChange(BufferedImage image) {
+	}
+
+	@Override
+	public void ADBChange(IDevice[] devices) {
+		
+	}
 }

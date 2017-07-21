@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * ���������
  * 
  * @author DraLastat
  *
@@ -27,7 +26,7 @@ public class ToolBarPanel extends JPanel {
 	private static MyIconButton buttonSetting;
 
 	/**
-	 * ����
+	 * 
 	 */
 	public ToolBarPanel() {
 		initialize();
@@ -36,7 +35,7 @@ public class ToolBarPanel extends JPanel {
 	}
 
 	/**
-	 * ��ʼ��
+	 * 
 	 */
 	private void initialize() {
 		Dimension preferredSize = new Dimension(48, ConstantsUI.MAIN_WINDOW_HEIGHT);
@@ -48,7 +47,7 @@ public class ToolBarPanel extends JPanel {
 	}
 
 	/**
-	 * ��ӹ��߰�ť
+	 * 
 	 */
 	private void addButton() {
 
@@ -82,7 +81,7 @@ public class ToolBarPanel extends JPanel {
 	}
 
 	/**
-	 * Ϊ����ť����¼���������
+	 * 
 	 */
 	private void addListener() {
 		buttonStatus.addActionListener(new ActionListener() {

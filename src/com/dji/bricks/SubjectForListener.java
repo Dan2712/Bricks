@@ -1,5 +1,4 @@
 package com.dji.bricks;
-import com.dji.bricks.mini_decode.ScreenObserver;
 
 /**
  * @author Dan
@@ -7,9 +6,9 @@ import com.dji.bricks.mini_decode.ScreenObserver;
  */
 public interface SubjectForListener {
 	
-	public void registerObserver(ScreenObserver o);
+	public void registerObserver(GlobalObserver o);
 
-	public void removeObserver(ScreenObserver o);
+	public void removeObserver(GlobalObserver o);
 
 	public void notifyObservers(Object obj);
 }
