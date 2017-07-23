@@ -179,8 +179,11 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
     }
     
     public void stopGetXml() {
+    	minicap.getDataQueue().clear();
+    	minicap.setRunning(false);
 		mScreenshot = null;
 		mModel = null;
+		repaint();
 	}
     
 	@Override

@@ -13,7 +13,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
-import org.hamcrest.core.IsInstanceOf;
 
 import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.CollectingOutputReceiver;
@@ -316,14 +315,14 @@ public class MiniCapUtil implements SubjectForListener{
 				while(isRunning) {
 					byte[] buffer = new byte[len];
 					int realLen = input.read(buffer);
-					if (buffer.length != realLen) {
-						if (realLen > 0) {
+					if (realLen > 0) {
+						if (buffer.length != realLen) {
 							buffer = subByteArray(buffer, 0, realLen);
-							dataQueue.add(buffer);
-						} else {
-							dataQueue.clear();
-							isRunning = false;
 						}
+						dataQueue.add(buffer);
+					} else {
+						isRunning = false;
+						dataQueue.clear();
 					}
 				}
 			} catch (IOException e) {
@@ -552,6 +551,14 @@ public class MiniCapUtil implements SubjectForListener{
 	    }
 	}
 	
+	public Queue<byte[]> getDataQueue() {
+		return dataQueue;
+	}
+
+	public void setRunning(boolean isRunning) {
+		this.isRunning = isRunning;
+	}
+
 	public void registerObserver(GlobalObserver o) {
 		// TODO Auto-generated method stub
 		observers.add(o);

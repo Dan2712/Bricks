@@ -44,7 +44,6 @@ public class CaserunPanel extends JPanel implements GlobalObserver {
 	private void initialize() {
 		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		this.setLayout(new BorderLayout());
-//		caserunPanelResult = new CaserunResultPanel(device);
 		caserunPanelData = new CaserunDataPanel();
 	}
 
@@ -120,7 +119,6 @@ public class CaserunPanel extends JPanel implements GlobalObserver {
 		caserunPanelMain = new JPanel();
 		caserunPanelMain.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		caserunPanelMain.setLayout(new BorderLayout());
-//		caserunPanelMain.add(caserunPanelResult);
 
 		panelCenter.add(panelList, BorderLayout.WEST);
 		panelCenter.add(caserunPanelMain, BorderLayout.CENTER);
@@ -214,6 +212,11 @@ public class CaserunPanel extends JPanel implements GlobalObserver {
 
 	@Override
 	public void ADBChange(IDevice[] devices) {
-		
+		if (devices[0] != null) {
+			caserunPanelResult = new CaserunResultPanel(device);
+			caserunPanelMain.add(caserunPanelResult);
+		} else {
+			
+		}
 	}
 }

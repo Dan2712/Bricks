@@ -622,7 +622,6 @@ public class CasecrePanel extends JPanel{
 				}
 			}
 		}
-		
 	}
 	
 	class EleListener implements ItemListener {

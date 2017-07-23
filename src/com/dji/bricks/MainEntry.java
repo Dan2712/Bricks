@@ -134,7 +134,7 @@ public class MainEntry implements GlobalObserver {
         adb.registerObserver(elecrePanel);
         casecrePanel = new CasecrePanel(sql);
         caserunPanel = new CaserunPanel();
-//        adb.registerObserver(casecrePanel);
+        adb.registerObserver(caserunPanel);
         settingPanel = new SettingPanel();
 
         mainPanel.add(toolbar, BorderLayout.WEST);

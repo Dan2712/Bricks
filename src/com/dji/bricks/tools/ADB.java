@@ -97,6 +97,7 @@ public class ADB implements IDeviceChangeListener, SubjectForListener {
 	public void deviceDisconnected(IDevice device) {
 		System.out.println("disconnect");
 		devices[0] = null;
+		notifyObservers(devices);
 	}
 
 	@Override

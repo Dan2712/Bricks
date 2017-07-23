@@ -127,8 +127,6 @@ public class UiNode extends BasicTreeNode {
 				xpath = idxpath.substring(1);
 				return xpath;
 			}else if(list.size()<4){
-				String a = list.get(0).getUniquePath();
-				String b = list.get(0).getPath();
 				resourceid = resourceid.replaceAll("'", "\\\\'");
 				xpath += "[@resource-id=\'" + resourceid + "\'";
 				flag = true;
