@@ -6,11 +6,13 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.android.ddmlib.IDevice;
+import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.MainEntry;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.tools.PropertyUtil;
@@ -18,7 +20,7 @@ import com.dji.bricks.tools.PropertyUtil;
  *
  * @author DraLastat
  */
-public class CaserunPanel extends JPanel{
+public class CaserunPanel extends JPanel implements GlobalObserver {
 	private static final long serialVersionUID = 1L;
 	private static JPanel panelResult;
 	private static JPanel panelData;
@@ -30,8 +32,7 @@ public class CaserunPanel extends JPanel{
 	/**
 	 * 
 	 */
-	public CaserunPanel(IDevice device) {
-		this.device = device;
+	public CaserunPanel() {
 		initialize();
 		addComponent();
 		addListener();
@@ -43,7 +44,6 @@ public class CaserunPanel extends JPanel{
 	private void initialize() {
 		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		this.setLayout(new BorderLayout());
-		caserunPanelResult = new CaserunResultPanel(device);
 		caserunPanelData = new CaserunDataPanel();
 	}
 
@@ -54,7 +54,6 @@ public class CaserunPanel extends JPanel{
 
 		this.add(getUpPanel(), BorderLayout.NORTH);
 		this.add(getCenterPanel(), BorderLayout.CENTER);
-
 	}
 	
 	/**
@@ -120,7 +119,6 @@ public class CaserunPanel extends JPanel{
 		caserunPanelMain = new JPanel();
 		caserunPanelMain.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		caserunPanelMain.setLayout(new BorderLayout());
-		caserunPanelMain.add(caserunPanelResult);
 
 		panelCenter.add(panelList, BorderLayout.WEST);
 		panelCenter.add(caserunPanelMain, BorderLayout.CENTER);
@@ -164,7 +162,6 @@ public class CaserunPanel extends JPanel{
 				CaserunPanel.caserunPanelMain.removeAll();
 				CaserunPanel.caserunPanelMain.add(caserunPanelResult);
 				MainEntry.caserunPanel.updateUI();
-
 			}
 		});
 
@@ -206,5 +203,20 @@ public class CaserunPanel extends JPanel{
 		});
 
 	}
-	
+
+	@Override
+	public void frameImageChange(BufferedImage image) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void ADBChange(IDevice[] devices) {
+		if (devices[0] != null) {
+			caserunPanelResult = new CaserunResultPanel(device);
+			caserunPanelMain.add(caserunPanelResult);
+		} else {
+			
+		}
+	}
 }

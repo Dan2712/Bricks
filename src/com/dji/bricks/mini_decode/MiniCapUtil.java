@@ -13,7 +13,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
-import org.hamcrest.core.IsInstanceOf;
 
 import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.CollectingOutputReceiver;
@@ -54,6 +53,7 @@ public class MiniCapUtil implements SubjectForListener{
 	private String ADB_GET_ORIENTATION = "dumpsys display | grep 'mDefaultViewport'";
 	private String GET_PID = "ps | grep /data/local/tmp/minicap";
 	private String GET_DPI = "getprop ro.sf.lcd_density";
+	private String GET_CRYSTAL = "cat /system/build.prop | grep \"product.model\"";
 	private String start_command = "";
 	
 	private Queue<byte[]> dataQueue = new LinkedBlockingQueue<byte[]>();
@@ -168,13 +168,10 @@ public class MiniCapUtil implements SubjectForListener{
 		return receiver.getOutput();
 	}
 	
-	private byte[] subByteArray(byte[] byte1, int start, int end) {
+	private byte[] subByteArray(byte[] byte1, int start, int end) throws NegativeArraySizeException {
 		byte[] byte2 = new byte[0];
-		try {
-			byte2 = new byte[end - start];
-		} catch (NegativeArraySizeException e) {
-			e.printStackTrace();
-		}
+		byte2 = new byte[end - start];
+		
 		System.arraycopy(byte1, start, byte2, 0, end - start);
 		return byte2;
 	}
@@ -292,7 +289,7 @@ public class MiniCapUtil implements SubjectForListener{
 			LOG.debug("start receiving data");
 			
 			try {
-				if (isPad)
+				if (isPad && !executeShellCommand(GET_CRYSTAL).substring(17, 23).equals("ZS600B"))
 					start_command = String.format(MINICAP_START_COMMAND, size, size, 90);
 				else
 					start_command = String.format(MINICAP_START_COMMAND, size, size, orientation_tag);
@@ -318,15 +315,23 @@ public class MiniCapUtil implements SubjectForListener{
 				while(isRunning) {
 					byte[] buffer = new byte[len];
 					int realLen = input.read(buffer);
-					if (buffer.length != realLen) {
-						buffer = subByteArray(buffer, 0, realLen);
+					if (realLen > 0) {
+						if (buffer.length != realLen) {
+							buffer = subByteArray(buffer, 0, realLen);
+						}
+						dataQueue.add(buffer);
+					} else {
+						isRunning = false;
+						dataQueue.clear();
 					}
-					dataQueue.add(buffer);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+			} catch (NegativeArraySizeException e) {
+				e.printStackTrace();
+				LOG.error("No data transmission");
 			} catch (StringIndexOutOfBoundsException e) {
 				LOG.error("No suitable .so file");
 			} finally {
@@ -546,10 +551,17 @@ public class MiniCapUtil implements SubjectForListener{
 	    }
 	}
 	
+	public Queue<byte[]> getDataQueue() {
+		return dataQueue;
+	}
+
+	public void setRunning(boolean isRunning) {
+		this.isRunning = isRunning;
+	}
+
 	public void registerObserver(GlobalObserver o) {
 		// TODO Auto-generated method stub
 		observers.add(o);
-
 	}
 	
 	public void removeObserver(GlobalObserver o) {
@@ -570,7 +582,6 @@ public class MiniCapUtil implements SubjectForListener{
 				stopScreenListener();
 				startScreenListener();
 			}
-			System.out.println(observers.size());
 			for (GlobalObserver observer : observers) {
 				observer.frameImageChange(image);
 			}

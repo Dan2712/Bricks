@@ -1,5 +1,4 @@
 package com.dji.bricks;
-import java.awt.image.BufferedImage;
 
 /**
  * @author Dan

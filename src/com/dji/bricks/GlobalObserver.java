@@ -11,5 +11,5 @@ public interface GlobalObserver {
 	
 	public void frameImageChange(BufferedImage image);
 	
-	public void ADBChange(IDevice[] devices); 
+	public void ADBChange(IDevice[] devices);
 }

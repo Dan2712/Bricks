@@ -15,7 +15,6 @@ import java.awt.image.BufferedImage;
 
 /**
  * 
- * 
  * @author DraLastat
  *
  */
