@@ -121,7 +121,6 @@ public class MainEntry implements GlobalObserver {
         frame.setIconImage(ConstantsUI.IMAGE_ICON);
         frame.setBackground(ConstantsUI.MAIN_BACK_COLOR);
         
-        // 
         frame.setResizable(false);
            
         mainPanel = new JPanel(true);

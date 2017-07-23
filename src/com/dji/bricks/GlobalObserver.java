@@ -2,7 +2,6 @@ package com.dji.bricks;
 import java.awt.image.BufferedImage;
 
 import com.android.ddmlib.IDevice;
-import com.hp.hpl.sparta.Document.Observer;
 
 /**
  * @author Dan

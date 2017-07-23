@@ -1,5 +1,7 @@
 package com.dji.bricks.UI.panel;
 
+import com.android.ddmlib.IDevice;
+import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.MainEntry;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
@@ -9,13 +11,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 
 /**
  * 
  * @author DraLastat
  *
  */
-public class ToolBarPanel extends JPanel {
+public class ToolBarPanel extends JPanel implements GlobalObserver {
 
 	private static final long serialVersionUID = 1L;
 
@@ -172,5 +175,17 @@ public class ToolBarPanel extends JPanel {
 
 			}
 		});
+	}
+
+	@Override
+	public void frameImageChange(BufferedImage image) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void ADBChange(IDevice[] devices) {
+		// TODO Auto-generated method stub
+		
 	}
 }

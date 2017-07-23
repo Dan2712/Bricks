@@ -18,6 +18,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -41,11 +42,11 @@ import com.dji.bricks.tools.SQLUtils;
 public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger("ElecrePanel.class");
-	private static MyIconButton ClickStatus;
-	private static MyIconButton CheckStatus;
-	private static MyIconButton ScrollStatus;
-	private static MyIconButton Focustatus;
-	private static MyIconButton LongClickStatus;
+	private static JLabel ClickStatus;
+	private static JLabel CheckStatus;
+	private static JLabel ScrollStatus;
+	private static JLabel Focustatus;
+	private static JLabel LongClickStatus;
 	private static MyIconButton buttonSave;
 	private static CheckButton chkbtn;
 	private JPanel panelCenter;
@@ -150,32 +151,17 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		JLabel focuschk = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.focuschk"));
 		JLabel long_clickchk = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.longclickchk"));
 		JLabel label_null = new JLabel();
-		ClickStatus = new MyIconButton(ConstantsUI.ICON_ELE_CHK, ConstantsUI.ICON_ELE_CHK_TRUE,
-                ConstantsUI.ICON_ELE_CHK_FALSE, "");
-		CheckStatus = new MyIconButton(ConstantsUI.ICON_ELE_CHK, ConstantsUI.ICON_ELE_CHK_TRUE,
-                ConstantsUI.ICON_ELE_CHK_FALSE, "");
-		ScrollStatus = new MyIconButton(ConstantsUI.ICON_ELE_CHK, ConstantsUI.ICON_ELE_CHK_TRUE,
-                ConstantsUI.ICON_ELE_CHK_FALSE, "");
-		Focustatus = new MyIconButton(ConstantsUI.ICON_ELE_CHK, ConstantsUI.ICON_ELE_CHK_TRUE,
-                ConstantsUI.ICON_ELE_CHK_FALSE, "");
-		LongClickStatus = new MyIconButton(ConstantsUI.ICON_ELE_CHK, ConstantsUI.ICON_ELE_CHK_TRUE,
-                ConstantsUI.ICON_ELE_CHK_FALSE, "");
+		ClickStatus = new JLabel();
+		ScrollStatus = new JLabel();
+		CheckStatus = new JLabel();
+		Focustatus = new JLabel();
+		LongClickStatus = new JLabel();
 		
-		chkbtn = new CheckButton(ConstantsUI.ICON_ELE_CHK_TRUE,ConstantsUI.ICON_ELE_CHK_FALSE,"");
-		JLabel chbt = new JLabel();
-		ImageIcon image = new ImageIcon(CURRENT_DIR + File.separator + "icon" + File.separator + "true.png");
-		
-		
-		if(node_info != null && node_info.containsKey("clickable")){
-			if(node_info.get("clickable") == "true"){
-//				System.out.println("click" + node_info.get("clickable"));
-				panelRight.updateUI();
-			}else{
-//				System.out.println("click" + node_info.get("clickable"));
-				
-			}
-		}
-
+		ClickStatus.setIcon(ConstantsUI.ICON_ELE_CHK);
+		ScrollStatus.setIcon(ConstantsUI.ICON_ELE_CHK);
+		CheckStatus.setIcon(ConstantsUI.ICON_ELE_CHK);
+		Focustatus.setIcon(ConstantsUI.ICON_ELE_CHK);
+		LongClickStatus.setIcon(ConstantsUI.ICON_ELE_CHK);
 		
 		ele_xpath.setFont(ConstantsUI.SEC_TITLE);
 		checkable.setFont(ConstantsUI.SEC_TITLE);
@@ -247,6 +233,8 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		labelEleItemNull_1.setPreferredSize(ConstantsUI.LABLE_SIZE_NULL_ITEM);
         buttonSave = new MyIconButton(ConstantsUI.ICON_SAVE, ConstantsUI.ICON_SAVE_ENABLE,
                 ConstantsUI.ICON_SAVE_DISABLE, "");
+//        buttonSave.setEnabled(false);
+        
         panelGridSave.add(labelEleItemNull_1);
         panelGridSave.add(buttonSave);
 
@@ -266,23 +254,55 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	public void update(Observable o, Object arg) {
 		node_info = ((VariableChangeObserve) o).getInfo();
 		textFieldEleItem_1.setText(node_info.get("xpath"));
+		
+//    	if(textFieldEleItem_5.getText().equals(null) && textFieldEleItem_6.getText().equals(null)){
+//    		buttonSave.setEnabled(false);
+//    		System.out.println(textFieldEleItem_5.getText());	
+//    		}
+	
+    	
 		if(node_info.get("package").equals("dji.pilot"))
 			textFieldEleItem_4.setText("DJI GO3");
 		else if (node_info.get("package").equals("dji.go.v4"))
 			textFieldEleItem_4.setText("DJI GO4");
 		
-		if(node_info.get("focusable").equals("1")){
-			ClickStatus.setSelected(true);
-			Focustatus.setSelectedIcon(ConstantsUI.ICON_ELE_CHK_TRUE);
-//			System.out.println("click" + node_info.get("clickable"));
-			panelRight.updateUI();
-		}else{
-			Focustatus.setSelectedIcon(ConstantsUI.ICON_ELE_CHK_FALSE);
-			ClickStatus.setSelected(false);
-//			System.out.println("click" + node_info.get("clickable"));
-			panelRight.updateUI();
+		if(node_info != null && node_info.containsKey("clickable")){
+			if(node_info.get("clickable").equals("1")){
+				ClickStatus.setIcon(ConstantsUI.ICON_ELE_CHK_TRUE);
+			}else{
+				ClickStatus.setIcon(ConstantsUI.ICON_ELE_CHK_FALSE);
+			}
+		}
+		if(node_info != null && node_info.containsKey("scrollable")){
+			if(node_info.get("scrollable").equals("1")){
+				ScrollStatus.setIcon(ConstantsUI.ICON_ELE_CHK_TRUE);
+			}else{
+				ScrollStatus.setIcon(ConstantsUI.ICON_ELE_CHK_FALSE);
+			}
+		}
+		if(node_info != null && node_info.containsKey("checkable")){
+			if(node_info.get("checkable").equals("1")){
+				CheckStatus.setIcon(ConstantsUI.ICON_ELE_CHK_TRUE);
+			}else{
+				CheckStatus.setIcon(ConstantsUI.ICON_ELE_CHK_FALSE);
+			}
+		}
+		if(node_info != null && node_info.containsKey("focusable")){
+			if(node_info.get("focusable").equals("1")){
+				Focustatus.setIcon(ConstantsUI.ICON_ELE_CHK_TRUE);
+			}else{
+				Focustatus.setIcon(ConstantsUI.ICON_ELE_CHK_FALSE);
+			}
+		}
+		if(node_info != null && node_info.containsKey("long-clickable")){
+			if(node_info.get("long-clickable").equals("1")){
+				LongClickStatus.setIcon(ConstantsUI.ICON_ELE_CHK_TRUE);
+			}else{
+				LongClickStatus.setIcon(ConstantsUI.ICON_ELE_CHK_FALSE);
+			}
 		}
 	}
+
 	private String app_name_text;
 	private String custom_name_text;
 	private String xpath_text;
@@ -302,37 +322,58 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		buttonSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                	app_name_text = textFieldEleItem_4.getText();
-                	activity_name_text = textFieldEleItem_5.getText();
-                	custom_name_text = textFieldEleItem_6.getText();
-                	state_text = node_info.get("clickable") + node_info.get("scrollable") + node_info.get("checkable") + node_info.get("focusable") + node_info.get("long-clickable");
-                	xpath_text = node_info.get("xpath");
-                	screen_text = node_info.get("screenPath");
-                	
-                	app_name.put("APP_NAME", app_name_text);
-                	custom_name.put("CUSTOM_NAME", custom_name_text);
-                	activity_name.put("ACTIVITY_NAME", activity_name_text);
-                	xpath.put("XPATH", xpath_text);
-                	state.put("STATE", state_text);
-                	screen.put("SCREEN_PATH", screen_text);
-                	sqllist.add(app_name);
-                	sqllist.add(custom_name);
-                	sqllist.add(activity_name);
-                	sqllist.add(xpath);
-                	sqllist.add(state);
-                	sqllist.add(screen);
-                	
-                	sql.insertEle("ELEMENT", sqllist);
-                	
-                	textFieldEleItem_5.setText("");
-                	textFieldEleItem_6.setText("");
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
+            	if(textFieldEleItem_5.getText().equals(null) && textFieldEleItem_6.getText().equals(null)){
+            		JOptionPane.showMessageDialog(buttonSave,"Failed");
+            	}else{
+            		buttonSave.setEnabled(true);
+                    try {
+                    	app_name_text = textFieldEleItem_4.getText();
+                    	activity_name_text = textFieldEleItem_5.getText();
+                    	custom_name_text = textFieldEleItem_6.getText();
+                    	state_text = node_info.get("clickable") + node_info.get("scrollable") + node_info.get("checkable") + node_info.get("focusable") + node_info.get("long-clickable");
+                    	xpath_text = node_info.get("xpath");
+                    	screen_text = node_info.get("screenPath");
+                    	app_name.put("APP_NAME", app_name_text);
+                    	custom_name.put("CUSTOM_NAME", custom_name_text);
+                    	activity_name.put("ACTIVITY_NAME", activity_name_text);
+                    	xpath.put("XPATH", xpath_text);
+                    	state.put("STATE", state_text);
+                    	screen.put("SCREEN_PATH", screen_text);
+                    	sqllist.add(app_name);
+                    	sqllist.add(custom_name);
+                    	sqllist.add(activity_name);
+                    	sqllist.add(xpath);
+                    	sqllist.add(state);
+                    	sqllist.add(screen);
+                    	sql.insertEle("ELEMENT", sqllist);
+                    	JOptionPane.showMessageDialog(buttonSave,"Save Complete");
+                    	
+                    	textFieldEleItem_5.setText("");
+                    	textFieldEleItem_6.setText("");
+
+                    	
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+            		
+            		System.out.println(textFieldEleItem_5.getText());
+            	}
+
 
             }
         });
+		textFieldEleItem_5.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) { 
+	            if(textFieldEleItem_5.getText().length() == 0 || textFieldEleItem_6.getText().length() == 0)
+	                buttonSave.setEnabled(false);
+	            else
+	            {
+	                buttonSave.setEnabled(true);
+	            }
+	        }
+		});
+	
+		}
 	}
 
 	@Override
