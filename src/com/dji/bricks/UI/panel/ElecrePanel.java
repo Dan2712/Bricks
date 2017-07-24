@@ -373,7 +373,6 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	        }
 		});
 	
-		}
 	}
 
 	@Override
