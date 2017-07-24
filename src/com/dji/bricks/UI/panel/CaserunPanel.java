@@ -160,7 +160,8 @@ public class CaserunPanel extends JPanel implements GlobalObserver {
 				panelData.setBackground(ConstantsUI.TOOL_BAR_BACK_COLOR);
 
 				CaserunPanel.caserunPanelMain.removeAll();
-				CaserunPanel.caserunPanelMain.add(caserunPanelResult);
+				if (caserunPanelResult != null)
+					CaserunPanel.caserunPanelMain.add(caserunPanelResult);
 				MainEntry.caserunPanel.updateUI();
 			}
 		});
