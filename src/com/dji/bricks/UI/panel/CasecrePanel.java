@@ -144,6 +144,7 @@ public class CasecrePanel extends JPanel{
 		comboxAppName = new JComboBox<String>();
 		comboxAppName.addItem("DJI GO3");
 		comboxAppName.addItem("DJI GO4");
+		comboxAppName.addItem("DJI Pilot");
 		comboxAppName.setEditable(false);
 		comboxAppName.setSelectedItem(null);
 		

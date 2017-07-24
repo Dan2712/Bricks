@@ -62,8 +62,9 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
     private VariableChangeObserve obs = null;
     private JPanel parentPanel = null;
     private String screenPath = "";
-    
     public static Boolean isRuncase = false;
+    private Rectangle rect;
+	private boolean isPainting = true;
     
 	public RealTimeScreenUI(IDevice device, VariableChangeObserve obs, JPanel parentPanel) {
     	this.device = device;
@@ -81,32 +82,32 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
         
 	@Override
 	public void frameImageChange(BufferedImage image) {
-		this.mScreenshot = image;
-		if (!isRuncase) {
-			cachedThreadPool.submit((new Runnable() {
-				
-				@Override
-				public void run() {
-					try {
-						mModel = null;
-						result = UiAutomatorHelper.takeSnapshot(device, null, true, mScreenshot);
-						mModel = result.model;
-					} catch (UiAutomatorException e) {
-						LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
+		if (isPainting) {
+			this.mScreenshot = image;
+			if (!isRuncase) {
+				cachedThreadPool.submit((new Runnable() {
+					
+					@Override
+					public void run() {
+						try {
+							mModel = null;
+							result = UiAutomatorHelper.takeSnapshot(device, null, true, mScreenshot);
+							mModel = result.model;
+						} catch (UiAutomatorException e) {
+							LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
+						}
 					}
-				}
-			}));
-		}
+				}));
+			}
+			this.updateScreenshotTransformation();
+			this.setSize(panel_bounds, panel_bounds);
 		
-		this.updateScreenshotTransformation();
-		this.setSize(panel_bounds, panel_bounds);
-		if (!isSelected) {
 			parentPanel.repaint();
 			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
 		}
 	}
 	
-	public void paint(Graphics g) {
+	public synchronized void paint(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		try {
 			if (mScreenshot == null)
@@ -119,7 +120,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 		}
 		
 		if (mModel != null) {
-			Rectangle rect = mModel.getCurrentDrawingRect();
+			rect = mModel.getCurrentDrawingRect();
 			if (rect != null) {
 				g2.setColor(Color.RED);
 				if (mModel.isExploreMode()) {
@@ -129,6 +130,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 				} else {
 					s = new BasicStroke(1.5f);
 					g2.setColor(Color.RED);
+					g2.setStroke(s);
 				}
 				g2.drawRect(mDx + getScaledSize(rect.x), mDy + getScaledSize(rect.y),
 	                    getScaledSize(rect.width), getScaledSize(rect.height));
@@ -186,6 +188,10 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 		repaint();
 	}
     
+	public void togglePainting() {
+		this.isPainting = !isPainting;
+	}
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -210,14 +216,16 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 				@Override
 				public void run() {
 					try {
-						BufferedImage image = new BufferedImage(panel_bounds, panel_bounds, BufferedImage.TYPE_INT_RGB);
-						RealTimeScreenUI.this.paint(image.getGraphics());
-						screenPath = "screenshot/" + System.currentTimeMillis() + ".jpg";
-						File screenShot = new File(screenPath);
-						if (!screenShot.getParentFile().exists())
-							screenShot.getParentFile().mkdirs();
-						
-						ImageIO.write(image.getSubimage(mDx, mDy, width, height), "jpg", screenShot);
+						if (isSelected) {
+							BufferedImage image = new BufferedImage(panel_bounds, panel_bounds, BufferedImage.TYPE_INT_RGB);
+							RealTimeScreenUI.this.paint(image.getGraphics());
+							screenPath = "screenshot/" + System.currentTimeMillis() + ".jpg";
+							File screenShot = new File(screenPath);
+							if (!screenShot.getParentFile().exists())
+								screenShot.getParentFile().mkdirs();
+							
+							ImageIO.write(image.getSubimage(mDx, mDy, width, height), "jpg", screenShot);
+						}
 					} catch (IOException e) {
 						e.printStackTrace();
 					}  

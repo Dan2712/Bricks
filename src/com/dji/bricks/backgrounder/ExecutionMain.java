@@ -12,7 +12,7 @@ public class ExecutionMain {
 	public static void RunTestCase(String path, JTextArea logText, IDevice device) {
 		
 		try {
-			AppiumInit.setUp(device, "dji.go.v4", "dji.pilot.main.activity.DJILauncherActivity");
+			AppiumInit.setUp(device, "com.dji.industry.pilot", "com.dji.industry.pilot.SplashActivity");
 			
 			RunTestCase testCase = new RunTestCase(path, 0, AppiumInit.driver, logText);
 			testCase.run();
