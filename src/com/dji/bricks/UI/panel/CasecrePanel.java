@@ -112,6 +112,7 @@ public class CasecrePanel extends JPanel{
 	
 	private ViewListener vlisten = new ViewListener();
 	private EleListener elisten = new EleListener();
+	
 	/**
 	 * 
 	 * @return
@@ -124,10 +125,8 @@ public class CasecrePanel extends JPanel{
 		
 		/**
 		 * 
-		 * 
 		 * @return
 		 */
-		
 		JPanel panelGridElePick = new JPanel();
 		panelGridElePick.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelGridElePick.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
@@ -540,14 +539,13 @@ public class CasecrePanel extends JPanel{
 		            @Override
 		            public void actionPerformed(ActionEvent e) {
 		            
-		            		try {
-		            			panelDown.remove(jbtn);
-		            			panelDown.updateUI();
-		            			System.out.println("delete event");
-		            		} catch (Exception e1) {
-		            			e1.printStackTrace();
-		            		}
-
+	            		try {
+	            			panelDown.remove(jbtn);
+	            			panelDown.updateUI();
+	            			System.out.println("delete event");
+	            		} catch (Exception e1) {
+	            			e1.printStackTrace();
+	            		}
 		            }
 		            
 		        });

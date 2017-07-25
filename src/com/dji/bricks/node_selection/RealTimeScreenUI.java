@@ -64,7 +64,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
     private String screenPath = "";
     public static Boolean isRuncase = false;
     private Rectangle rect;
-	private boolean isPainting = true;
+	private volatile boolean isPainting = true;
     
 	public RealTimeScreenUI(IDevice device, VariableChangeObserve obs, JPanel parentPanel) {
     	this.device = device;
@@ -91,7 +91,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 					public void run() {
 						try {
 							mModel = null;
-							result = UiAutomatorHelper.takeSnapshot(device, null, true, mScreenshot);
+							result = UiAutomatorHelper.takeSnapshot(device, null, false, mScreenshot);
 							mModel = result.model;
 						} catch (UiAutomatorException e) {
 							LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
@@ -207,6 +207,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 		// TODO Auto-generated method stub
 		if (mModel != null) {
             mModel.toggleExploreMode();
+            System.out.println(mModel.isExploreMode());
             isSelected = !isSelected;
             parentPanel.repaint();
             repaint();

@@ -116,6 +116,7 @@ public class UiNode extends BasicTreeNode {
 
 	public String getXpath() {
 		String className = getNodeClassAttribute();
+		System.out.println(className + ": " + getAttribute("index"));
 		String xpath = "/" + className + "[@index=\'" + getAttribute("index") + "\']";
 		boolean flag = false;
 
@@ -137,7 +138,8 @@ public class UiNode extends BasicTreeNode {
 		if (text != null && !text.equals("")) {
 			text = text.replaceAll("\"", "\\\\\"");
 			if(flag){
-				xpath += " and @text=\'" + text + "\'";
+				if (!(xpath.substring(xpath.length()-7, xpath.length()-1)).equals("editor"))
+					xpath += " and @text=\'" + text + "\'";
 			}else{
 				xpath += "[@text=\'" + text + "\'";
 				flag = true;
@@ -147,7 +149,7 @@ public class UiNode extends BasicTreeNode {
 		if(!content_desc.equals("")){
 			content_desc = content_desc.replaceAll("'", "\\\\'");
 			if(flag){
-				xpath += " and @content-desc=\'" + content_desc + "\'";
+					xpath += " and @content-desc=\'" + content_desc + "\'";
 			}else{
 				xpath += "[@content-desc=\'" + content_desc + "\'";
 				flag = true;
