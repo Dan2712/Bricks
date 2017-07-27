@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 
 import com.android.ddmlib.IDevice;
 import com.dji.bricks.GlobalObserver;
+import com.dji.bricks.MainEntry;
 import com.dji.bricks.UI.CheckButton;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
@@ -360,6 +361,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 //            	}
 
             	realTimeScreen.togglePainting();
+//            	MainEntry.cachedThreadPool.shutdownNow();
             }
         });
 		textFieldEleItem_5.addActionListener(new ActionListener() {

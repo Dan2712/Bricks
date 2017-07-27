@@ -14,7 +14,7 @@ public class ExecutionMain {
 		try {
 			AppiumInit.setUp(device, "com.dji.industry.pilot", "com.dji.industry.pilot.SplashActivity");
 			
-			RunTestCase testCase = new RunTestCase(path, 0, AppiumInit.driver, logText);
+			RunTestCase testCase = new RunTestCase(path, 0, AppiumInit.driver, logText, device);
 			testCase.run();
 		}catch (Exception e) {
 			e.printStackTrace();

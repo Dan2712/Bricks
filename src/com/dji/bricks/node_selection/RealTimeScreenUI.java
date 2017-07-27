@@ -91,14 +91,15 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 					public void run() {
 						try {
 							mModel = null;
-							result = UiAutomatorHelper.takeSnapshot(device, null, false, mScreenshot);
+							result = UiAutomatorHelper.takeSnapshot(device, null, true, mScreenshot);
 							mModel = result.model;
 						} catch (UiAutomatorException e) {
-							LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
+							System.out.println("Loading. Current page doesn't contain UI Hierarchy xml.");
 						}
 					}
 				}));
 			}
+			
 			this.updateScreenshotTransformation();
 			this.setSize(panel_bounds, panel_bounds);
 		
@@ -118,7 +119,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		if (mModel != null) {
 			rect = mModel.getCurrentDrawingRect();
 			if (rect != null) {

@@ -27,7 +27,6 @@ public class CusElement {
 
 			@Override
 			public WebElement apply(WebDriver d) {
-				System.out.println(ele);
 				return d.findElement(By.xpath(ele));
 			}
 		});

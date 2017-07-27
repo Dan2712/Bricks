@@ -24,10 +24,6 @@ public class ADB implements IDeviceChangeListener, SubjectForListener {
 	private List<GlobalObserver> observers = new ArrayList<GlobalObserver>();
 	private IDevice[] devices = new IDevice[10];
 	
-//	public ADB() {
-//		init();
-//	}
-//	
 	//get adb tools path
 	private String getAdbPath() {
 		if (adbPath == null) {
