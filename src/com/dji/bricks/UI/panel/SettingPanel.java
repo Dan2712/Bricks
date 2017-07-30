@@ -30,7 +30,7 @@ public class SettingPanel extends JPanel {
 	private static JPanel settingPanelAbout;
 
 	/**
-	 * ����
+	 * 
 	 */
 	public SettingPanel() {
 		initialize();
@@ -39,7 +39,7 @@ public class SettingPanel extends JPanel {
 	}
 
 	/**
-	 * ��ʼ��
+	 * 
 	 */
 	private void initialize() {
 		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
@@ -49,7 +49,7 @@ public class SettingPanel extends JPanel {
 	}
 
 	/**
-	 * ������
+	 * 
 	 */
 	private void addComponent() {
 
@@ -59,7 +59,7 @@ public class SettingPanel extends JPanel {
 	}
 
 	/**
-	 * �ϲ����
+	 * 
 	 * 
 	 * @return
 	 */
@@ -77,7 +77,7 @@ public class SettingPanel extends JPanel {
 	}
 
 	/**
-	 * �в����
+	 * 
 	 * 
 	 * @return
 	 */
@@ -130,7 +130,7 @@ public class SettingPanel extends JPanel {
 	}
 
 	/**
-	 * Ϊ����������¼�����
+	 * 
 	 */
 	private void addListener() {
 		panelOption.addMouseListener(new MouseListener() {

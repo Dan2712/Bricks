@@ -42,7 +42,7 @@ import com.dji.bricks.tools.SQLUtils;
 public class MainEntry implements GlobalObserver {
     private static Logger LOG = Logger.getLogger(MainEntry.class);
 
-    private JFrame frame;
+    public static JFrame frame;
     private ToolBarPanel toolbar;
     private static JPanel mainPanel;
     public static JPanel mainPanelCenter;

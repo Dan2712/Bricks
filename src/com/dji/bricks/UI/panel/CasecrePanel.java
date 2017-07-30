@@ -28,23 +28,27 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import com.alibaba.fastjson.JSON;
-
 import com.dji.bricks.UI.BrickBean;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
 import com.dji.bricks.tools.PropertyUtil;
 import com.dji.bricks.tools.SQLUtils;
+import com.dji.bricks.UI.panel.PopupWindow;;
 
 /**
  *
  * @author DraLastat
  */
 public class CasecrePanel extends JPanel{
+	
 	private static final long serialVersionUID = 1L;
+	
 	private static MyIconButton buttonEleAdd;
 	private static MyIconButton buttonActAdd;
 	private static MyIconButton buttonVerAdd;
 	private static MyIconButton buttonSave;
+	private static JPanel popuppanel;
+	private static PopupWindow popupwindow;
 	private int id;
 	private int type;
 	private LinkedList<BrickBean> caseList = new LinkedList<>();
@@ -69,6 +73,7 @@ public class CasecrePanel extends JPanel{
 	private void initialize() {
 		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		this.setLayout(new BorderLayout());
+//		popuppanel = new PopupWindow();
 	}
 
 	/**
@@ -76,12 +81,12 @@ public class CasecrePanel extends JPanel{
 	 */
 	private JPanel CaseCre;
 	private void addComponent() {
-		CaseCre = getDownPanel();
+		CaseCre = getWestPanel();
 		this.add(getUpPanel(), BorderLayout.NORTH);
 		//this.add(getLeftPanel(), BorderLayout.WEST);
 		//this.add(getRightPanel(), BorderLayout.EAST);
-		this.add(getCenterPanel(), BorderLayout.CENTER);
-		this.add(getDownPanel(), BorderLayout.SOUTH);
+		this.add(getWestPanel(), BorderLayout.WEST);
+		this.add(getEastPanel(), BorderLayout.EAST);
 	}
 	/**
 	 * 
@@ -116,11 +121,13 @@ public class CasecrePanel extends JPanel{
 	 * 
 	 * @return
 	 */
-	private JPanel getCenterPanel() {
+	private JPanel getWestPanel() {
 		
 		JPanel panelCenter = new JPanel();
+		Dimension preferredSize = new Dimension(300, 40);
 		panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
-		panelCenter.setLayout(new GridLayout(1, 3));
+		panelCenter.setLayout(new GridLayout(3, 1));
+		panelCenter.setPreferredSize(preferredSize);
 		
 		/**
 		 * 
@@ -129,7 +136,7 @@ public class CasecrePanel extends JPanel{
 		 */
 		
 		JPanel panelGridElePick = new JPanel();
-		panelGridElePick.setBackground(ConstantsUI.MAIN_BACK_COLOR);
+		panelGridElePick.setBackground(ConstantsUI.ELE_COLOR);
 		panelGridElePick.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
 		
 		
@@ -234,8 +241,27 @@ public class CasecrePanel extends JPanel{
 		 * @return
 		 */
 		JPanel panelGridActPick = new JPanel();
-		panelGridActPick.setBackground(ConstantsUI.MAIN_BACK_COLOR);
+		panelGridActPick.setBackground(ConstantsUI.ACT_COLOR);
 		panelGridActPick.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
+		
+		JLabel labelActPick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.actpick"));
+        buttonActAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
+                ConstantsUI.ICON_ELE_ADD_DISABLE, "");
+		JLabel labelActNull = new JLabel();
+		JLabel labelActName = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.actname"));
+		labelActPick.setFont(ConstantsUI.SEC_TITLE);
+		labelActName.setFont(ConstantsUI.FONT_NORMAL);
+		comboxActName.setFont(ConstantsUI.FONT_NORMAL);
+		labelActPick.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
+		labelActNull.setPreferredSize(ConstantsUI.LABLE_SIZE_CASECRE_NULL_ITEM);
+		labelActName.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
+		comboxActName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
+		
+		panelGridActPick.add(labelActPick);
+		panelGridActPick.add(buttonActAdd);
+		panelGridActPick.add(labelActNull);
+		panelGridActPick.add(labelActName);
+		panelGridActPick.add(comboxActName);
 
 		/**
 		 *
@@ -243,14 +269,10 @@ public class CasecrePanel extends JPanel{
 		 * @return
 		 */
 		JPanel panelGridVerPick = new JPanel();
-		panelGridVerPick.setBackground(ConstantsUI.MAIN_BACK_COLOR);
+		panelGridVerPick.setBackground(ConstantsUI.VER_COLOR);
 		panelGridVerPick.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
 		
-		JLabel labelActPick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.actpick"));
-        buttonActAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
-                ConstantsUI.ICON_ELE_ADD_DISABLE, "");
-		JLabel labelActNull = new JLabel();
-		JLabel labelActName = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.actname"));
+		
 		
 		JLabel labelVerPick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.verpick"));
         buttonVerAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
@@ -298,28 +320,19 @@ public class CasecrePanel extends JPanel{
 			}
 		});
 		
-		labelActPick.setFont(ConstantsUI.SEC_TITLE);
-		labelActName.setFont(ConstantsUI.FONT_NORMAL);
-		comboxActName.setFont(ConstantsUI.FONT_NORMAL);
+
 		labelVerPick.setFont(ConstantsUI.SEC_TITLE);
 		labelVerName.setFont(ConstantsUI.FONT_NORMAL);
 		comboxVerName.setFont(ConstantsUI.FONT_NORMAL);
 		
-		labelActPick.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
-		labelActNull.setPreferredSize(ConstantsUI.LABLE_SIZE_CASECRE_NULL_ITEM);
-		labelActName.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
-		comboxActName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
+		
 		labelVerPick.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
 		labelVerNull.setPreferredSize(ConstantsUI.LABLE_SIZE_CASECRE_NULL_ITEM);
 		labelVerName.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
 		comboxVerName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
 		labelNull_2.setPreferredSize(ConstantsUI.LABLE_SIZE_CASECRE_NULL_SEC_ITEM);
 		
-		panelGridVerPick.add(labelActPick);
-		panelGridVerPick.add(buttonActAdd);
-		panelGridVerPick.add(labelActNull);
-		panelGridVerPick.add(labelActName);
-		panelGridVerPick.add(comboxActName);
+
 		panelGridVerPick.add(labelVerPick);
 		panelGridVerPick.add(buttonVerAdd);
 		panelGridVerPick.add(labelVerNull);
@@ -340,7 +353,7 @@ public class CasecrePanel extends JPanel{
 	 * @return
 	 */
 	private JPanel panelDown ;
-	private JPanel getDownPanel() {
+	private JPanel getEastPanel() {
 		if(panelDown == null){
 			panelDown = new JPanel();
 			/*JLabel labelTitle = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.title"));
@@ -349,10 +362,11 @@ public class CasecrePanel extends JPanel{
 			
 			panelDown.add(labelTitle);*/
 		}
+
 		
-		Dimension preferredSize = new Dimension(245, 350);
+		Dimension preferredSize = new Dimension(500, ConstantsUI.MAIN_WINDOW_HEIGHT);
 		panelDown.setPreferredSize(preferredSize);
-		panelDown.setBackground(Color.DARK_GRAY);
+		panelDown.setBackground(new Color(229, 229, 229));
 		panelDown.setLayout(new FlowLayout(FlowLayout.LEFT));
 		
 	/*	JButton btn = new JButton();
@@ -360,9 +374,7 @@ public class CasecrePanel extends JPanel{
 		btn.setBorder(null);
 		btn.setLocation(20, 20);
 		btn.addMouseMotionListener(new BricksDrag());*/
-
 		
-		//panelDown.add(btn);
 		panelDown.updateUI();
 		return panelDown;
 	}
@@ -457,23 +469,25 @@ public class CasecrePanel extends JPanel{
 	            public void actionPerformed(ActionEvent e) {
 
 	                try {
-	                	id = butclick ++;
-	                	butver = new JButton();
-	                	butver.setBackground(Color.DARK_GRAY);
-	                	//btn2.setForeground(Color.blue);
-	                	butver.setPreferredSize(new Dimension(50, 20));
-	                	butver.setBorder(null);
-	                	if(val.equals("TV")){
-	                		butver.setText("TV");
-	                	}else if(val.equals("IV")){
-	                		butver.setText("IV");
-	                	}else if(val.equals("EEV")){
-	                		butver.setText("EEV");
-	                	}
-	                	setId(id);
-	                	butver.addMouseListener(new PopClickListener(butver));
-	                	panelDown.add(butver);
-	                	panelDown.updateUI();
+	                	new PopupWindow();
+//	                	System.out.println("work");
+//	                	id = butclick ++;
+//	                	butver = new JButton();
+//	                	butver.setBackground(Color.DARK_GRAY);
+//	                	//btn2.setForeground(Color.blue);
+//	                	butver.setPreferredSize(new Dimension(50, 20));
+//	                	butver.setBorder(null);
+//	                	if(val.equals("TV")){
+//	                		butver.setText("TV");
+//	                	}else if(val.equals("IV")){
+//	                		butver.setText("IV");
+//	                	}else if(val.equals("EEV")){
+//	                		butver.setText("EEV");
+//	                	}
+//	                	setId(id);
+//	                	butver.addMouseListener(new PopClickListener(butver));
+//	                	panelDown.add(butver);
+//	                	panelDown.updateUI();
 	                } catch (Exception e1) {
 	                	e1.printStackTrace();
 	                }

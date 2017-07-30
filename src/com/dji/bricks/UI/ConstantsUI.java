@@ -42,7 +42,18 @@ public class ConstantsUI {
      *
      */
     public final static Color MAIN_BACK_COLOR = Color.WHITE;
-
+    /**
+    *
+    */
+    public final static Color ELE_COLOR = new Color(229, 66, 110);
+    /**
+    *
+    */
+    public final static Color ACT_COLOR = new Color(255, 236, 66);
+    /**
+    *
+    */
+    public final static Color VER_COLOR = new Color(99, 208, 242);
     /**
      * 
      */

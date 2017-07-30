@@ -374,7 +374,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		});
 	
 		}
-	}
+	
 
 	@Override
 	public void frameImageChange(BufferedImage image) {
