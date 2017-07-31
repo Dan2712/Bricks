@@ -22,11 +22,12 @@ public class AppiumInit {
           
        //configuration
         capabilities.setCapability("appPackage", appPackage);  
-        capabilities.setCapability("appActivity", launchActivity);  
+        capabilities.setCapability("appActivity", launchActivity);
         capabilities.setCapability("noReset", true);
-        capabilities.setCapability("sessionOverride", true);    //override session everytime， otherwise cannot start a new session second time 
+        capabilities.setCapability("sessionOverride", true);    //override session everytime， otherwise cannot start a new session second time
+        capabilities.setCapability("ignoreUnimportantViews", true);
 
-        driver = new AppiumDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);  
+        driver = new AppiumDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
         driver.manage().timeouts().implicitlyWait(5,TimeUnit.SECONDS);
 	}
 	

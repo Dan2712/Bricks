@@ -117,6 +117,7 @@ public class CasecrePanel extends JPanel{
 	
 	private ViewListener vlisten = new ViewListener();
 	private EleListener elisten = new EleListener();
+	
 	/**
 	 * 
 	 * @return
@@ -131,10 +132,8 @@ public class CasecrePanel extends JPanel{
 		
 		/**
 		 * 
-		 * 
 		 * @return
 		 */
-		
 		JPanel panelGridElePick = new JPanel();
 		panelGridElePick.setBackground(ConstantsUI.ELE_COLOR);
 		panelGridElePick.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
@@ -151,6 +150,7 @@ public class CasecrePanel extends JPanel{
 		comboxAppName = new JComboBox<String>();
 		comboxAppName.addItem("DJI GO3");
 		comboxAppName.addItem("DJI GO4");
+		comboxAppName.addItem("DJI Pilot");
 		comboxAppName.setEditable(false);
 		comboxAppName.setSelectedItem(null);
 		
@@ -297,23 +297,31 @@ public class CasecrePanel extends JPanel{
 					switch ((String) e.getItem()) {
 					case "Text Validation":
 						val = "TV";
-						String ele_path = "//android.widget.TextView[@resource-id='dji.go.v4:id/fpv_error_pop_item_title_tv']";
+						String ele_path_text = "//android.widget.TextView[@resource-id='dji.go.v4:id/fpv_error_pop_item_title_tv']";
 						String expect_text = "自动起飞操作失败";
 						
-						BrickBean brick = new BrickBean();
-						brick.setProperty("val");
-						brick.setValidation_name(1);
-						Map<String, String> params = new HashMap<>();
-						params.put("ele_path", ele_path);
-						params.put("expect_text", expect_text);
-						brick.setParams(params);
-						caseList.add(brick);
+						BrickBean brick_valText = new BrickBean();
+						brick_valText.setProperty("val");
+						brick_valText.setValidation_name(1);
+						Map<String, String> params_text = new HashMap<>();
+						params_text.put("ele_path", ele_path_text);
+						params_text.put("expect_text", expect_text);
+						brick_valText.setParams(params_text);
+						caseList.add(brick_valText);
 						break;
 					case "Image Validation":
 						val = "IV";
 						break;
 					case "Element Exist Validation":
 						val = "EEV";
+						String ele_path_eleVal = "//android.widget.TextView[@resource-id='com.dji.industry.pilot:id/home_connect_cameras']";
+						BrickBean brick_valEle = new BrickBean();
+						brick_valEle.setProperty("val");
+						brick_valEle.setValidation_name(2);
+						Map<String, String> params_eleVal = new HashMap<>();
+						params_eleVal.put("ele_path", ele_path_eleVal);
+						brick_valEle.setParams(params_eleVal);
+						caseList.add(brick_valEle);
 						break;
 					}
 				}
@@ -553,14 +561,13 @@ public class CasecrePanel extends JPanel{
 		            @Override
 		            public void actionPerformed(ActionEvent e) {
 		            
-		            		try {
-		            			panelDown.remove(jbtn);
-		            			panelDown.updateUI();
-		            			System.out.println("delete event");
-		            		} catch (Exception e1) {
-		            			e1.printStackTrace();
-		            		}
-
+	            		try {
+	            			panelDown.remove(jbtn);
+	            			panelDown.updateUI();
+	            			System.out.println("delete event");
+	            		} catch (Exception e1) {
+	            			e1.printStackTrace();
+	            		}
 		            }
 		            
 		        });

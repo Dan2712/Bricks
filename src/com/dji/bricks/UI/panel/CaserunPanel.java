@@ -27,7 +27,6 @@ public class CaserunPanel extends JPanel implements GlobalObserver {
 	public static JPanel caserunPanelMain;
 	private static JPanel caserunPanelResult;
 	private static JPanel caserunPanelData;
-	private IDevice device;
 	
 	/**
 	 * 
@@ -160,7 +159,8 @@ public class CaserunPanel extends JPanel implements GlobalObserver {
 				panelData.setBackground(ConstantsUI.TOOL_BAR_BACK_COLOR);
 
 				CaserunPanel.caserunPanelMain.removeAll();
-				CaserunPanel.caserunPanelMain.add(caserunPanelResult);
+				if (caserunPanelResult != null)
+					CaserunPanel.caserunPanelMain.add(caserunPanelResult);
 				MainEntry.caserunPanel.updateUI();
 			}
 		});
@@ -213,10 +213,12 @@ public class CaserunPanel extends JPanel implements GlobalObserver {
 	@Override
 	public void ADBChange(IDevice[] devices) {
 		if (devices[0] != null) {
-			caserunPanelResult = new CaserunResultPanel(device);
+			caserunPanelResult = new CaserunResultPanel(devices[0]);
 			caserunPanelMain.add(caserunPanelResult);
 		} else {
-			
+			CaserunPanel.caserunPanelMain.removeAll();
+			MainEntry.caserunPanel.updateUI();
+			caserunPanelResult = null;
 		}
 	}
 }

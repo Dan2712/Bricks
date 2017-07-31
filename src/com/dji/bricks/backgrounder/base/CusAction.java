@@ -28,7 +28,7 @@ public class CusAction {
 	//3.input text
 	public void setText(WebElement ele, String text) {
 		ele.clear();
-		ele.sendKeys(text);
+		ele.sendKeys("120");
 	}
 	
 	//10.seekbar drag

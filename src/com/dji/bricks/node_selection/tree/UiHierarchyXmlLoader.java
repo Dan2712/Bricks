@@ -216,7 +216,6 @@ public class UiHierarchyXmlLoader {
             			}
             			parent = parent.getParent();
             		}
-//            		System.out.println("0000000000");
             		return "/"+xpath;
             	}
             	

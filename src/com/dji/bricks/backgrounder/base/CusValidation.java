@@ -24,4 +24,12 @@ public class CusValidation {
 		
 		return false;
 	}
+	
+	public Boolean getExactEle(String eleName) {
+		WebElement ele = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(eleName);
+		
+		if (ele != null)
+			return true;
+		return false;
+	}
 }
