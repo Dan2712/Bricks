@@ -30,8 +30,10 @@ import com.sun.jna.platform.unix.X11.Font;
 */
 public class PopupWindow extends Thread{
 	 private Map<String,String> feaMap=null;
+	 private static int type;
 	 
-	 public PopupWindow(){
+	 public PopupWindow(int type){
+		    this.type = type;
 		 	feaMap=new HashMap<String,String>();
 		 	feaMap.put("name", "popup test");
 		 	feaMap.put("release", "time check");
@@ -62,10 +64,12 @@ public class PopupWindow extends Thread{
 	        feaPan.add(jfeaPan);
 	        headPan.add(head);
 	        btnPan.add(update);
+	        if(type == 1){
 	        tw.add(headPan,BorderLayout.NORTH);
 	        tw.add(feaPan,BorderLayout.CENTER);
+	        }else if(type == 2){
 	        tw.add(btnPan,BorderLayout.SOUTH);
-	   
+	        }
 	        update.addMouseListener(new MouseAdapter(){
 	        	public void mouseClicked(MouseEvent e){
 	        		JOptionPane.showMessageDialog(tw, "???");
@@ -79,6 +83,6 @@ public class PopupWindow extends Thread{
 	        tw.run();  
 	 		}
 	 public static void main(String args[]){
-		 	new PopupWindow();
+		 	new PopupWindow(type);
 	 		}
 	}

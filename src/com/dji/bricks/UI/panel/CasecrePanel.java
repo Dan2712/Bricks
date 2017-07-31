@@ -410,7 +410,7 @@ public class CasecrePanel extends JPanel{
 			  @Override
 	            public void actionPerformed(ActionEvent e) {
 	                try {
-	                	
+	                	new PopupWindow(2);
 	                	id = butclick ++;
 	                	butele = new JButton();
 	                	butele.setBackground(Color.DARK_GRAY);
@@ -477,7 +477,7 @@ public class CasecrePanel extends JPanel{
 	            public void actionPerformed(ActionEvent e) {
 
 	                try {
-	                	new PopupWindow();
+	                	new PopupWindow(1);
 //	                	System.out.println("work");
 //	                	id = butclick ++;
 //	                	butver = new JButton();

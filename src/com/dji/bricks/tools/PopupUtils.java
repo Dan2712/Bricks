@@ -23,13 +23,13 @@ public class PopupUtils extends JDialog implements Runnable {
         this.height = height;
         x = (int) (MainEntry.frame.getWidth());
         y = (int) (MainEntry.frame.getHeight());
-        windowx = (int) MainEntry.frame.getLocationOnScreen().getX() + 1015;
+        windowx = (int) MainEntry.frame.getLocationOnScreen().getX() + 1005;
         windowy = (int) MainEntry.frame.getLocationOnScreen().getY() + 72;
         initComponents();
     	} 
     
     public void run() {  
-        for (int i = 0; i <= height; i += 10) {  
+        for (int i = 0; i <= height; i += 30) {  
             try {  
                 this.setLocation(windowx - i, windowy);
                 Thread.sleep(5);  
@@ -57,7 +57,7 @@ public class PopupUtils extends JDialog implements Runnable {
         });        
     }   
     public void close(){
-     for (int i = 0; i <= height; i += 10) {  
+     for (int i = 0; i <= height; i += 300) {  
             try {
                 setLocation(windowx -width + i, windowy);
                 Thread.sleep(5);                                  
