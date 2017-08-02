@@ -94,7 +94,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 							result = UiAutomatorHelper.takeSnapshot(device, null, true, mScreenshot);
 							mModel = result.model;
 						} catch (UiAutomatorException e) {
-							System.out.println("Loading. Current page doesn't contain UI Hierarchy xml.");
+							LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
 						}
 					}
 				}));

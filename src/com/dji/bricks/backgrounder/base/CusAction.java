@@ -1,16 +1,15 @@
 package com.dji.bricks.backgrounder.base;
 
 import org.openqa.selenium.WebElement;
-
-import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.TouchAction;
+import io.appium.java_client.android.AndroidDriver;
 
 public class CusAction {
 	 
-	private AppiumDriver driver;
+	private AndroidDriver driver;
 	private TouchAction touchAction;
 	
-	public CusAction(AppiumDriver driver) {
+	public CusAction(AndroidDriver driver) {
 		this.driver = driver;
 		touchAction = new TouchAction(driver);
 	}

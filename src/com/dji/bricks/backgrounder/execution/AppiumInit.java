@@ -6,12 +6,13 @@ import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import com.alibaba.fastjson.JSONObject;
 import com.android.ddmlib.IDevice;
-import io.appium.java_client.AppiumDriver;
+
+import io.appium.java_client.android.AndroidDriver;
 
 public class AppiumInit {
 	
 	public static final int WAIT_TIME = 30;
-	public static AppiumDriver driver; 
+	public static AndroidDriver driver; 
 	
 	public static void setUp(IDevice device, String appPackage, String launchActivity) throws Exception {
 		//init appium  
@@ -27,7 +28,7 @@ public class AppiumInit {
         capabilities.setCapability("sessionOverride", true);    //override session everytime， otherwise cannot start a new session second time
         capabilities.setCapability("ignoreUnimportantViews", true);
 
-        driver = new AppiumDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
+        driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
         driver.manage().timeouts().implicitlyWait(5,TimeUnit.SECONDS);
 	}
 	

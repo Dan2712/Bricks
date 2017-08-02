@@ -3,15 +3,15 @@ package com.dji.bricks.backgrounder.base;
 import org.openqa.selenium.WebElement;
 
 import com.dji.bricks.backgrounder.execution.AppiumInit;
-import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
 
 public class CusValidation {
 	
-	private AppiumDriver driver;
+	private AndroidDriver driver;
 	
 	private int[] validationList = new int[50];
 	
-	public CusValidation(AppiumDriver driver) {
+	public CusValidation(AndroidDriver driver) {
 		this.driver = driver;
 	}
 	

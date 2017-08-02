@@ -6,16 +6,16 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.functions.ExpectedCondition;
 
 public class CusElement {
 	
 	private int wait_time;
-	private AppiumDriver driver;
+	private AndroidDriver driver;
 	private WebElement element;
 	
-	public CusElement(int wait_time, AppiumDriver driver) {
+	public CusElement(int wait_time, AndroidDriver driver) {
 		this.wait_time = wait_time;
 		this.driver = driver;
 	}

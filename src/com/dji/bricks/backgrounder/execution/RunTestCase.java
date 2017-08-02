@@ -14,12 +14,13 @@ import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
+import com.dji.bricks.backgrounder.ExecutionMain;
 import com.dji.bricks.backgrounder.base.CusAction;
 import com.dji.bricks.backgrounder.base.CusElement;
 import com.dji.bricks.backgrounder.base.CusValidation;
 import com.dji.bricks.tools.FileUtils;
 
-import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
 
 public class RunTestCase implements Runnable{
 
@@ -27,13 +28,13 @@ public class RunTestCase implements Runnable{
 	private String ele_customName;
 	private int runMode;
 	private String path;
-	private AppiumDriver driver;
+	private AndroidDriver driver;
 	private CusAction action;
 	private CusValidation validation;
 	private JTextArea logText;
 	private IDevice device;
 	
-	public RunTestCase(String path, int runMode, AppiumDriver driver, JTextArea logText, IDevice device) {
+	public RunTestCase(String path, int runMode, AndroidDriver driver, JTextArea logText, IDevice device) {
 		this.path = path;
 		this.runMode = runMode;
 		this.driver = driver;
@@ -50,35 +51,44 @@ public class RunTestCase implements Runnable{
 		if (this.runMode == 0) {
 			for (int i=0; i<jsonFile.size(); i++) {
 				JSONObject obj = jsonFile.getJSONObject(i);
-				if (obj.getString("property").equals("ele")) {
-					try {
-						ele_sub = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(obj.getString("ele_xpath"));
-						this.ele_customName = obj.getString("custom_name");
-					} catch (NoSuchElementException e) {
-						logText.append("No such element: " + this.ele_customName);
-						break;
+				try {
+					if (obj.getString("property").equals("ele")) {
+							ele_sub = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(obj.getString("ele_xpath"));
+							this.ele_customName = obj.getString("custom_name");
+					} else if (obj.getString("property").equals("act")) {
+						this.actionSwitch(obj);
+					} else if (obj.getString("property").equals("val")) {
+						this.validationSwitch(obj);
 					}
-				} else if (obj.getString("property").equals("act")) {
-					this.actionSwitch(obj);
-				} else if (obj.getString("property").equals("val")) {
-					this.validationSwitch(obj);
+				} catch (Exception e) {
+					if (e instanceof NoSuchElementException)
+						logText.append("No such element: " + this.ele_customName);
+					else
+						logText.append("Cannot get system info now");
+					break;
 				}
 			}
 		}
 	}
 	
-	public void actionSwitch(JSONObject action_info) {
+	public void actionSwitch(JSONObject action_info) throws Exception {
 		int action_name = action_info.getIntValue("action_name");
 		switch (action_name) {
 		case 1:
 			action.click(ele_sub);
 			logText.append(this.ele_customName + " is clicked" + "\n");
+			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
+			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
 			break;
 		case 2:
 			action.longPress(ele_sub);
+			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
+			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
 			break;
 		case 3:
 			action.setText(ele_sub, action_info.getString("inputText"));
+			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
+			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
 			break;
 		case 4:
 			break;
@@ -95,6 +105,8 @@ public class RunTestCase implements Runnable{
 		case 10:
 			action.dragBar(ele_sub);
 			logText.setText(this.ele_customName + " is dragged" + "\n");
+			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 1000));
+			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 1000));
 			break;
 		case 11:
 			break;
@@ -102,7 +114,7 @@ public class RunTestCase implements Runnable{
 		
 	}
 	
-	public void validationSwitch(JSONObject validation_info) {
+	public void validationSwitch(JSONObject validation_info) throws Exception {
 		int validation_name = validation_info.getIntValue("validation_name");
 		JSONObject params = validation_info.getJSONObject("params");
 		
@@ -116,6 +128,8 @@ public class RunTestCase implements Runnable{
 				logText.append("Text validation fail" + "\n");
 			break;
 		case 2:
+			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 1000));
+			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 1000));
 			String ele_name_elval = params.getString("ele_path");
 			if (validation.getExactEle(ele_name_elval))
 				logText.append("Element validation success");
@@ -123,18 +137,5 @@ public class RunTestCase implements Runnable{
 				logText.append("Element validation fail");
 			break;
 		}
-	}
-	
-	private String getMemBatInfo() {
-		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
-		
-		try {
-			device.executeShellCommand("adb shell dumpsys meminfo com.dji.industry.pilot", receiver, 0);
-		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		receiver.flush();
-		return receiver.getOutput();
 	}
 }

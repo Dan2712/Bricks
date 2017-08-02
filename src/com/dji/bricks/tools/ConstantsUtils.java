@@ -10,7 +10,6 @@ import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.node_selection.tree.BasicTreeNode;
 
 /**
- * ���߲���صĳ���
  * 
  * @author DraLastat
  *
@@ -18,9 +17,8 @@ import com.dji.bricks.node_selection.tree.BasicTreeNode;
 public class ConstantsUtils {
 
 	/**
-	 * �����ļ�
+	 * 
 	 */
-	// �����ļ� ·��
 	public final static String PATH_CONFIG = ConstantsUI.CURRENT_DIR + File.separator + "config" + File.separator
 			+ "config.xml";
 	
@@ -48,11 +46,10 @@ public class ConstantsUtils {
 	public static List<BasicTreeNode>  checkList = new ArrayList<BasicTreeNode>();;
 
 	/**
-	 * properties·��
+	 * 
 	 */
 	public final static String PATH_PROPERTY = ConstantsUI.CURRENT_DIR + File.separator + "config" + File.separator
 			+ "zh-cn.properties";
-	// �����ļ�domʵ��
 	public final static ConfigManager CONFIGER = ConfigManager.getConfigManager();
 	// xpath
 	public final static String XPATH_LAST_SYNC_TIME = "//dataSync/status/lastSyncTime";
@@ -83,6 +80,5 @@ public class ConstantsUtils {
 
 	public final static String XPATH_POSITION_CODE = "//dataSync/increase/POSITION_CODE";
 
-	// ��־�ļ� ·��
 	public final static String PATH_LOG = ConstantsUI.CURRENT_DIR + File.separator + "log" + File.separator + "log.log";
 }
