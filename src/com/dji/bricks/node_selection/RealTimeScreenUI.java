@@ -54,6 +54,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
     private Cursor mOrginialCursor;
     private Cursor mCrossCursor;
     private BasicStroke s;
+    private BufferedImage screenImage = null;
     
     private UiAutomatorModel mModel;
     private UiAutomatorResult result;
@@ -65,6 +66,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
     public static Boolean isRuncase = false;
     private Rectangle rect;
 	private volatile boolean isPainting = true;
+	private int paintTime = 0;
     
 	public RealTimeScreenUI(IDevice device, VariableChangeObserve obs, JPanel parentPanel) {
     	this.device = device;
@@ -104,37 +106,86 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 			this.setSize(panel_bounds, panel_bounds);
 		
 			parentPanel.repaint();
-			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
+//			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
+			repaint();
 		}
 	}
 	
 	public synchronized void paint(Graphics g) {
+//		Graphics2D g2 = (Graphics2D) g;
+//		try {
+//			if (mScreenshot == null)
+//				return;
+//			
+//			g2.drawImage(mScreenshot, mDx, mDy, width, height, this);
+//			mScreenshot.flush();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//		if (mModel != null) {
+//			rect = mModel.getCurrentDrawingRect();
+//			if (rect != null) {
+//				g2.setColor(Color.RED);
+//				if (mModel.isExploreMode()) {
+//					s = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{15,10,}, 0.0f);
+//					g2.setColor(Color.RED);
+//					g2.setStroke(s);
+//				} else {
+//					s = new BasicStroke(1.5f);
+//					g2.setColor(Color.RED);
+//					g2.setStroke(s);
+//				}
+//				g2.drawRect(mDx + getScaledSize(rect.x), mDy + getScaledSize(rect.y),
+//	                    getScaledSize(rect.width), getScaledSize(rect.height));
+//			}
+//		}
+		
 		Graphics2D g2 = (Graphics2D) g;
-		try {
-			if (mScreenshot == null)
-				return;
-			
-			g2.drawImage(mScreenshot, mDx, mDy, width, height, this);
-			mScreenshot.flush();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 		if (mModel != null) {
-			rect = mModel.getCurrentDrawingRect();
-			if (rect != null) {
-				g2.setColor(Color.RED);
-				if (mModel.isExploreMode()) {
+			if (mModel.isExploreMode()) {
+				try {
+					if (mScreenshot == null)
+						return;
+					
+					g2.drawImage(mScreenshot, mDx, mDy, width, height, this);
+					mScreenshot.flush();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				rect = mModel.getCurrentDrawingRect();
+				if (rect != null) {
+					g2.setColor(Color.RED);
 					s = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{15,10,}, 0.0f);
 					g2.setColor(Color.RED);
 					g2.setStroke(s);
-				} else {
-					s = new BasicStroke(1.5f);
-					g2.setColor(Color.RED);
-					g2.setStroke(s);
+					g2.drawRect(mDx + getScaledSize(rect.x), mDy + getScaledSize(rect.y),
+		                    getScaledSize(rect.width), getScaledSize(rect.height));
 				}
-				g2.drawRect(mDx + getScaledSize(rect.x), mDy + getScaledSize(rect.y),
-	                    getScaledSize(rect.width), getScaledSize(rect.height));
+				paintTime = 0;
+			} else {
+				if (paintTime == 0) {
+					if (mScreenshot != null) {
+						g2.drawImage(mScreenshot, mDx, mDy, width, height, this);
+						mScreenshot.flush();
+					}
+					
+					rect = mModel.getCurrentDrawingRect();
+					if (rect != null) {
+						s = new BasicStroke(1.5f);
+						g2.setColor(Color.RED);
+						g2.setStroke(s);
+						g2.drawRect(mDx + getScaledSize(rect.x), mDy + getScaledSize(rect.y),
+			                    getScaledSize(rect.width), getScaledSize(rect.height));
+					}
+					paintTime = 1;
+				} else if (paintTime == 1) {
+					if (screenImage != null) {
+						g2.drawImage(screenImage, mDx, mDy, width, height, this);
+						screenImage.flush();
+					}
+				}
 			}
 		}
 	}
@@ -209,24 +260,26 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 		if (mModel != null) {
             mModel.toggleExploreMode();
             System.out.println(mModel.isExploreMode());
-            isSelected = !isSelected;
-            parentPanel.repaint();
-            repaint();
+//            isSelected = !isSelected;
             
+            BufferedImage image = new BufferedImage(panel_bounds, panel_bounds, BufferedImage.TYPE_INT_RGB);
+			RealTimeScreenUI.this.paint(image.getGraphics());
+			screenImage = image.getSubimage(mDx, mDy, width, height);
+//			parentPanel.repaint();
+            repaint();
+			
             cachedThreadPool.submit((new Runnable() {
 				
 				@Override
 				public void run() {
 					try {
-						if (isSelected) {
-							BufferedImage image = new BufferedImage(panel_bounds, panel_bounds, BufferedImage.TYPE_INT_RGB);
-							RealTimeScreenUI.this.paint(image.getGraphics());
+						if (!mModel.isExploreMode()) {
 							screenPath = "screenshot/" + System.currentTimeMillis() + ".jpg";
 							File screenShot = new File(screenPath);
 							if (!screenShot.getParentFile().exists())
 								screenShot.getParentFile().mkdirs();
 							
-							ImageIO.write(image.getSubimage(mDx, mDy, width, height), "jpg", screenShot);
+							ImageIO.write(image, "jpg", screenShot);
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -240,14 +293,18 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
 		setCursor(mCrossCursor);
-		parentPanel.repaint();
+		if (mModel != null && mModel.isExploreMode()) {
+			repaint();
+		}
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		setCursor(mOrginialCursor);
-		parentPanel.repaint();
+		if (mModel != null && mModel.isExploreMode()) {
+			repaint();
+		}
 	}
 
 	@Override
@@ -276,7 +333,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 	            	node_info.put("package", node_sel.getAttribute("package"));
 	            	node_info.put("screenPath", screenPath);
 	            	obs.setInfo(node_info);
-	            	parentPanel.repaint();
+//	            	parentPanel.repaint();
 	            	repaint();
             	}
             }
