@@ -58,7 +58,6 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
     
     private UiAutomatorModel mModel;
     private UiAutomatorResult result;
-    private volatile Boolean isSelected = false;
     private Map<String, String> node_info = new HashMap<String, String>();
     private VariableChangeObserve obs = null;
     private JPanel parentPanel = null;
@@ -67,6 +66,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
     private Rectangle rect;
 	private volatile boolean isPainting = true;
 	private int paintTime = 0;
+	private boolean mExploreMode = true;
     
 	public RealTimeScreenUI(IDevice device, VariableChangeObserve obs, JPanel parentPanel) {
     	this.device = device;
@@ -84,7 +84,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
         
 	@Override
 	public void frameImageChange(BufferedImage image) {
-		if (isPainting) {
+		if (isPainting && paintTime == 0) {
 			this.mScreenshot = image;
 			if (!isRuncase) {
 				cachedThreadPool.submit((new Runnable() {
@@ -94,7 +94,9 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 						try {
 							mModel = null;
 							result = UiAutomatorHelper.takeSnapshot(device, null, true, mScreenshot);
-							mModel = result.model;
+							
+							if (result != null)
+								mModel = result.model;
 						} catch (UiAutomatorException e) {
 							LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
 						}
@@ -106,8 +108,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 			this.setSize(panel_bounds, panel_bounds);
 		
 			parentPanel.repaint();
-//			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
-			repaint();
+			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
 		}
 	}
 	
@@ -142,17 +143,18 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 //		}
 		
 		Graphics2D g2 = (Graphics2D) g;
+		try {
+			if (mScreenshot == null)
+				return;
+			
+			g2.drawImage(mScreenshot, mDx, mDy, width, height, this);
+			mScreenshot.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		if (mModel != null) {
-			if (mModel.isExploreMode()) {
-				try {
-					if (mScreenshot == null)
-						return;
-					
-					g2.drawImage(mScreenshot, mDx, mDy, width, height, this);
-					mScreenshot.flush();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+			if (isExploreMode()) {
 				
 				rect = mModel.getCurrentDrawingRect();
 				if (rect != null) {
@@ -244,6 +246,14 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 		this.isPainting = !isPainting;
 	}
 	
+	public boolean isExploreMode() {
+        return mExploreMode;
+    }
+
+    public void toggleExploreMode() {
+        mExploreMode = !mExploreMode;
+    }
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -258,14 +268,12 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		if (mModel != null) {
-            mModel.toggleExploreMode();
-            System.out.println(mModel.isExploreMode());
-//            isSelected = !isSelected;
+            toggleExploreMode();
             
             BufferedImage image = new BufferedImage(panel_bounds, panel_bounds, BufferedImage.TYPE_INT_RGB);
 			RealTimeScreenUI.this.paint(image.getGraphics());
 			screenImage = image.getSubimage(mDx, mDy, width, height);
-//			parentPanel.repaint();
+			parentPanel.repaint();
             repaint();
 			
             cachedThreadPool.submit((new Runnable() {
@@ -273,7 +281,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 				@Override
 				public void run() {
 					try {
-						if (!mModel.isExploreMode()) {
+						if (!isExploreMode()) {
 							screenPath = "screenshot/" + System.currentTimeMillis() + ".jpg";
 							File screenShot = new File(screenPath);
 							if (!screenShot.getParentFile().exists())
@@ -293,7 +301,8 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
 		setCursor(mCrossCursor);
-		if (mModel != null && mModel.isExploreMode()) {
+		if (mModel != null && paintTime == 0) {
+			System.out.println("enter: " + isExploreMode());
 			repaint();
 		}
 	}
@@ -302,7 +311,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		setCursor(mOrginialCursor);
-		if (mModel != null && mModel.isExploreMode()) {
+		if (mModel != null && isExploreMode()) {
 			repaint();
 		}
 	}
@@ -318,7 +327,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 		if (mModel != null) {
 			int x = getInverseScaledSize(e.getX() - mDx);
             int y = getInverseScaledSize(e.getY() - mDy);
-            if (mModel.isExploreMode()) {
+            if (isExploreMode()) {
             	BasicTreeNode node = mModel.updateSelectionForCoordinates(x, y);
             	if (node != null) {
 	            	mModel.setSelectedNode(node);

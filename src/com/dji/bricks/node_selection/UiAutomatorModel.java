@@ -47,7 +47,7 @@ public class UiAutomatorModel {
     private List<Rectangle> mNafNodes;
 
     // determines whether we lookup the leaf UI node on mouse move of screenshot image
-    private boolean mExploreMode = true;
+//    private boolean mExploreMode = true;
 
     private boolean mShowNafNodes = false;
     private List<UiNode> mNodelist;
@@ -76,7 +76,7 @@ public class UiAutomatorModel {
         }
 
         mRootNode = rootNode;
-        mExploreMode = true;
+//        mExploreMode = true;
         mNodelist = loader.getAllNodes();
     }
 
@@ -136,17 +136,13 @@ public class UiAutomatorModel {
         return node;
     }
 
-    public boolean isExploreMode() {
-        return mExploreMode;
-    }
-
-    public void toggleExploreMode() {
-        mExploreMode = !mExploreMode;
-    }
-
-    public void setExploreMode(boolean exploreMode) {
-        mExploreMode = exploreMode;
-    }
+//    public boolean isExploreMode() {
+//        return mExploreMode;
+//    }
+//
+//    public void toggleExploreMode() {
+//        mExploreMode = !mExploreMode;
+//    }
 
     private static class MinAreaFindNodeListener implements IFindNodeListener {
         BasicTreeNode mNode = null;
