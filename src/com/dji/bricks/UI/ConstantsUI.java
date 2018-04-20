@@ -130,6 +130,8 @@ public class ConstantsUI {
             CURRENT_DIR + File.separator + "icon" + File.separator + "addenable.png");
     public final static ImageIcon ICON_ELE_ADD_DISABLE = new ImageIcon(
             CURRENT_DIR + File.separator + "icon" + File.separator + "addenable.png");
+    public final static ImageIcon ICON_CLOSE_POPWINDOW = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "close.png");
     public final static ImageIcon ICON_ELE_CHK = new ImageIcon(
             CURRENT_DIR + File.separator + "icon" + File.separator + "unknow.png");
     public final static ImageIcon ICON_ELE_CHK_TRUE = new ImageIcon(

@@ -39,7 +39,7 @@ public class PopupUtils extends JDialog implements Runnable {
         }
         try {
         	Thread.sleep(3000);
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
         	// TODO Auto-generated catch block
         	e.printStackTrace();
         }
@@ -61,7 +61,7 @@ public class PopupUtils extends JDialog implements Runnable {
             try {
                 setLocation(windowx -width + i, windowy);
                 Thread.sleep(5);                                  
-            } catch (InterruptedException ex) {  
+            } catch (Exception ex) {  
                 Logger.getLogger(PopupUtils.class.getName()).log(Level.SEVERE, null, ex);  
             }  
         }

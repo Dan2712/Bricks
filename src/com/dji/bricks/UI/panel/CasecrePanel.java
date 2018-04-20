@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -26,14 +27,14 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JTextPane;
 
 import com.alibaba.fastjson.JSON;
 import com.dji.bricks.UI.BrickBean;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
 import com.dji.bricks.tools.PropertyUtil;
-import com.dji.bricks.tools.SQLUtils;
-import com.dji.bricks.UI.panel.PopupWindow;;
+import com.dji.bricks.tools.SQLUtils;;
 
 /**
  *
@@ -73,7 +74,7 @@ public class CasecrePanel extends JPanel{
 	private void initialize() {
 		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		this.setLayout(new BorderLayout());
-//		popuppanel = new PopupWindow();
+		
 	}
 
 	/**
@@ -83,8 +84,6 @@ public class CasecrePanel extends JPanel{
 	private void addComponent() {
 		CaseCre = getWestPanel();
 		this.add(getUpPanel(), BorderLayout.NORTH);
-		//this.add(getLeftPanel(), BorderLayout.WEST);
-		//this.add(getRightPanel(), BorderLayout.EAST);
 		this.add(getWestPanel(), BorderLayout.WEST);
 		this.add(getEastPanel(), BorderLayout.EAST);
 	}
@@ -96,7 +95,6 @@ public class CasecrePanel extends JPanel{
 		JPanel panelUp = new JPanel();
 		panelUp.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelUp.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
-
 		JLabel labelTitle = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.title"));
 		labelTitle.setFont(ConstantsUI.FONT_TITLE);
 		labelTitle.setForeground(ConstantsUI.TOOL_BAR_BACK_COLOR);
@@ -272,8 +270,6 @@ public class CasecrePanel extends JPanel{
 		panelGridVerPick.setBackground(ConstantsUI.VER_COLOR);
 		panelGridVerPick.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
 		
-		
-		
 		JLabel labelVerPick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.verpick"));
         buttonVerAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
                 ConstantsUI.ICON_ELE_ADD_DISABLE, "");
@@ -361,9 +357,13 @@ public class CasecrePanel extends JPanel{
 	 * @return
 	 */
 	private JPanel panelDown ;
-	private JPanel getEastPanel() {
+	private JTextPane btnArea;
+	private JTextPane getEastPanel() {
 		if(panelDown == null){
-			panelDown = new JPanel();
+//			panelDown = new JPanel();
+			btnArea = new JTextPane();
+//			btnArea.setEditable(true);
+
 			/*JLabel labelTitle = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.title"));
 			labelTitle.setFont(ConstantsUI.FONT_TITLE);
 			labelTitle.setForeground(ConstantsUI.TOOL_BAR_BACK_COLOR);
@@ -371,20 +371,24 @@ public class CasecrePanel extends JPanel{
 			panelDown.add(labelTitle);*/
 		}
 
-		
-		Dimension preferredSize = new Dimension(500, ConstantsUI.MAIN_WINDOW_HEIGHT);
-		panelDown.setPreferredSize(preferredSize);
-		panelDown.setBackground(new Color(229, 229, 229));
-		panelDown.setLayout(new FlowLayout(FlowLayout.LEFT));
+		Dimension preferredSize = new Dimension(200, 300);
+		btnArea.setPreferredSize(preferredSize);
+		btnArea.setBackground(Color.orange);
+		btnArea.setLayout(new FlowLayout(FlowLayout.LEFT));
+//		Dimension preferredSize = new Dimension(500, ConstantsUI.MAIN_WINDOW_HEIGHT);
+//		panelDown.setPreferredSize(preferredSize);
+//		panelDown.setBackground(new Color(229, 229, 229));
+//		panelDown.setLayout(new FlowLayout(FlowLayout.LEFT));
 		
 	/*	JButton btn = new JButton();
 		btn.setPreferredSize(new Dimension(50, 20));
 		btn.setBorder(null);
 		btn.setLocation(20, 20);
 		btn.addMouseMotionListener(new BricksDrag());*/
-		
-		panelDown.updateUI();
-		return panelDown;
+//		panelDown.add(btnArea);
+//		btnArea.updateUI();
+//		return panelDown;
+		return btnArea;
 	}
 
 	private JButton butele;
@@ -393,7 +397,7 @@ public class CasecrePanel extends JPanel{
 	private int butclick = 1;
 	//private int id;
     
-    public int getId() {
+    public int getId(JButton jbtn) {
         return id;
     }
     public void setId(int id) {
@@ -410,24 +414,33 @@ public class CasecrePanel extends JPanel{
 			  @Override
 	            public void actionPerformed(ActionEvent e) {
 	                try {
-	                	new PopupWindow(2);
+//	                	new PopupWindow(2);
 	                	id = butclick ++;
-	                	butele = new JButton();
-	                	butele.setBackground(Color.DARK_GRAY);
-	                	butele.setPreferredSize(new Dimension(50, 20));
-	                	butele.setBorder(null);
-	                	butele.setText(cus_name);
 	                	setId(id);
-	                	butele.addMouseListener(new PopClickListener(butele));
-	                	panelDown.add(butele);
-	                	panelDown.updateUI();
+//	                	butele = new JButton();
+	                	JLabel butele2 = new JLabel();
+	                	butele2.setText("Num" + id);
+	                	butele2.setOpaque(true);
+	                	butele2.setPreferredSize(new Dimension(100, 40));
+	                	butele2.setBackground(Color.gray);
+//	                	butele2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+//	                	butele.setBackground(Color.DARK_GRAY);
+//	                	butele.setPreferredSize(new Dimension(50, 20));
+//	                	butele.setBorder(null);
+//	                	butele.setText(cus_name);
 	                	
-	                	BrickBean brick = new BrickBean();
-	                	brick.setEle_xpath(xpath);
-	                	brick.setCustom_name(cus_name);
-	                	brick.setProperty("ele");
-	                	
-	                	caseList.add(brick);
+//	                	butele.addMouseListener(new PopClickListener(butele));
+	                	btnArea.insertComponent(butele2);
+//	                	btnArea.updateUI();
+//	                	panelDown.updateUI();
+//	                	System.out.println(id);
+//	                	
+//	                	BrickBean brick = new BrickBean();
+//	                	brick.setEle_xpath(xpath);
+//	                	brick.setCustom_name(cus_name);
+//	                	brick.setProperty("ele");
+//	                	
+//	                	caseList.add(brick);
 	                } catch (Exception e1) {
 	                	e1.printStackTrace();
 	                }
@@ -459,10 +472,12 @@ public class CasecrePanel extends JPanel{
 	                	butact.addMouseListener(new PopClickListener(butact));
 	                	panelDown.add(butact);
 	                	panelDown.updateUI();
+	                	System.out.println(id);
 	                	
 	                	BrickBean brick = new BrickBean();
 	                	brick.setAction_name(action);
 	                	brick.setProperty("act");
+	                	
 	                	
 	                	caseList.add(brick);
 	                } catch (Exception e1) {
@@ -477,7 +492,9 @@ public class CasecrePanel extends JPanel{
 	            public void actionPerformed(ActionEvent e) {
 
 	                try {
-	                	new PopupWindow(1);
+	                	int count = panelDown.getComponentCount();
+	                	System.out.println(count);
+//	                	new PopupWindow(1);
 //	                	System.out.println("work");
 //	                	id = butclick ++;
 //	                	butver = new JButton();
@@ -548,7 +565,9 @@ public class CasecrePanel extends JPanel{
 		            public void actionPerformed(ActionEvent e) {
 
 		                try {
-		                	panelDown.add(jbtn);
+		                	JButton jbtn0 = new JButton();
+		                	panelDown.add(jbtn0);
+		                	caseList.add(2, new BrickBean());
 		                	panelDown.updateUI();
 		                	System.out.println("add event");
 		                } catch (Exception e1) {
@@ -564,6 +583,8 @@ public class CasecrePanel extends JPanel{
 	            		try {
 	            			panelDown.remove(jbtn);
 	            			panelDown.updateUI();
+	            			caseList.remove(jbtn);
+	            			
 	            			System.out.println("delete event");
 	            		} catch (Exception e1) {
 	            			e1.printStackTrace();
