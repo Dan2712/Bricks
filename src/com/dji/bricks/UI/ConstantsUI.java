@@ -130,6 +130,24 @@ public class ConstantsUI {
             CURRENT_DIR + File.separator + "icon" + File.separator + "addenable.png");
     public final static ImageIcon ICON_ELE_ADD_DISABLE = new ImageIcon(
             CURRENT_DIR + File.separator + "icon" + File.separator + "addenable.png");
+    public final static ImageIcon ICON_SCRSHOT = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "scrshot.png");
+    public final static ImageIcon ICON_SCRSHOT_ENABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "scrshot_enable.png");
+    public final static ImageIcon ICON_SCRSHOT_DISABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "scrshot_enable.png");
+    public final static ImageIcon ICON_DOCREAD = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "docRead.png");
+    public final static ImageIcon ICON_DOCREAD_ENABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "docReadEnable.png");
+    public final static ImageIcon ICON_DOCREAD_DISABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "docReadEnable.png");
+    public final static ImageIcon ICON_JSONLOAD = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "jsonLoad.png");
+    public final static ImageIcon ICON_JSONLOAD_ENABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "jsonLoadEnable.png");
+    public final static ImageIcon ICON_JSONLOAD_DISABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "jsonLoadEnable.png");
     public final static ImageIcon ICON_CLOSE_POPWINDOW = new ImageIcon(
             CURRENT_DIR + File.separator + "icon" + File.separator + "close.png");
     public final static ImageIcon ICON_ELE_CHK = new ImageIcon(
@@ -204,6 +222,18 @@ public class ConstantsUI {
             CURRENT_DIR + File.separator + "icon" + File.separator + "clearLogEnable.png");
     public final static ImageIcon ICON_CLEAR_LOG_DISABLE = new ImageIcon(
             CURRENT_DIR + File.separator + "icon" + File.separator + "clearLogDisable.png");
+    public final static ImageIcon ICON_PLAY_LIST = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "playlist.png");
+    public final static ImageIcon ICON_PLAY_LIST_ENABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "playlistEnable.png");
+    public final static ImageIcon ICON_PLAY_LIST_DISABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "playlistEnable.png");
+    public final static ImageIcon ICON_LIST_SAVE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "listSave.png");
+    public final static ImageIcon ICON_LIST_SAVE_ENABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "listSaveEnable.png");
+    public final static ImageIcon ICON_LIST_SAVE_DISABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "listSaveEnable.png");
 
     /**
      * 
@@ -214,11 +244,11 @@ public class ConstantsUI {
     public final static Dimension LABLE_SIZE_ELE_ITEM = new Dimension(100, 30);
     public final static Dimension LABLE_SIZE_NULL_ITEM = new Dimension(320, 30);
     public final static Dimension LABLE_NULL_ITEM = new Dimension(80, 30);
-    public final static Dimension LABLE_SIZE_CASECRE_NULL_ITEM = new Dimension(500, 30);
+    public final static Dimension LABLE_SIZE_CASECRE_NULL_ITEM = new Dimension(500, 10);
     public final static Dimension LABLE_SIZE_CASECRE_NULL_SEC_ITEM = new Dimension(130, 30);
     public final static Dimension LABLE_SIZE_CASE_NULL_ITEM = new Dimension(350, 30);
     public final static Dimension TEXT_FIELD_SIZE_ITEM = new Dimension(190, 24);
-    public final static Dimension TEXT_COMBOX_SIZE_ITEM = new Dimension(130, 24);
+    public final static Dimension TEXT_COMBOX_SIZE_ITEM = new Dimension(70, 24);
     public final static Dimension RADIO_SIZE = new Dimension(1300, 60);
     public final static Dimension PANEL_ITEM_SIZE = new Dimension(1300, 40);
 

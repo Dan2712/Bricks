@@ -14,7 +14,7 @@ import java.util.Properties;
 public class PropertyUtil {
 
     /**
-     * ��ȡproperty
+     * 
      * @param key
      * @return
      */

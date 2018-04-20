@@ -21,10 +21,6 @@ public class BricksDrag extends MouseAdapter{
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		//������벢���ڱ߿��ڣ�����ʾ������С��̬
-		//������뵫���ڱ߿���
-		//����ԭ�㡣
 		JComponent comp=(JComponent)e.getSource();
 		JComponent panel=(JComponent)comp.getParent();
 		Point p=comp.getLocationOnScreen();

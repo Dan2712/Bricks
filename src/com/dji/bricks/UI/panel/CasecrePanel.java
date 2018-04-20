@@ -1,15 +1,11 @@
 package com.dji.bricks.UI.panel;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -19,25 +15,25 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTextPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 
 import com.alibaba.fastjson.JSON;
 import com.dji.bricks.UI.BrickBean;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
 import com.dji.bricks.tools.PropertyUtil;
-import com.dji.bricks.tools.SQLUtils;;
+import com.dji.bricks.tools.SQLUtils;
+
 
 /**
- *
+ * Case create page 
  * @author DraLastat
  */
 public class CasecrePanel extends JPanel{
@@ -48,6 +44,10 @@ public class CasecrePanel extends JPanel{
 	private static MyIconButton buttonActAdd;
 	private static MyIconButton buttonVerAdd;
 	private static MyIconButton buttonSave;
+	private static MyIconButton buttonScrshot;
+	private static MyIconButton buttonDocRead;
+	private static MyIconButton buttonJsonLoad;
+	private static MyIconButton buttonPlayList;
 	private static JPanel popuppanel;
 	private static PopupWindow popupwindow;
 	private int id;
@@ -56,10 +56,11 @@ public class CasecrePanel extends JPanel{
 	
 	private String xpath = "";
 	private String cus_name = "";
+	private String act_name = "";
 	private String val = "";
 	private int action;
 	/**
-	 * 
+	 * Initialize
 	 */
 	public CasecrePanel(SQLUtils sql) {
 		this.sql = sql;
@@ -68,27 +69,20 @@ public class CasecrePanel extends JPanel{
 		addListener();
 	}
 
-	/**
-	 * 
-	 */
 	private void initialize() {
 		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		this.setLayout(new BorderLayout());
-		
 	}
 
-	/**
-	 * 
-	 */
 	private JPanel CaseCre;
 	private void addComponent() {
-		CaseCre = getWestPanel();
 		this.add(getUpPanel(), BorderLayout.NORTH);
 		this.add(getWestPanel(), BorderLayout.WEST);
-		this.add(getEastPanel(), BorderLayout.EAST);
+//		this.add(getEastPanel(), BorderLayout.EAST);
 	}
+	
 	/**
-	 * 
+	 * Title Panel 
 	 * @return
 	 */
 	private JPanel getUpPanel() {
@@ -99,76 +93,79 @@ public class CasecrePanel extends JPanel{
 		labelTitle.setFont(ConstantsUI.FONT_TITLE);
 		labelTitle.setForeground(ConstantsUI.TOOL_BAR_BACK_COLOR);
 		panelUp.add(labelTitle);
-
 		return panelUp;
 	}
 	
+	/**
+	 * Element Adding Panel
+	 */
 	private JComboBox<String> comboxAppName;
 	private JComboBox<String> comboxViewName;
 	private JComboBox<String> comboxEleName;
 	private JComboBox<String> comboxActName;
 	private JComboBox<String> comboxVerName;
+	private JTable table;
+	private DefaultTableModel model;
 	private String appName = "";
-	
 	private SQLUtils sql = null;
 	private ResultSet xpathSet = null;
 	
 	private ViewListener vlisten = new ViewListener();
 	private EleListener elisten = new EleListener();
-	
-	/**
-	 * 
-	 * @return
-	 */
-	private JPanel getWestPanel() {
+	private JPanel getWestPanel(){
+		JPanel panelWest = new JPanel();
+		panelWest.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		panelWest.setPreferredSize(new Dimension(500, 100));
+		panelWest.setBackground(ConstantsUI.TABLE_LOG_COLOR);
 		
-		JPanel panelCenter = new JPanel();
-		Dimension preferredSize = new Dimension(300, 40);
-		panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
-		panelCenter.setLayout(new GridLayout(3, 1));
-		panelCenter.setPreferredSize(preferredSize);
+		// Database input panel
+		JPanel DataGrid = new JPanel();
+		JLabel DataSrc = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.datasrc"));
+		DataSrc.setFont(ConstantsUI.FONT_NORMAL);
+		DataGrid.setPreferredSize(new Dimension(500, 50));
+		DataGrid.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
+		DataGrid.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		JTextField DataFrom = new JTextField();
+		DataFrom.setPreferredSize(new Dimension(260, 24));
+		buttonDocRead = new MyIconButton(ConstantsUI.ICON_DOCREAD, ConstantsUI.ICON_DOCREAD_ENABLE,
+                ConstantsUI.ICON_DOCREAD_DISABLE, "");
+		buttonJsonLoad = new MyIconButton(ConstantsUI.ICON_JSONLOAD, ConstantsUI.ICON_JSONLOAD_ENABLE,
+                ConstantsUI.ICON_JSONLOAD_DISABLE, "");
+		DataGrid.add(DataSrc);
+		DataGrid.add(DataFrom);
+		DataGrid.add(buttonDocRead);
+		DataGrid.add(buttonJsonLoad);
 		
-		/**
-		 * 
-		 * @return
-		 */
-		JPanel panelGridElePick = new JPanel();
-		panelGridElePick.setBackground(ConstantsUI.ELE_COLOR);
-		panelGridElePick.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
-		
-		
-		JLabel labelElePick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.elepick"));
-        buttonEleAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
+		//Bricks adding panel
+		JPanel ElePanel = new JPanel();
+		ElePanel.setPreferredSize(new Dimension(500, 50));
+		ElePanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
+		ElePanel.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		JLabel ElePick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.elepick"));
+		ElePick.setFont(ConstantsUI.FONT_NORMAL);
+		buttonScrshot = new MyIconButton(ConstantsUI.ICON_SCRSHOT, ConstantsUI.ICON_SCRSHOT_ENABLE,
+                ConstantsUI.ICON_SCRSHOT_DISABLE, "");
+		buttonEleAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
                 ConstantsUI.ICON_ELE_ADD_DISABLE, "");
-		JLabel labelEleNull = new JLabel();
-		JLabel labelEleSave_app = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.app"));
-		JLabel labelEleSave_view = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.view"));
-		JLabel labelEleSave_name = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.name"));
-		
+
 		comboxAppName = new JComboBox<String>();
 		comboxAppName.addItem("DJI GO3");
 		comboxAppName.addItem("DJI GO4");
 		comboxAppName.addItem("DJI Pilot");
 		comboxAppName.setEditable(false);
 		comboxAppName.setSelectedItem(null);
+		comboxAppName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
 		
 		comboxViewName = new JComboBox<String>();
 		comboxViewName.setEditable(false);
+		comboxViewName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
 		
 		comboxEleName = new JComboBox<String>();
 		comboxEleName.setEditable(false);
+		comboxEleName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
+
 		
-		comboxActName = new JComboBox<String>();
-		comboxActName.setEditable(false);
-		comboxActName.setSelectedItem(null);
-		comboxActName.addItem("click");
-		comboxActName.addItem("longPress");
-		comboxActName.addItem("setText");
-		comboxActName.addItem("dragBar");
-		comboxActName.setSelectedItem(null);
-		comboxActName.addItemListener(new ActListener());
-		
-		// App selection change listener
+		// App_Name selection change listener
 		comboxAppName.addItemListener(new ItemListener() {
 			
 			@Override
@@ -203,88 +200,52 @@ public class CasecrePanel extends JPanel{
 			}
 		});
 		
-		// 
-		labelElePick.setFont(ConstantsUI.SEC_TITLE);
-		labelEleSave_app.setFont(ConstantsUI.FONT_NORMAL);
-		labelEleSave_view.setFont(ConstantsUI.FONT_NORMAL);
-		labelEleSave_name.setFont(ConstantsUI.FONT_NORMAL);
-		comboxAppName.setFont(ConstantsUI.FONT_NORMAL);
-		comboxViewName.setFont(ConstantsUI.FONT_NORMAL);
-		comboxEleName.setFont(ConstantsUI.FONT_NORMAL);
-		
+		ElePanel.add(ElePick);
+		ElePanel.add(comboxAppName);
+		ElePanel.add(comboxViewName);
+		ElePanel.add(comboxEleName);
+		ElePanel.add(buttonScrshot);
+		ElePanel.add(buttonEleAdd);
 
-		// 
-		labelElePick.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
-		labelEleNull.setPreferredSize(ConstantsUI.LABLE_SIZE_CASECRE_NULL_ITEM);
-		labelEleSave_app.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
-		labelEleSave_view.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
-		labelEleSave_name.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
-		comboxAppName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
-		comboxViewName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
-		comboxEleName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
 		
-		panelGridElePick.add(labelElePick);
-		panelGridElePick.add(buttonEleAdd);
-		panelGridElePick.add(labelEleNull);
-		panelGridElePick.add(labelEleSave_app);
-		panelGridElePick.add(comboxAppName);
-		panelGridElePick.add(labelEleSave_view);
-		panelGridElePick.add(comboxViewName);
-		panelGridElePick.add(labelEleSave_name);
-		panelGridElePick.add(comboxEleName);
-		
-		/**
-		 * 
-		 * 
-		 * @return
-		 */
-		JPanel panelGridActPick = new JPanel();
-		panelGridActPick.setBackground(ConstantsUI.ACT_COLOR);
-		panelGridActPick.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
-		
-		JLabel labelActPick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.actpick"));
-        buttonActAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
-                ConstantsUI.ICON_ELE_ADD_DISABLE, "");
-		JLabel labelActNull = new JLabel();
-		JLabel labelActName = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.actname"));
-		labelActPick.setFont(ConstantsUI.SEC_TITLE);
-		labelActName.setFont(ConstantsUI.FONT_NORMAL);
-		comboxActName.setFont(ConstantsUI.FONT_NORMAL);
-		labelActPick.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
-		labelActNull.setPreferredSize(ConstantsUI.LABLE_SIZE_CASECRE_NULL_ITEM);
-		labelActName.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
+		JPanel ActPanel = new JPanel();
+		ActPanel.setPreferredSize(new Dimension(500, 50));
+		ActPanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
+		ActPanel.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		JLabel ActPick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.actpick"));
+		ActPick.setFont(ConstantsUI.FONT_NORMAL);
+		comboxActName = new JComboBox<String>();
+		comboxActName.setEditable(false);
+		comboxActName.setSelectedItem(null);
+		comboxActName.addItem("click");
+		comboxActName.addItem("longPress");
+		comboxActName.addItem("setText");
+		comboxActName.addItem("dragBar");
+		comboxActName.setSelectedItem(null);
 		comboxActName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
-		
-		panelGridActPick.add(labelActPick);
-		panelGridActPick.add(buttonActAdd);
-		panelGridActPick.add(labelActNull);
-		panelGridActPick.add(labelActName);
-		panelGridActPick.add(comboxActName);
-
-		/**
-		 *
-		 * 
-		 * @return
-		 */
-		JPanel panelGridVerPick = new JPanel();
-		panelGridVerPick.setBackground(ConstantsUI.VER_COLOR);
-		panelGridVerPick.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
-		
-		JLabel labelVerPick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.verpick"));
-        buttonVerAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
+		comboxActName.addItemListener(new ActListener());
+		JLabel ActNull = new JLabel();
+		ActNull.setPreferredSize(new Dimension(225, 40));
+		buttonActAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
                 ConstantsUI.ICON_ELE_ADD_DISABLE, "");
-		JLabel labelVerNull = new JLabel();
-		JLabel labelVerName = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.vername"));
-        buttonSave = new MyIconButton(ConstantsUI.ICON_SAVE, ConstantsUI.ICON_SAVE_ENABLE,
-                ConstantsUI.ICON_SAVE_DISABLE, "");
-        JLabel labelNull_2 = new JLabel();
+		ActPanel.add(ActPick);
+		ActPanel.add(comboxActName);
+		ActPanel.add(ActNull);
+		ActPanel.add(buttonActAdd);
 		
+		JPanel VerPanel = new JPanel();
+		VerPanel.setPreferredSize(new Dimension(500, 50));
+		VerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
+		VerPanel.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		JLabel VerPick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.verpick"));
+		VerPick.setFont(ConstantsUI.FONT_NORMAL);
 		comboxVerName = new JComboBox<String>();
 		comboxVerName.addItem("Text Validation");
 		comboxVerName.addItem("Image Validation");
 		comboxVerName.addItem("Element Exist Validation");
 		comboxVerName.setEditable(false);
 		comboxVerName.setSelectedItem(null);
+		comboxVerName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
 		comboxVerName.addItemListener(new ItemListener() {
 			
 			@Override
@@ -323,124 +284,79 @@ public class CasecrePanel extends JPanel{
 				}
 			}
 		});
+		JLabel VerNull = new JLabel();
+		VerNull.setPreferredSize(new Dimension(225, 40));
+		buttonVerAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
+                ConstantsUI.ICON_ELE_ADD_DISABLE, "");
+		VerPanel.add(VerPick);
+		VerPanel.add(comboxVerName);
+		VerPanel.add(VerNull);
+		VerPanel.add(buttonVerAdd);
 		
-
-		labelVerPick.setFont(ConstantsUI.SEC_TITLE);
-		labelVerName.setFont(ConstantsUI.FONT_NORMAL);
-		comboxVerName.setFont(ConstantsUI.FONT_NORMAL);
+		// Case create List panel
+		JPanel ListGrid = new JPanel();
+		ListGrid.setPreferredSize(new Dimension(500, 350));
+		ListGrid.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		model = new DefaultTableModel();
+	    table = new JTable(model);
+	    table.setPreferredScrollableViewportSize(new Dimension(500, 280));
+	    // Set row color for different bricks type
+//        table.setDefaultRenderer(Object.class, new TableCellRenderer() {
+//            @Override
+//            public Component getTableCellRendererComponent(JTable table,
+//                    Object value, boolean isSelected, boolean hasFocus,
+//                    int row, int column) {
+//                JPanel pane = new JPanel();
+//                if(brick_type == 1){
+//                	pane.setForeground(Color.BLUE);
+//                }else if(brick_type == 2){
+//                	pane.setForeground(Color.RED);
+//                }else{
+//                	pane.setForeground(Color.DARK_GRAY);
+//                }
+//                return pane;
+//            }
+//        });
+        
+	    model.addColumn("Item1");
+	    model.addColumn("Item2");
+	    model.addColumn("Item3");
+	    model.addColumn("Item4");
+		buttonSave = new MyIconButton(ConstantsUI.ICON_LIST_SAVE, ConstantsUI.ICON_LIST_SAVE_ENABLE,
+                ConstantsUI.ICON_LIST_SAVE_DISABLE, "");
+	    buttonPlayList = new MyIconButton(ConstantsUI.ICON_PLAY_LIST, ConstantsUI.ICON_PLAY_LIST_ENABLE,
+                ConstantsUI.ICON_PLAY_LIST_DISABLE, "");
+		JLabel TableNull = new JLabel();
+		TableNull.setPreferredSize(new Dimension(385, 40));
 		
+		ListGrid.add(new JScrollPane(table));
+		ListGrid.add(TableNull);
+		ListGrid.add(buttonPlayList);
+		ListGrid.add(buttonSave);
 		
-		labelVerPick.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
-		labelVerNull.setPreferredSize(ConstantsUI.LABLE_SIZE_CASECRE_NULL_ITEM);
-		labelVerName.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
-		comboxVerName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
-		labelNull_2.setPreferredSize(ConstantsUI.LABLE_SIZE_CASECRE_NULL_SEC_ITEM);
+		// Adding component to panel
+		panelWest.add(DataGrid);
+		panelWest.add(ElePanel);
+		panelWest.add(ActPanel);
+		panelWest.add(VerPanel);
+		panelWest.add(ListGrid);
+		panelWest.updateUI();
 		
-
-		panelGridVerPick.add(labelVerPick);
-		panelGridVerPick.add(buttonVerAdd);
-		panelGridVerPick.add(labelVerNull);
-		panelGridVerPick.add(labelVerName);
-		panelGridVerPick.add(comboxVerName);
-		panelGridVerPick.add(labelNull_2);
-		panelGridVerPick.add(buttonSave);
-		
-		panelCenter.add(panelGridElePick);
-		panelCenter.add(panelGridActPick);
-		panelCenter.add(panelGridVerPick);
-		
-		return panelCenter;
+		return  panelWest;
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
-	private JPanel panelDown ;
-	private JTextPane btnArea;
-	private JTextPane getEastPanel() {
-		if(panelDown == null){
-//			panelDown = new JPanel();
-			btnArea = new JTextPane();
-//			btnArea.setEditable(true);
-
-			/*JLabel labelTitle = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.title"));
-			labelTitle.setFont(ConstantsUI.FONT_TITLE);
-			labelTitle.setForeground(ConstantsUI.TOOL_BAR_BACK_COLOR);
-			
-			panelDown.add(labelTitle);*/
-		}
-
-		Dimension preferredSize = new Dimension(200, 300);
-		btnArea.setPreferredSize(preferredSize);
-		btnArea.setBackground(Color.orange);
-		btnArea.setLayout(new FlowLayout(FlowLayout.LEFT));
-//		Dimension preferredSize = new Dimension(500, ConstantsUI.MAIN_WINDOW_HEIGHT);
-//		panelDown.setPreferredSize(preferredSize);
-//		panelDown.setBackground(new Color(229, 229, 229));
-//		panelDown.setLayout(new FlowLayout(FlowLayout.LEFT));
-		
-	/*	JButton btn = new JButton();
-		btn.setPreferredSize(new Dimension(50, 20));
-		btn.setBorder(null);
-		btn.setLocation(20, 20);
-		btn.addMouseMotionListener(new BricksDrag());*/
-//		panelDown.add(btnArea);
-//		btnArea.updateUI();
-//		return panelDown;
-		return btnArea;
-	}
-
-	private JButton butele;
-	private JButton butact;
-	private JButton butver;
-	private int butclick = 1;
-	//private int id;
-    
-    public int getId(JButton jbtn) {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-    public int getType() {
-        return type;
-    }
-    public void setType(int id) {
-        this.type = type;
-    }
+	// Adding Bricks button listener
 	public void addListener() {
-		  buttonEleAdd.addActionListener(new ActionListener() {
+		buttonEleAdd.addActionListener(new ActionListener() {
 			  @Override
 	            public void actionPerformed(ActionEvent e) {
 	                try {
-//	                	new PopupWindow(2);
-	                	id = butclick ++;
-	                	setId(id);
-//	                	butele = new JButton();
-	                	JLabel butele2 = new JLabel();
-	                	butele2.setText("Num" + id);
-	                	butele2.setOpaque(true);
-	                	butele2.setPreferredSize(new Dimension(100, 40));
-	                	butele2.setBackground(Color.gray);
-//	                	butele2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-//	                	butele.setBackground(Color.DARK_GRAY);
-//	                	butele.setPreferredSize(new Dimension(50, 20));
-//	                	butele.setBorder(null);
-//	                	butele.setText(cus_name);
-	                	
-//	                	butele.addMouseListener(new PopClickListener(butele));
-	                	btnArea.insertComponent(butele2);
-//	                	btnArea.updateUI();
-//	                	panelDown.updateUI();
-//	                	System.out.println(id);
-//	                	
-//	                	BrickBean brick = new BrickBean();
-//	                	brick.setEle_xpath(xpath);
-//	                	brick.setCustom_name(cus_name);
-//	                	brick.setProperty("ele");
-//	                	
-//	                	caseList.add(brick);
+	            	    model.addRow(new Object[] { cus_name });
+	                	BrickBean brick = new BrickBean();
+	                	brick.setEle_xpath(xpath);
+	                	brick.setCustom_name(cus_name);
+	                	brick.setProperty("ele");
+	                	caseList.add(brick);
 	                } catch (Exception e1) {
 	                	e1.printStackTrace();
 	                }
@@ -448,37 +364,23 @@ public class CasecrePanel extends JPanel{
 	            }
 	        });
 		  	buttonActAdd.addActionListener(new ActionListener() {
-
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
 
 	                try {
-	                	id = butclick ++;
-	                	butact = new JButton();
-	                	butact.setBackground(Color.DARK_GRAY);
-	                	//btn2.setForeground(Color.blue);
-	                	butact.setPreferredSize(new Dimension(50, 20));
-	                	butact.setBorder(null);
 	                	if(action == 1){
-	                		butact.setText("CK");
+	                		act_name = "CK";
 	                	}else if(action == 2){
-	                		butact.setText("LP");
+	                		act_name = "LP";
 	                	}else if(action == 3){
-	                		butact.setText("ST");
+	                		act_name = "ST";
 	                	}else if(action == 10){
-	                		butact.setText("DB");
+	                		act_name = "DB";
 	                	}
-	                	setId(id);
-	                	butact.addMouseListener(new PopClickListener(butact));
-	                	panelDown.add(butact);
-	                	panelDown.updateUI();
-	                	System.out.println(id);
-	                	
-	                	BrickBean brick = new BrickBean();
+	                	model.addRow(new Object[] { act_name });
+	            	    BrickBean brick = new BrickBean();
 	                	brick.setAction_name(action);
 	                	brick.setProperty("act");
-	                	
-	                	
 	                	caseList.add(brick);
 	                } catch (Exception e1) {
 	                	e1.printStackTrace();
@@ -487,32 +389,11 @@ public class CasecrePanel extends JPanel{
 	            }
 	        });
 		  	buttonVerAdd.addActionListener(new ActionListener() {
-
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
 
 	                try {
-	                	int count = panelDown.getComponentCount();
-	                	System.out.println(count);
-//	                	new PopupWindow(1);
-//	                	System.out.println("work");
-//	                	id = butclick ++;
-//	                	butver = new JButton();
-//	                	butver.setBackground(Color.DARK_GRAY);
-//	                	//btn2.setForeground(Color.blue);
-//	                	butver.setPreferredSize(new Dimension(50, 20));
-//	                	butver.setBorder(null);
-//	                	if(val.equals("TV")){
-//	                		butver.setText("TV");
-//	                	}else if(val.equals("IV")){
-//	                		butver.setText("IV");
-//	                	}else if(val.equals("EEV")){
-//	                		butver.setText("EEV");
-//	                	}
-//	                	setId(id);
-//	                	butver.addMouseListener(new PopClickListener(butver));
-//	                	panelDown.add(butver);
-//	                	panelDown.updateUI();
+	                	model.addRow(new Object[] { "v5", "v6" });
 	                } catch (Exception e1) {
 	                	e1.printStackTrace();
 	                }
@@ -520,7 +401,6 @@ public class CasecrePanel extends JPanel{
 	            }
 	        });
 		  	buttonSave.addActionListener(new ActionListener() {
-
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
 
@@ -542,93 +422,27 @@ public class CasecrePanel extends JPanel{
 
 	            }
 	        });
-	  }
-
-	  
-	  class RightMenu extends JPopupMenu {
-		    JMenuItem add_bricks;
-		    JMenuItem delete_bricks;
-		    JMenuItem modify_bricks;
-		    JButton jbtn;
-		    public RightMenu(JButton jbtn){
-		    	this.jbtn = jbtn;
-		    	add_bricks = new JMenuItem("Add");
-		    	delete_bricks = new JMenuItem("Delete");
-		    	modify_bricks = new JMenuItem("Modify");
-		        add(add_bricks);
-		        add(delete_bricks);
-		        add(modify_bricks);
-		        
-			    add_bricks.addActionListener(new ActionListener() {
-
-		            @Override
-		            public void actionPerformed(ActionEvent e) {
-
-		                try {
-		                	JButton jbtn0 = new JButton();
-		                	panelDown.add(jbtn0);
-		                	caseList.add(2, new BrickBean());
-		                	panelDown.updateUI();
-		                	System.out.println("add event");
-		                } catch (Exception e1) {
-		                    	                }
-
-		            }
-		        });
-			    delete_bricks.addActionListener(new ActionListener() {
-
-		            @Override
-		            public void actionPerformed(ActionEvent e) {
-		            
-	            		try {
-	            			panelDown.remove(jbtn);
-	            			panelDown.updateUI();
-	            			caseList.remove(jbtn);
-	            			
-	            			System.out.println("delete event");
-	            		} catch (Exception e1) {
-	            			e1.printStackTrace();
-	            		}
-		            }
-		            
-		        });
-			    modify_bricks.addActionListener(new ActionListener() {
-
-		            @Override
-		            public void actionPerformed(ActionEvent e) {
-
-		                try {
-		                	System.out.println("modify event");
-		                } catch (Exception e1) {
-		                	e1.printStackTrace();
-		                }
-		            }
-		        });
-		    }
-
-		}
-	  
-	  
-	  class PopClickListener extends MouseAdapter {
-		    public void mousePressed(MouseEvent e){
-		        if (e.isPopupTrigger())
-		            doPop(e);
-		    }
-		    private JButton jbtn;
-		    public PopClickListener(JButton jbtn){
-		    	super();
-		    	this.jbtn =jbtn;
-		    }
-		    public void mouseReleased(MouseEvent e){
-		        if (e.isPopupTrigger())
-		            doPop(e);
-		    }
-
-		    private void doPop(MouseEvent e){
-		    	RightMenu menu = new RightMenu(jbtn);
-		        menu.show(e.getComponent(), e.getX(), e.getY());
-		    }
-		}
+	}
+//	 class PopClickListener extends MouseAdapter {
+//		    public void mousePressed(MouseEvent e){
+//		        if (e.isPopupTrigger())
+//		            doPop(e);
+//		    }
+//		    private JButton jbtn;
+//		    public PopClickListener(JButton jbtn){
+//		    	super();
+//		    	this.jbtn =jbtn;
+//		    }
+//		    public void mouseReleased(MouseEvent e){
+//		        if (e.isPopupTrigger())
+//		            doPop(e);
+//		    }
+//
+//		    private void doPop(MouseEvent e){
+//		    	RightMenu menu = new RightMenu(jbtn);
+//		        menu.show(e.getComponent(), e.getX(), e.getY());
+//		    }
+//		}
 	  
 	class ViewListener implements ItemListener {
 
@@ -679,28 +493,28 @@ public class CasecrePanel extends JPanel{
 				while (xpathSet.next()) {
 					xpath = xpathSet.getString("XPATH");
 					cus_name = xpathSet.getString("CUSTOM_NAME");
-//					String state = xpathSet.getString(5);
-//					for (int i = 0; i < state.length(); i++) {
-//						if (state.charAt(i) == '1') {
-//					        switch (i) {
-//					        case 0:
-//					        	comboxActName.addItem("click");
-//					        	break;
-//					        case 1:
-//					        	comboxActName.addItem("scroll");
-//					        	break;
-//					        case 2:
-//					        	comboxActName.addItem("check");
-//					        	break;
-//					        case 3:
-//					        	comboxActName.addItem("focus");
-//					        	break;
-//					        case 4:
-//					        	comboxActName.addItem("long-click");
-//					        	break;
-//					        }
-//						}
-//				    }
+					String state = xpathSet.getString(5);
+					for (int i = 0; i < state.length(); i++) {
+						if (state.charAt(i) == '1') {
+					        switch (i) {
+					        case 0:
+					        	comboxActName.addItem("click");
+					        	break;
+					        case 1:
+					        	comboxActName.addItem("scroll");
+					        	break;
+					        case 2:
+					        	comboxActName.addItem("check");
+					        	break;
+					        case 3:
+					        	comboxActName.addItem("focus");
+					        	break;
+					        case 4:
+					        	comboxActName.addItem("long-click");
+					        	break;
+					        }
+						}
+				    }
 				}
 			} catch (SQLException e1) {
 				e1.printStackTrace();
@@ -734,4 +548,5 @@ public class CasecrePanel extends JPanel{
 			}
 		}
 	}
-}
+	}
+	
