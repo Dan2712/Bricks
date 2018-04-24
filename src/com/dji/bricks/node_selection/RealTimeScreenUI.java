@@ -95,20 +95,27 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 							mModel = null;
 							result = UiAutomatorHelper.takeSnapshot(device, null, true, mScreenshot);
 							
-							if (result != null)
+							if (result != null) {
 								mModel = result.model;
+								updateScreenshotTransformation();
+								setSize(panel_bounds, panel_bounds);
+							
+								parentPanel.repaint();
+								paintImmediately(new Rectangle(mDx, mDy, width, height));
+							}
 						} catch (UiAutomatorException e) {
 							LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
+//							System.out.println("Loading. Current page doesn't contain UI Hierarchy xml.");
 						}
 					}
 				}));
 			}
 			
-			this.updateScreenshotTransformation();
-			this.setSize(panel_bounds, panel_bounds);
-		
-			parentPanel.repaint();
-			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
+//			this.updateScreenshotTransformation();
+//			this.setSize(panel_bounds, panel_bounds);
+//		
+//			parentPanel.repaint();
+//			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
 		}
 	}
 	
@@ -302,7 +309,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 		// TODO Auto-generated method stub
 		setCursor(mCrossCursor);
 		if (mModel != null && paintTime == 0) {
-			System.out.println("enter: " + isExploreMode());
+			parentPanel.repaint();
 			repaint();
 		}
 	}
@@ -312,6 +319,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 		// TODO Auto-generated method stub
 		setCursor(mOrginialCursor);
 		if (mModel != null && isExploreMode()) {
+			parentPanel.repaint();
 			repaint();
 		}
 	}
@@ -342,7 +350,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 	            	node_info.put("package", node_sel.getAttribute("package"));
 	            	node_info.put("screenPath", screenPath);
 	            	obs.setInfo(node_info);
-//	            	parentPanel.repaint();
+	            	parentPanel.repaint();
 	            	repaint();
             	}
             }

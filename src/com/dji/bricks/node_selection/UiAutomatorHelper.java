@@ -134,16 +134,17 @@ public class UiAutomatorHelper {
         xmlDumpFile.deleteOnExit();
         
         try {
-        	if (uiDumpFile == null) {
+        	if (uiDumpFile == null) 
         		uiDumpFile = xmlDumpFile;
-        		Boolean isEqual = FileUtils.contentEquals(xmlDumpFile, uiDumpFile);
-        		System.out.println(isEqual);
+        	else {
+        		Boolean isEqual = FileUtils.contentEquals(uiDumpFile, xmlDumpFile);
         		
         		if (!isEqual)
         			uiDumpFile = xmlDumpFile;
         		else
         			return null;
         	}
+
 		} catch (IOException e) {
 			String msg = "Error while comparing dumping: "
                     + e.getMessage();
