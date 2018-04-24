@@ -49,6 +49,10 @@ public class ConstantsUI {
     /**
     *
     */
+    public final static Color LOG_COLOR = new Color(72, 73, 73);
+    /**
+    *
+    */
     public final static Color ACT_COLOR = new Color(255, 236, 66);
     /**
     *

@@ -1,5 +1,6 @@
 package com.dji.bricks.UI.panel;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -8,9 +9,13 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -21,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
@@ -78,7 +84,7 @@ public class CasecrePanel extends JPanel{
 	private void addComponent() {
 		this.add(getUpPanel(), BorderLayout.NORTH);
 		this.add(getWestPanel(), BorderLayout.WEST);
-//		this.add(getEastPanel(), BorderLayout.EAST);
+		this.add(getEastPanel(), BorderLayout.EAST);
 	}
 	
 	/**
@@ -109,6 +115,7 @@ public class CasecrePanel extends JPanel{
 	private String appName = "";
 	private SQLUtils sql = null;
 	private ResultSet xpathSet = null;
+	private PrintStream standardOut;
 	
 	private ViewListener vlisten = new ViewListener();
 	private EleListener elisten = new EleListener();
@@ -345,6 +352,29 @@ public class CasecrePanel extends JPanel{
 		return  panelWest;
 	}
 	
+	/**
+	 * Log print Panel 
+	 * @return
+	 */
+	private JPanel getEastPanel() {
+		JPanel panelEast = new JPanel();
+		panelEast.setBackground(ConstantsUI.TOOL_BAR_BACK_COLOR);
+		panelEast.setLayout(new BorderLayout());
+		JTextArea LogArea = new JTextArea(5, 38);
+		LogArea.setBackground(ConstantsUI.LOG_COLOR);
+		LogArea.setForeground(ConstantsUI.MAIN_BACK_COLOR);
+		LogArea.setEditable(false);
+		PrintStream printStream = new PrintStream(new CustomOutputStream(LogArea));
+		standardOut = System.out;
+        
+        // re-assigns standard output stream and error output stream
+        System.setOut(printStream);
+        System.setErr(printStream);
+        
+		panelEast.add(new JScrollPane(LogArea));
+		return panelEast;
+	}
+	
 	// Adding Bricks button listener
 	public void addListener() {
 		buttonEleAdd.addActionListener(new ActionListener() {
@@ -400,6 +430,17 @@ public class CasecrePanel extends JPanel{
 
 	            }
 	        });
+		  	buttonPlayList.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+
+	                try {
+	                	printLog();
+	                }catch (Exception e1) {
+	                	e1.printStackTrace();
+	                	}
+	            	}
+	            });
 		  	buttonSave.addActionListener(new ActionListener() {
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
@@ -423,6 +464,24 @@ public class CasecrePanel extends JPanel{
 	            }
 	        });
 	}
+	// Log print thread
+	// TODO adding real time log in here
+    private void printLog() {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    System.out.println("Time now is " + (new Date()));
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+        thread.start();
+    }
 //	 class PopClickListener extends MouseAdapter {
 //		    public void mousePressed(MouseEvent e){
 //		        if (e.isPopupTrigger())
@@ -443,7 +502,23 @@ public class CasecrePanel extends JPanel{
 //		        menu.show(e.getComponent(), e.getX(), e.getY());
 //		    }
 //		}
-	  
+    // JTextArea output method
+    class CustomOutputStream extends OutputStream {
+        private JTextArea textArea;
+         
+        public CustomOutputStream(JTextArea textArea) {
+            this.textArea = textArea;
+        }
+         
+        @Override
+        public void write(int b) throws IOException {
+            // redirects data to the text area
+            textArea.append(String.valueOf((char)b));
+            // scrolls the text area to the end of data
+            textArea.setCaretPosition(textArea.getDocument().getLength());
+        }
+    }  
+    
 	class ViewListener implements ItemListener {
 
 		@Override
