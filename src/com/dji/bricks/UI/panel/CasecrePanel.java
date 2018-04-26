@@ -3,6 +3,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -49,13 +51,18 @@ public class CasecrePanel extends JPanel{
 	private static MyIconButton buttonEleAdd;
 	private static MyIconButton buttonActAdd;
 	private static MyIconButton buttonVerAdd;
+	private static MyIconButton buttonRowDelete;
+	private static MyIconButton buttonEleRefresh;
+	private static MyIconButton buttonActRefresh;
+	private static MyIconButton buttonVerRefresh;
 	private static MyIconButton buttonSave;
 	private static MyIconButton buttonScrshot;
 	private static MyIconButton buttonDocRead;
 	private static MyIconButton buttonJsonLoad;
 	private static MyIconButton buttonPlayList;
+	private static MyIconButton buttonRTChart;
 	private static JPanel popuppanel;
-	private static PopupWindow popupwindow;
+//	private static PopupWindow popupwindow;
 	private int id;
 	private int type;
 	private LinkedList<BrickBean> caseList = new LinkedList<>();
@@ -83,8 +90,8 @@ public class CasecrePanel extends JPanel{
 	private JPanel CaseCre;
 	private void addComponent() {
 		this.add(getUpPanel(), BorderLayout.NORTH);
-		this.add(getWestPanel(), BorderLayout.WEST);
-		this.add(getEastPanel(), BorderLayout.EAST);
+		this.add(getCenterPanel(), BorderLayout.CENTER);
+		this.add(getDownPanel(), BorderLayout.SOUTH);
 	}
 	
 	/**
@@ -110,30 +117,68 @@ public class CasecrePanel extends JPanel{
 	private JComboBox<String> comboxEleName;
 	private JComboBox<String> comboxActName;
 	private JComboBox<String> comboxVerName;
-	private JTable table;
+	private JTable casetable;
 	private DefaultTableModel model;
 	private String appName = "";
 	private SQLUtils sql = null;
 	private ResultSet xpathSet = null;
 	private PrintStream standardOut;
+	private Object[] table_row = new Object[5];
 	
 	private ViewListener vlisten = new ViewListener();
 	private EleListener elisten = new EleListener();
-	private JPanel getWestPanel(){
-		JPanel panelWest = new JPanel();
-		panelWest.setBackground(ConstantsUI.TABLE_LOG_COLOR);
-		panelWest.setPreferredSize(new Dimension(500, 100));
-		panelWest.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+	private JPanel getCenterPanel(){
+		JPanel panelCenter = new JPanel();
+		panelCenter.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		JPanel TablePanel = new JPanel();
+		TablePanel.setPreferredSize(new Dimension(810, 250));
+        casetable = new JTable(); 
+        // create a table model and set a Column Identifiers to this model 
+        Object[] columns = {"Id","Type","SPEC 1","SPEC 2","SPEC 3"};
+        model = new DefaultTableModel();
+        model.setColumnIdentifiers(columns);
+        
+        // set the model to the table
+        casetable.setModel(model);
+        
+        // Change A JTable Background Color, Font Size, Font Color, Row Height
+        casetable.setBackground(Color.LIGHT_GRAY);
+        casetable.setForeground(Color.black);
+        Font font = new Font("",1,10);
+        casetable.setFont(font);
+        casetable.setRowHeight(30);
+        casetable.setPreferredScrollableViewportSize(new Dimension(800, 200));
+        // create an array of objects to set the row data
+        TablePanel.add(new JScrollPane(casetable));
+        
+		// Adding component to panel
+        panelCenter.add(TablePanel);
+        panelCenter.updateUI();
 		
+		return  panelCenter;
+	}
+	
+	/**
+	 * Log print Panel 
+	 * @return
+	 */
+	private JPanel getDownPanel() {
+		JPanel panelDown = new JPanel();
+		panelDown.setBackground(ConstantsUI.TOOL_BAR_BACK_COLOR);
+		panelDown.setPreferredSize(new Dimension(810, 320));
+		panelDown.setLayout(new GridLayout(1,2));
+		JPanel LeftPanel = new JPanel();
+		JPanel RightPanel = new JPanel();
+
 		// Database input panel
 		JPanel DataGrid = new JPanel();
 		JLabel DataSrc = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.datasrc"));
 		DataSrc.setFont(ConstantsUI.FONT_NORMAL);
-		DataGrid.setPreferredSize(new Dimension(500, 50));
+		DataGrid.setPreferredSize(new Dimension(420, 40));
 		DataGrid.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
 		DataGrid.setBackground(ConstantsUI.TABLE_LOG_COLOR);
 		JTextField DataFrom = new JTextField();
-		DataFrom.setPreferredSize(new Dimension(260, 24));
+		DataFrom.setPreferredSize(new Dimension(150, 24));
 		buttonDocRead = new MyIconButton(ConstantsUI.ICON_DOCREAD, ConstantsUI.ICON_DOCREAD_ENABLE,
                 ConstantsUI.ICON_DOCREAD_DISABLE, "");
 		buttonJsonLoad = new MyIconButton(ConstantsUI.ICON_JSONLOAD, ConstantsUI.ICON_JSONLOAD_ENABLE,
@@ -144,16 +189,30 @@ public class CasecrePanel extends JPanel{
 		DataGrid.add(buttonJsonLoad);
 		
 		//Bricks adding panel
-		JPanel ElePanel = new JPanel();
-		ElePanel.setPreferredSize(new Dimension(500, 50));
-		ElePanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
-		ElePanel.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		JPanel ElePanel_APP = new JPanel();
+		ElePanel_APP.setPreferredSize(new Dimension(420, 40));
+		ElePanel_APP.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
+		ElePanel_APP.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		JPanel ElePanel_View = new JPanel();
+		ElePanel_View.setPreferredSize(new Dimension(420, 40));
+		ElePanel_View.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
+		ElePanel_View.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		JPanel ElePanel_Name = new JPanel();
+		ElePanel_Name.setPreferredSize(new Dimension(420, 40));
+		ElePanel_Name.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
+		ElePanel_Name.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		JLabel Ele_Null = new JLabel();
+		Ele_Null.setPreferredSize(new Dimension(50,35));
+		JLabel Ele_Null2 = new JLabel();
+		Ele_Null2.setPreferredSize(new Dimension(50,35));
 		JLabel ElePick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.elepick"));
 		ElePick.setFont(ConstantsUI.FONT_NORMAL);
 		buttonScrshot = new MyIconButton(ConstantsUI.ICON_SCRSHOT, ConstantsUI.ICON_SCRSHOT_ENABLE,
                 ConstantsUI.ICON_SCRSHOT_DISABLE, "");
 		buttonEleAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
                 ConstantsUI.ICON_ELE_ADD_DISABLE, "");
+		buttonEleRefresh = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
+                ConstantsUI.ICON_ROW_REFRESH_DISABLE, "");
 
 		comboxAppName = new JComboBox<String>();
 		comboxAppName.addItem("DJI GO3");
@@ -207,16 +266,19 @@ public class CasecrePanel extends JPanel{
 			}
 		});
 		
-		ElePanel.add(ElePick);
-		ElePanel.add(comboxAppName);
-		ElePanel.add(comboxViewName);
-		ElePanel.add(comboxEleName);
-		ElePanel.add(buttonScrshot);
-		ElePanel.add(buttonEleAdd);
+		ElePanel_APP.add(ElePick);
+		ElePanel_APP.add(comboxAppName);
+		ElePanel_View.add(Ele_Null);
+		ElePanel_View.add(comboxViewName);
+		ElePanel_Name.add(Ele_Null2);
+		ElePanel_Name.add(comboxEleName);
+		ElePanel_Name.add(buttonScrshot);
+		ElePanel_Name.add(buttonEleAdd);
+		ElePanel_Name.add(buttonEleRefresh);
 
 		
 		JPanel ActPanel = new JPanel();
-		ActPanel.setPreferredSize(new Dimension(500, 50));
+		ActPanel.setPreferredSize(new Dimension(420, 40));
 		ActPanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
 		ActPanel.setBackground(ConstantsUI.TABLE_LOG_COLOR);
 		JLabel ActPick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.actpick"));
@@ -232,16 +294,19 @@ public class CasecrePanel extends JPanel{
 		comboxActName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
 		comboxActName.addItemListener(new ActListener());
 		JLabel ActNull = new JLabel();
-		ActNull.setPreferredSize(new Dimension(225, 40));
+		ActNull.setPreferredSize(new Dimension(40, 40));
 		buttonActAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
                 ConstantsUI.ICON_ELE_ADD_DISABLE, "");
+		buttonActRefresh = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
+                ConstantsUI.ICON_ROW_REFRESH_DISABLE, "");
 		ActPanel.add(ActPick);
 		ActPanel.add(comboxActName);
 		ActPanel.add(ActNull);
 		ActPanel.add(buttonActAdd);
+		ActPanel.add(buttonActRefresh);
 		
 		JPanel VerPanel = new JPanel();
-		VerPanel.setPreferredSize(new Dimension(500, 50));
+		VerPanel.setPreferredSize(new Dimension(420, 40));
 		VerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
 		VerPanel.setBackground(ConstantsUI.TABLE_LOG_COLOR);
 		JLabel VerPick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.verpick"));
@@ -292,96 +357,76 @@ public class CasecrePanel extends JPanel{
 			}
 		});
 		JLabel VerNull = new JLabel();
-		VerNull.setPreferredSize(new Dimension(225, 40));
+		VerNull.setPreferredSize(new Dimension(40, 40));
 		buttonVerAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
                 ConstantsUI.ICON_ELE_ADD_DISABLE, "");
+		buttonVerRefresh = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
+                ConstantsUI.ICON_ROW_REFRESH_DISABLE, "");
 		VerPanel.add(VerPick);
 		VerPanel.add(comboxVerName);
 		VerPanel.add(VerNull);
 		VerPanel.add(buttonVerAdd);
+		VerPanel.add(buttonVerRefresh);
 		
-		// Case create List panel
-		JPanel ListGrid = new JPanel();
-		ListGrid.setPreferredSize(new Dimension(500, 350));
-		ListGrid.setBackground(ConstantsUI.TABLE_LOG_COLOR);
-		model = new DefaultTableModel();
-	    table = new JTable(model);
-	    table.setPreferredScrollableViewportSize(new Dimension(500, 280));
-	    // Set row color for different bricks type
-//        table.setDefaultRenderer(Object.class, new TableCellRenderer() {
-//            @Override
-//            public Component getTableCellRendererComponent(JTable table,
-//                    Object value, boolean isSelected, boolean hasFocus,
-//                    int row, int column) {
-//                JPanel pane = new JPanel();
-//                if(brick_type == 1){
-//                	pane.setForeground(Color.BLUE);
-//                }else if(brick_type == 2){
-//                	pane.setForeground(Color.RED);
-//                }else{
-//                	pane.setForeground(Color.DARK_GRAY);
-//                }
-//                return pane;
-//            }
-//        });
-        
-	    model.addColumn("Item1");
-	    model.addColumn("Item2");
-	    model.addColumn("Item3");
-	    model.addColumn("Item4");
+		JPanel RunPanel = new JPanel();
+		RunPanel.setPreferredSize(new Dimension(420, 40));
+		RunPanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
+		RunPanel.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		buttonRowDelete = new MyIconButton(ConstantsUI.ICON_ROW_DELETE, ConstantsUI.ICON_ROW_DELETE_ENABLE,
+                ConstantsUI.ICON_ROW_DELETE_DISABLE, "");
 		buttonSave = new MyIconButton(ConstantsUI.ICON_LIST_SAVE, ConstantsUI.ICON_LIST_SAVE_ENABLE,
-                ConstantsUI.ICON_LIST_SAVE_DISABLE, "");
-	    buttonPlayList = new MyIconButton(ConstantsUI.ICON_PLAY_LIST, ConstantsUI.ICON_PLAY_LIST_ENABLE,
-                ConstantsUI.ICON_PLAY_LIST_DISABLE, "");
+				ConstantsUI.ICON_LIST_SAVE_DISABLE, "");
+		buttonPlayList = new MyIconButton(ConstantsUI.ICON_PLAY_LIST, ConstantsUI.ICON_PLAY_LIST_ENABLE,
+				ConstantsUI.ICON_PLAY_LIST_DISABLE, "");
+		buttonRTChart = new MyIconButton(ConstantsUI.ICON_RTCHART, ConstantsUI.ICON_RTCHART_ENABLE,
+				ConstantsUI.ICON_RTCHART_DISABLE, "");
 		JLabel TableNull = new JLabel();
-		TableNull.setPreferredSize(new Dimension(385, 40));
+		TableNull.setPreferredSize(new Dimension(355, 40));
+		RunPanel.add(buttonRowDelete);
+		RunPanel.add(buttonSave);
+		RunPanel.add(buttonPlayList);
+		RunPanel.add(buttonRTChart);
 		
-		ListGrid.add(new JScrollPane(table));
-		ListGrid.add(TableNull);
-		ListGrid.add(buttonPlayList);
-		ListGrid.add(buttonSave);
-		
-		// Adding component to panel
-		panelWest.add(DataGrid);
-		panelWest.add(ElePanel);
-		panelWest.add(ActPanel);
-		panelWest.add(VerPanel);
-		panelWest.add(ListGrid);
-		panelWest.updateUI();
-		
-		return  panelWest;
-	}
-	
-	/**
-	 * Log print Panel 
-	 * @return
-	 */
-	private JPanel getEastPanel() {
-		JPanel panelEast = new JPanel();
-		panelEast.setBackground(ConstantsUI.TOOL_BAR_BACK_COLOR);
-		panelEast.setLayout(new BorderLayout());
-		JTextArea LogArea = new JTextArea(5, 38);
+		JPanel panelLog = new JPanel();
+		panelLog.setBackground(ConstantsUI.TOOL_BAR_BACK_COLOR);
+		panelLog.setLayout(new BorderLayout());
+		JTextArea LogArea = new JTextArea(17, 50);
 		LogArea.setBackground(ConstantsUI.LOG_COLOR);
 		LogArea.setForeground(ConstantsUI.MAIN_BACK_COLOR);
 		LogArea.setEditable(false);
 		PrintStream printStream = new PrintStream(new CustomOutputStream(LogArea));
 		standardOut = System.out;
-        
         // re-assigns standard output stream and error output stream
         System.setOut(printStream);
         System.setErr(printStream);
         
-		panelEast.add(new JScrollPane(LogArea));
-		return panelEast;
+        panelLog.add(new JScrollPane(LogArea));
+		
+        LeftPanel.add(DataGrid);
+        LeftPanel.add(ElePanel_APP);
+        LeftPanel.add(ElePanel_View);
+        LeftPanel.add(ElePanel_Name);
+        LeftPanel.add(ActPanel);
+        LeftPanel.add(VerPanel);
+        LeftPanel.add(RunPanel);
+        RightPanel.add(panelLog);
+        panelDown.add(LeftPanel);
+        panelDown.add(RightPanel);
+		
+		return panelDown;
 	}
 	
-	// Adding Bricks button listener
+	// Add Bricks button listener
 	public void addListener() {
 		buttonEleAdd.addActionListener(new ActionListener() {
 			  @Override
 	            public void actionPerformed(ActionEvent e) {
 	                try {
-	            	    model.addRow(new Object[] { cus_name });
+	                	table_row[1] = cus_name;
+	                	table_row[2] = cus_name;
+	                	table_row[3] = cus_name;
+	                	table_row[4] = cus_name;
+	            	    model.addRow(table_row);
 	                	BrickBean brick = new BrickBean();
 	                	brick.setEle_xpath(xpath);
 	                	brick.setCustom_name(cus_name);
@@ -407,7 +452,11 @@ public class CasecrePanel extends JPanel{
 	                	}else if(action == 10){
 	                		act_name = "DB";
 	                	}
-	                	model.addRow(new Object[] { act_name });
+	                	table_row[1] = act_name;
+	                	table_row[2] = "N/A";
+	                	table_row[3] = "N/A";
+	                	table_row[4] = "N/A";
+	                	model.addRow(table_row);
 	            	    BrickBean brick = new BrickBean();
 	                	brick.setAction_name(action);
 	                	brick.setProperty("act");
@@ -423,13 +472,99 @@ public class CasecrePanel extends JPanel{
 	            public void actionPerformed(ActionEvent e) {
 
 	                try {
-	                	model.addRow(new Object[] { "v5", "v6" });
+	                	table_row[1] = "Ver";
+	                	table_row[2] = "N/A";
+	                	table_row[3] = "N/A";
+	                	table_row[4] = "N/A";
+	                	model.addRow(table_row);
 	                } catch (Exception e1) {
 	                	e1.printStackTrace();
 	                }
 
 	            }
 	        });
+		  	buttonRowDelete.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+
+	                try {
+	                    // i = the index of the selected row
+	                    int i = casetable.getSelectedRow();
+	                    if(i >= 0){
+	                        model.removeRow(i);
+	                    }
+	                    else{
+	                        System.out.println("Delete Error");
+	                    }
+	                } catch (Exception e1) {
+	                	e1.printStackTrace();
+	                }
+
+	            }
+	        });
+		  	buttonEleRefresh.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	            	try{
+	                // i = the index of the selected row
+	                int i = casetable.getSelectedRow();
+	                
+	                if(i >= 0) 
+	                {
+	                   model.setValueAt(cus_name, i, 1);
+	                   model.setValueAt(cus_name, i, 2);
+	                   model.setValueAt(cus_name, i, 3);
+	                   model.setValueAt(cus_name, i, 4);
+	                }
+	                else{
+	                    System.out.println("Update Ele Error");
+	                	}
+	                } catch (Exception e1) {
+	                	e1.printStackTrace();
+	                }
+
+	            }
+	        });
+		  	buttonActRefresh.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	            	try{
+	                // i = the index of the selected row
+	                int i = casetable.getSelectedRow();
+	                
+	                if(i >= 0) 
+	                {
+	                   model.setValueAt(act_name, i, 1);
+	                }
+	                else{
+	                    System.out.println("Update Act Error");
+	                	}
+	                } catch (Exception e1) {
+	                	e1.printStackTrace();
+	                }
+
+	            }
+	        });
+//		  	buttonVerRefresh.addActionListener(new ActionListener() {
+//	            @Override
+//	            public void actionPerformed(ActionEvent e) {
+//	            	try{
+//	                // i = the index of the selected row
+//	                int i = casetable.getSelectedRow();
+//	                
+//	                if(i >= 0) 
+//	                {
+//	                   model.setValueAt(act_name, i, 1);
+//	                }
+//	                else{
+//	                    System.out.println("Update Act Error");
+//	                	}
+//	                } catch (Exception e1) {
+//	                	e1.printStackTrace();
+//	                }
+//
+//	            }
+//	        });
 		  	buttonPlayList.addActionListener(new ActionListener() {
 	            @Override
 	            public void actionPerformed(ActionEvent e) {

@@ -238,6 +238,24 @@ public class ConstantsUI {
             CURRENT_DIR + File.separator + "icon" + File.separator + "listSaveEnable.png");
     public final static ImageIcon ICON_LIST_SAVE_DISABLE = new ImageIcon(
             CURRENT_DIR + File.separator + "icon" + File.separator + "listSaveEnable.png");
+    public final static ImageIcon ICON_RTCHART = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "dynamic.png");
+    public final static ImageIcon ICON_RTCHART_ENABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "dynamicEnable.png");
+    public final static ImageIcon ICON_RTCHART_DISABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "dynamicEnable.png");
+    public final static ImageIcon ICON_ROW_DELETE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "deleterow.png");
+    public final static ImageIcon ICON_ROW_DELETE_ENABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "deletetrowEnable.png");
+    public final static ImageIcon ICON_ROW_DELETE_DISABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "deletetrowEnable.png");
+    public final static ImageIcon ICON_ROW_REFRESH = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "refresh.png");
+    public final static ImageIcon ICON_ROW_REFRESH_ENABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "refreshEnable.png");
+    public final static ImageIcon ICON_ROW_REFRESH_DISABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "refreshEnable.png");
 
     /**
      * 
@@ -252,7 +270,7 @@ public class ConstantsUI {
     public final static Dimension LABLE_SIZE_CASECRE_NULL_SEC_ITEM = new Dimension(130, 30);
     public final static Dimension LABLE_SIZE_CASE_NULL_ITEM = new Dimension(350, 30);
     public final static Dimension TEXT_FIELD_SIZE_ITEM = new Dimension(190, 24);
-    public final static Dimension TEXT_COMBOX_SIZE_ITEM = new Dimension(70, 24);
+    public final static Dimension TEXT_COMBOX_SIZE_ITEM = new Dimension(120, 24);
     public final static Dimension RADIO_SIZE = new Dimension(1300, 60);
     public final static Dimension PANEL_ITEM_SIZE = new Dimension(1300, 40);
 
