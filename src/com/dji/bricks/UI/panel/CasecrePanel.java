@@ -1,7 +1,6 @@
 package com.dji.bricks.UI.panel;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -23,22 +22,16 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
-import javax.swing.JDesktopPane;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.table.DefaultTableModel;
 
 import com.alibaba.fastjson.JSON;
@@ -69,8 +62,8 @@ public class CasecrePanel extends JPanel{
 	private static MyIconButton buttonJsonLoad;
 	private static MyIconButton buttonPlayList;
 	private static MyIconButton buttonRTChart;
-	private static MyIconButton buttonVersetText_add;
-	private static MyIconButton buttonVersetText_re;
+	private static MyIconButton buttonVersetTX_add;
+	private static MyIconButton buttonVersetTX_re;
 	private static MyIconButton buttonVersetEE_add;
 	private static MyIconButton buttonVersetEE_re;
 	private static JPanel popuppanel;
@@ -753,6 +746,59 @@ public class CasecrePanel extends JPanel{
 	    		ver_setting_frame.setSize(400, 300);
 	    		ver_setting_frame.setTitle("Text Verification");
 	    		ver_setting_frame.setVisible(true);
+	    		ver_setting_frame.setLayout(new BorderLayout());
+	    		JPanel text_pane = new JPanel();
+	    		text_pane.setPreferredSize(new Dimension(390, 260));
+	    		JPanel text_btn_pane = new JPanel();
+	    		JTextArea ver_text_input = new JTextArea(11,45);
+	    		ver_text_input.setLineWrap(true);
+	    		buttonVersetTX_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
+	                    ConstantsUI.ICON_ELE_ADD_DISABLE, "");
+	    		buttonVersetTX_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
+	                    ConstantsUI.ICON_ROW_REFRESH_DISABLE, "");
+	    		text_pane.add(new JScrollPane(ver_text_input));
+	    		text_btn_pane.add(buttonVersetTX_add);
+	    		text_btn_pane.add(buttonVersetTX_re);
+	    		ver_setting_frame.add(text_pane, BorderLayout.NORTH);
+	    		ver_setting_frame.add(text_btn_pane, BorderLayout.SOUTH);
+	    		
+	    		// button method
+	    		buttonVersetTX_add.addActionListener(new ActionListener() {
+		            @Override
+		            public void actionPerformed(ActionEvent e) {
+
+		                try {
+		                	table_row[1] = "Ver_text";
+		                	table_row[2] = "Text";
+		                	table_row[3] = "N/A";
+		                	table_row[4] = "N/A";
+		                	model.addRow(table_row);
+		                } catch (Exception e1) {
+		                	e1.printStackTrace();
+		                }
+
+		            }
+		        });
+	    		buttonVersetTX_re.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	            	try{
+	                // i = the index of the selected row
+	                int i = casetable.getSelectedRow();
+	                
+	                if(i >= 0) 
+	                {
+	                   model.setValueAt("ver_re", i, 1);
+	                }
+	                else{
+	                    System.out.println("Update Act Error");
+	                	}
+	                } catch (Exception e1) {
+	                	e1.printStackTrace();
+	                }
+
+	            }
+	        });
 	    	}else if (ver_type == 3){
 	    		ver_setting_frame.setSize(300, 200);
 	    		ver_setting_frame.setTitle("Element Picking");
@@ -876,10 +922,5 @@ public class CasecrePanel extends JPanel{
 	    	}
 
 	    }
-
-//	    public static void main(String[] args) {
-//	        new VerifiWindow();
-//	    }
-//	}
 	}
 }
