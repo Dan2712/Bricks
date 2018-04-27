@@ -148,31 +148,27 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private ViewListener vlisten = new ViewListener();
 	private EleListener elisten = new EleListener();
 	
+	/**
+	 * case list set to Jtable
+	 * @return
+	 */
 	private JPanel getCenterPanel(){
 		JPanel panelCenter = new JPanel();
 		panelCenter.setBackground(ConstantsUI.TABLE_LINE_COLOR);
 		JPanel TablePanel = new JPanel();
 		TablePanel.setPreferredSize(new Dimension(810, 250));
         casetable = new JTable(); 
-        // create a table model and set a Column Identifiers to this model 
         Object[] columns = {"Id","Type","SPEC 1","SPEC 2","SPEC 3"};
         model = new DefaultTableModel();
         model.setColumnIdentifiers(columns);
-        
-        // set the model to the table
         casetable.setModel(model);
-        
-        // Change A JTable Background Color, Font Size, Font Color, Row Height
         casetable.setBackground(Color.LIGHT_GRAY);
         casetable.setForeground(Color.black);
         Font font = new Font("",1,10);
         casetable.setFont(font);
         casetable.setRowHeight(30);
         casetable.setPreferredScrollableViewportSize(new Dimension(800, 200));
-        // create an array of objects to set the row data
         TablePanel.add(new JScrollPane(casetable));
-        
-		// Adding component to panel
         panelCenter.add(TablePanel);
         panelCenter.updateUI();
 		
@@ -201,9 +197,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		JTextField DataFrom = new JTextField();
 		DataFrom.setPreferredSize(new Dimension(180, 24));
 		buttonDocRead = new MyIconButton(ConstantsUI.ICON_DOCREAD, ConstantsUI.ICON_DOCREAD_ENABLE,
-                ConstantsUI.ICON_DOCREAD_DISABLE, "");
+                ConstantsUI.ICON_DOCREAD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.docread"));
 		buttonJsonLoad = new MyIconButton(ConstantsUI.ICON_JSONLOAD, ConstantsUI.ICON_JSONLOAD_ENABLE,
-                ConstantsUI.ICON_JSONLOAD_DISABLE, "");
+                ConstantsUI.ICON_JSONLOAD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.jsonload"));
 		DataGrid.add(DataSrc);
 		DataGrid.add(DataFrom);
 		DataGrid.add(buttonDocRead);
@@ -229,11 +225,11 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		JLabel ElePick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.elepick"));
 		ElePick.setFont(ConstantsUI.FONT_NORMAL);
 		buttonScrshot = new MyIconButton(ConstantsUI.ICON_SCRSHOT, ConstantsUI.ICON_SCRSHOT_ENABLE,
-                ConstantsUI.ICON_SCRSHOT_DISABLE, "");
+                ConstantsUI.ICON_SCRSHOT_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.screenshot"));
 		buttonEleAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
-                ConstantsUI.ICON_ELE_ADD_DISABLE, "");
+                ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addele"));
 		buttonEleRefresh = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
-                ConstantsUI.ICON_ROW_REFRESH_DISABLE, "");
+                ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.reele"));
 
 		comboxAppName = new JComboBox<String>();
 		comboxAppName.addItem("General");
@@ -318,9 +314,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		JLabel ActNull = new JLabel();
 		ActNull.setPreferredSize(new Dimension(35, 40));
 		buttonActAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
-                ConstantsUI.ICON_ELE_ADD_DISABLE, "");
+                ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addact"));
 		buttonActRefresh = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
-                ConstantsUI.ICON_ROW_REFRESH_DISABLE, "");
+                ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.react"));
 		ActPanel.add(ActPick);
 		ActPanel.add(comboxActName);
 		ActPanel.add(ActNull);
@@ -384,7 +380,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		JLabel VerNull = new JLabel();
 		VerNull.setPreferredSize(new Dimension(35, 40));
 		buttonVerAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
-                ConstantsUI.ICON_ELE_ADD_DISABLE, "");
+                ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
 		VerPanel.add(VerPick);
 		VerPanel.add(comboxVerName);
 		VerPanel.add(VerNull);
@@ -394,15 +390,15 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		RunPanel.setPreferredSize(new Dimension(420, 40));
 		RunPanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
 		buttonTimer = new MyIconButton(ConstantsUI.ICON_TIMER, ConstantsUI.ICON_TIMER_ENABLE,
-				ConstantsUI.ICON_TIMER_DISABLE, "");
+				ConstantsUI.ICON_TIMER_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.timer"));
 		buttonRowDelete = new MyIconButton(ConstantsUI.ICON_ROW_DELETE, ConstantsUI.ICON_ROW_DELETE_ENABLE,
-                ConstantsUI.ICON_ROW_DELETE_DISABLE, "");
+                ConstantsUI.ICON_ROW_DELETE_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.rowdelete"));
 		buttonSave = new MyIconButton(ConstantsUI.ICON_LIST_SAVE, ConstantsUI.ICON_LIST_SAVE_ENABLE,
-				ConstantsUI.ICON_LIST_SAVE_DISABLE, "");
+				ConstantsUI.ICON_LIST_SAVE_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.listsave"));
 		buttonPlayList = new MyIconButton(ConstantsUI.ICON_PLAY_LIST, ConstantsUI.ICON_PLAY_LIST_ENABLE,
-				ConstantsUI.ICON_PLAY_LIST_DISABLE, "");
+				ConstantsUI.ICON_PLAY_LIST_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.playlist"));
 		buttonRTChart = new MyIconButton(ConstantsUI.ICON_RTCHART, ConstantsUI.ICON_RTCHART_ENABLE,
-				ConstantsUI.ICON_RTCHART_DISABLE, "");
+				ConstantsUI.ICON_RTCHART_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.rtchart"));
 		JLabel TableNull = new JLabel();
 		TableNull.setPreferredSize(new Dimension(75, 40));
 		RunPanel.add(buttonTimer);
@@ -600,26 +596,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 
             }
         });
-//		  	buttonVerRefresh.addActionListener(new ActionListener() {
-//	            @Override
-//	            public void actionPerformed(ActionEvent e) {
-//	            	try{
-//	                // i = the index of the selected row
-//	                int i = casetable.getSelectedRow();
-//	                
-//	                if(i >= 0) 
-//	                {
-//	                   model.setValueAt(act_name, i, 1);
-//	                }
-//	                else{
-//	                    System.out.println("Update Act Error");
-//	                	}
-//	                } catch (Exception e1) {
-//	                	e1.printStackTrace();
-//	                }
-//
-//	            }
-//	        });
 	  	
 	  	buttonPlayList.addActionListener(new ActionListener() {
             @Override
@@ -895,9 +871,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    		JTextArea ver_text_input = new JTextArea(11,45);
 	    		ver_text_input.setLineWrap(true);
 	    		buttonVersetTX_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
-	                    ConstantsUI.ICON_ELE_ADD_DISABLE, "");
+	                    ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
 	    		buttonVersetTX_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
-	                    ConstantsUI.ICON_ROW_REFRESH_DISABLE, "");
+	                    ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.rever"));
 	    		text_pane.add(new JScrollPane(ver_text_input));
 	    		text_btn_pane.add(buttonVersetTX_add);
 	    		text_btn_pane.add(buttonVersetTX_re);
@@ -1013,9 +989,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    			}
 	    		});
 	    		buttonVersetEE_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
-	                    ConstantsUI.ICON_ELE_ADD_DISABLE, "");
+	                    ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
 	    		buttonVersetEE_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
-	                    ConstantsUI.ICON_ROW_REFRESH_DISABLE, "");
+	                    ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.rever"));
 	    		
 	    		// inside-button method
 	    		buttonVersetEE_add.addActionListener(new ActionListener() {
@@ -1083,9 +1059,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    		timer_num.setPreferredSize(new Dimension(80,20));
 	    		JPanel timer_btn_pane = new JPanel();
 	    		buttonVersetTimer_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
-	                    ConstantsUI.ICON_ELE_ADD_DISABLE, "");
+	                    ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.timer"));
 	    		buttonVersetTimer_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
-	                    ConstantsUI.ICON_ROW_REFRESH_DISABLE, "");
+	                    ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.retimer"));
 	    		// inside-button method
 	    		buttonVersetTimer_add.addActionListener(new ActionListener() {
 		            @Override
@@ -1093,7 +1069,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 
 		                try {
 		                	table_row[1] = "Timer";
-		                	table_row[2] = timer_num.getText() + "S";
+		                	table_row[2] = timer_num.getText() +"  "+ "S";
 		                	table_row[3] = "N/A";
 		                	table_row[4] = "N/A";
 		                	model.addRow(table_row);
