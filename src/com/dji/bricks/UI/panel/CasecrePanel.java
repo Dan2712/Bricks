@@ -31,7 +31,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.table.DefaultTableModel;
 
 import com.alibaba.fastjson.JSON;
@@ -62,10 +61,13 @@ public class CasecrePanel extends JPanel{
 	private static MyIconButton buttonJsonLoad;
 	private static MyIconButton buttonPlayList;
 	private static MyIconButton buttonRTChart;
+	private static MyIconButton buttonTimer;
 	private static MyIconButton buttonVersetTX_add;
 	private static MyIconButton buttonVersetTX_re;
 	private static MyIconButton buttonVersetEE_add;
 	private static MyIconButton buttonVersetEE_re;
+	private static MyIconButton buttonVersetTimer_add;
+	private static MyIconButton buttonVersetTimer_re;
 	private static JPanel popuppanel;
 	private static PopupWindow popupwindow;
 	private int id;
@@ -183,7 +185,7 @@ public class CasecrePanel extends JPanel{
 		DataGrid.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
 		DataGrid.setBackground(ConstantsUI.TABLE_LOG_COLOR);
 		JTextField DataFrom = new JTextField();
-		DataFrom.setPreferredSize(new Dimension(150, 24));
+		DataFrom.setPreferredSize(new Dimension(180, 24));
 		buttonDocRead = new MyIconButton(ConstantsUI.ICON_DOCREAD, ConstantsUI.ICON_DOCREAD_ENABLE,
                 ConstantsUI.ICON_DOCREAD_DISABLE, "");
 		buttonJsonLoad = new MyIconButton(ConstantsUI.ICON_JSONLOAD, ConstantsUI.ICON_JSONLOAD_ENABLE,
@@ -299,7 +301,7 @@ public class CasecrePanel extends JPanel{
 		comboxActName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
 		comboxActName.addItemListener(new ActListener());
 		JLabel ActNull = new JLabel();
-		ActNull.setPreferredSize(new Dimension(40, 40));
+		ActNull.setPreferredSize(new Dimension(35, 40));
 		buttonActAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
                 ConstantsUI.ICON_ELE_ADD_DISABLE, "");
 		buttonActRefresh = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
@@ -365,7 +367,7 @@ public class CasecrePanel extends JPanel{
 			}
 		});
 		JLabel VerNull = new JLabel();
-		VerNull.setPreferredSize(new Dimension(40, 40));
+		VerNull.setPreferredSize(new Dimension(35, 40));
 		buttonVerAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
                 ConstantsUI.ICON_ELE_ADD_DISABLE, "");
 		VerPanel.add(VerPick);
@@ -376,7 +378,9 @@ public class CasecrePanel extends JPanel{
 		JPanel RunPanel = new JPanel();
 		RunPanel.setPreferredSize(new Dimension(420, 40));
 		RunPanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
-		RunPanel.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+//		RunPanel.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		buttonTimer = new MyIconButton(ConstantsUI.ICON_TIMER, ConstantsUI.ICON_TIMER_ENABLE,
+				ConstantsUI.ICON_TIMER_DISABLE, "");
 		buttonRowDelete = new MyIconButton(ConstantsUI.ICON_ROW_DELETE, ConstantsUI.ICON_ROW_DELETE_ENABLE,
                 ConstantsUI.ICON_ROW_DELETE_DISABLE, "");
 		buttonSave = new MyIconButton(ConstantsUI.ICON_LIST_SAVE, ConstantsUI.ICON_LIST_SAVE_ENABLE,
@@ -386,11 +390,13 @@ public class CasecrePanel extends JPanel{
 		buttonRTChart = new MyIconButton(ConstantsUI.ICON_RTCHART, ConstantsUI.ICON_RTCHART_ENABLE,
 				ConstantsUI.ICON_RTCHART_DISABLE, "");
 		JLabel TableNull = new JLabel();
-		TableNull.setPreferredSize(new Dimension(355, 40));
+		TableNull.setPreferredSize(new Dimension(75, 40));
+		RunPanel.add(buttonTimer);
 		RunPanel.add(buttonRowDelete);
-		RunPanel.add(buttonSave);
+		RunPanel.add(TableNull);
 		RunPanel.add(buttonPlayList);
 		RunPanel.add(buttonRTChart);
+		RunPanel.add(buttonSave);
 		
 		JPanel panelLog = new JPanel();
 		panelLog.setBackground(ConstantsUI.TOOL_BAR_BACK_COLOR);
@@ -427,10 +433,10 @@ public class CasecrePanel extends JPanel{
 			  @Override
 	            public void actionPerformed(ActionEvent e) {
 	                try {
-	                	table_row[1] = cus_name;
-	                	table_row[2] = cus_name;
-	                	table_row[3] = cus_name;
-	                	table_row[4] = cus_name;
+	                	table_row[1] = "ELE";
+	                	table_row[2] = comboxAppName.getSelectedItem();
+	                	table_row[3] = comboxViewName.getSelectedItem();
+	                	table_row[4] = comboxEleName.getSelectedItem();
 	            	    model.addRow(table_row);
 	                	BrickBean brick = new BrickBean();
 	                	brick.setEle_xpath(xpath);
@@ -457,8 +463,8 @@ public class CasecrePanel extends JPanel{
 	                	}else if(action == 10){
 	                		act_name = "DB";
 	                	}
-	                	table_row[1] = act_name;
-	                	table_row[2] = "N/A";
+	                	table_row[1] = "ACT";
+	                	table_row[2] = act_name;
 	                	table_row[3] = "N/A";
 	                	table_row[4] = "N/A";
 	                	model.addRow(table_row);
@@ -477,7 +483,19 @@ public class CasecrePanel extends JPanel{
 	            public void actionPerformed(ActionEvent e) {
 
 	                try {
-	                	new VerifiWindow();
+	                	new VerifiWindow(ver_type);
+	                } catch (Exception e1) {
+	                	e1.printStackTrace();
+	                }
+
+	            }
+	        });
+		  	buttonTimer.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+
+	                try {
+	                	new VerifiWindow(ver_type = 4);
 	                } catch (Exception e1) {
 	                	e1.printStackTrace();
 	                }
@@ -741,7 +759,7 @@ public class CasecrePanel extends JPanel{
 	}
 	class VerifiWindow extends JFrame{
 		JFrame ver_setting_frame = new JFrame();
-	    public VerifiWindow() {
+	    public VerifiWindow(int type) {
 	    	if(ver_type == 1){
 	    		ver_setting_frame.setSize(400, 300);
 	    		ver_setting_frame.setTitle("Text Verification");
@@ -761,7 +779,9 @@ public class CasecrePanel extends JPanel{
 	    		text_btn_pane.add(buttonVersetTX_re);
 	    		ver_setting_frame.add(text_pane, BorderLayout.NORTH);
 	    		ver_setting_frame.add(text_btn_pane, BorderLayout.SOUTH);
-	    		
+	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	    		ver_setting_frame.setVisible(true);
+
 	    		// button method
 	    		buttonVersetTX_add.addActionListener(new ActionListener() {
 		            @Override
@@ -917,6 +937,66 @@ public class CasecrePanel extends JPanel{
 	    		ver_setting_frame.add(app_view_pick);
 	    		ver_setting_frame.add(ele_name_pick);
 	    		ver_setting_frame.add(button_pane);
+	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	    		ver_setting_frame.setVisible(true);
+	    	}else if (ver_type == 4){
+	    		ver_setting_frame.setSize(270, 130);
+	    		ver_setting_frame.setTitle("WaitTime Setting");
+	    		ver_setting_frame.setLayout(new BorderLayout());
+	    		JPanel timer_pane = new JPanel();
+	    		timer_pane.setPreferredSize(new Dimension(200, 60));
+	    		JLabel timer_label = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.timer"));
+	    		timer_label.setFont(ConstantsUI.FONT_NORMAL);
+	    		JTextField timer_num = new JTextField();
+	    		timer_num.setPreferredSize(new Dimension(80,20));
+	    		JPanel timer_btn_pane = new JPanel();
+	    		buttonVersetTimer_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
+	                    ConstantsUI.ICON_ELE_ADD_DISABLE, "");
+	    		buttonVersetTimer_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
+	                    ConstantsUI.ICON_ROW_REFRESH_DISABLE, "");
+	    		// button method
+	    		buttonVersetTimer_add.addActionListener(new ActionListener() {
+		            @Override
+		            public void actionPerformed(ActionEvent e) {
+
+		                try {
+		                	table_row[1] = "Timer";
+		                	table_row[2] = timer_num.getText() + "S";
+		                	table_row[3] = "N/A";
+		                	table_row[4] = "N/A";
+		                	model.addRow(table_row);
+		                } catch (Exception e1) {
+		                	e1.printStackTrace();
+		                }
+
+		            }
+		        });
+	    		buttonVersetTimer_re.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	            	try{
+	                // i = the index of the selected row
+	                int i = casetable.getSelectedRow();
+	                
+	                if(i >= 0) 
+	                {
+	                   model.setValueAt("timer_re", i, 1);
+	                }
+	                else{
+	                    System.out.println("Update Act Error");
+	                	}
+	                } catch (Exception e1) {
+	                	e1.printStackTrace();
+	                }
+
+	            }
+	        });
+	    		timer_pane.add(timer_label);
+	    		timer_pane.add(timer_num);
+	    		timer_btn_pane.add(buttonVersetTimer_add);
+	    		timer_btn_pane.add(buttonVersetTimer_re);
+	    		ver_setting_frame.add(timer_pane, BorderLayout.NORTH);
+	    		ver_setting_frame.add(timer_btn_pane, BorderLayout.SOUTH);
 	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    		ver_setting_frame.setVisible(true);
 	    	}
