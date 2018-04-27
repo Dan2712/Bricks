@@ -34,6 +34,7 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import com.alibaba.fastjson.JSON;
+import com.dji.bricks.MainEntry;
 import com.dji.bricks.UI.BrickBean;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
@@ -68,9 +69,6 @@ public class CasecrePanel extends JPanel{
 	private static MyIconButton buttonVersetEE_re;
 	private static MyIconButton buttonVersetTimer_add;
 	private static MyIconButton buttonVersetTimer_re;
-	private static JPanel popuppanel;
-	private static PopupWindow popupwindow;
-	private int id;
 	private int ver_type;
 	private LinkedList<BrickBean> caseList = new LinkedList<>();
 	
@@ -136,7 +134,7 @@ public class CasecrePanel extends JPanel{
 	private EleListener elisten = new EleListener();
 	private JPanel getCenterPanel(){
 		JPanel panelCenter = new JPanel();
-		panelCenter.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		panelCenter.setBackground(ConstantsUI.TABLE_LINE_COLOR);
 		JPanel TablePanel = new JPanel();
 		TablePanel.setPreferredSize(new Dimension(810, 250));
         casetable = new JTable(); 
@@ -166,7 +164,7 @@ public class CasecrePanel extends JPanel{
 	}
 	
 	/**
-	 * Log print Panel 
+	 * caselist editing & log print Panel 
 	 * @return
 	 */
 	private JPanel getDownPanel() {
@@ -183,7 +181,7 @@ public class CasecrePanel extends JPanel{
 		DataSrc.setFont(ConstantsUI.FONT_NORMAL);
 		DataGrid.setPreferredSize(new Dimension(420, 40));
 		DataGrid.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
-		DataGrid.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		DataGrid.setBackground(ConstantsUI.TABLE_LINE_COLOR);
 		JTextField DataFrom = new JTextField();
 		DataFrom.setPreferredSize(new Dimension(180, 24));
 		buttonDocRead = new MyIconButton(ConstantsUI.ICON_DOCREAD, ConstantsUI.ICON_DOCREAD_ENABLE,
@@ -199,15 +197,15 @@ public class CasecrePanel extends JPanel{
 		JPanel ElePanel_APP = new JPanel();
 		ElePanel_APP.setPreferredSize(new Dimension(420, 40));
 		ElePanel_APP.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
-		ElePanel_APP.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		ElePanel_APP.setBackground(ConstantsUI.TABLE_LINE_COLOR);
 		JPanel ElePanel_View = new JPanel();
 		ElePanel_View.setPreferredSize(new Dimension(420, 40));
 		ElePanel_View.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
-		ElePanel_View.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		ElePanel_View.setBackground(ConstantsUI.TABLE_LINE_COLOR);
 		JPanel ElePanel_Name = new JPanel();
 		ElePanel_Name.setPreferredSize(new Dimension(420, 40));
 		ElePanel_Name.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
-		ElePanel_Name.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		ElePanel_Name.setBackground(ConstantsUI.TABLE_LINE_COLOR);
 		JLabel Ele_Null = new JLabel();
 		Ele_Null.setPreferredSize(new Dimension(50,35));
 		JLabel Ele_Null2 = new JLabel();
@@ -287,7 +285,7 @@ public class CasecrePanel extends JPanel{
 		JPanel ActPanel = new JPanel();
 		ActPanel.setPreferredSize(new Dimension(420, 40));
 		ActPanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
-		ActPanel.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		ActPanel.setBackground(ConstantsUI.TABLE_LINE_COLOR);
 		JLabel ActPick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.actpick"));
 		ActPick.setFont(ConstantsUI.FONT_NORMAL);
 		comboxActName = new JComboBox<String>();
@@ -315,7 +313,7 @@ public class CasecrePanel extends JPanel{
 		JPanel VerPanel = new JPanel();
 		VerPanel.setPreferredSize(new Dimension(420, 40));
 		VerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
-		VerPanel.setBackground(ConstantsUI.TABLE_LOG_COLOR);
+		VerPanel.setBackground(ConstantsUI.TABLE_LINE_COLOR);
 		JLabel VerPick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.verpick"));
 		VerPick.setFont(ConstantsUI.FONT_NORMAL);
 		comboxVerName = new JComboBox<String>();
@@ -378,7 +376,6 @@ public class CasecrePanel extends JPanel{
 		JPanel RunPanel = new JPanel();
 		RunPanel.setPreferredSize(new Dimension(420, 40));
 		RunPanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
-//		RunPanel.setBackground(ConstantsUI.TABLE_LOG_COLOR);
 		buttonTimer = new MyIconButton(ConstantsUI.ICON_TIMER, ConstantsUI.ICON_TIMER_ENABLE,
 				ConstantsUI.ICON_TIMER_DISABLE, "");
 		buttonRowDelete = new MyIconButton(ConstantsUI.ICON_ROW_DELETE, ConstantsUI.ICON_ROW_DELETE_ENABLE,
@@ -616,26 +613,6 @@ public class CasecrePanel extends JPanel{
         });
         thread.start();
     }
-//	 class PopClickListener extends MouseAdapter {
-//		    public void mousePressed(MouseEvent e){
-//		        if (e.isPopupTrigger())
-//		            doPop(e);
-//		    }
-//		    private JButton jbtn;
-//		    public PopClickListener(JButton jbtn){
-//		    	super();
-//		    	this.jbtn =jbtn;
-//		    }
-//		    public void mouseReleased(MouseEvent e){
-//		        if (e.isPopupTrigger())
-//		            doPop(e);
-//		    }
-//
-//		    private void doPop(MouseEvent e){
-//		    	RightMenu menu = new RightMenu(jbtn);
-//		        menu.show(e.getComponent(), e.getX(), e.getY());
-//		    }
-//		}
     // JTextArea output method
     class CustomOutputStream extends OutputStream {
         private JTextArea textArea;
@@ -758,15 +735,18 @@ public class CasecrePanel extends JPanel{
 		}
 	}
 	class VerifiWindow extends JFrame{
+		// init popup window
 		JFrame ver_setting_frame = new JFrame();
+
 	    public VerifiWindow(int type) {
 	    	if(ver_type == 1){
+	    		// Text verification method
 	    		ver_setting_frame.setSize(400, 300);
 	    		ver_setting_frame.setTitle("Text Verification");
 	    		ver_setting_frame.setVisible(true);
 	    		ver_setting_frame.setLayout(new BorderLayout());
 	    		JPanel text_pane = new JPanel();
-	    		text_pane.setPreferredSize(new Dimension(390, 260));
+//	    		text_pane.setBackground(Color.gray);
 	    		JPanel text_btn_pane = new JPanel();
 	    		JTextArea ver_text_input = new JTextArea(11,45);
 	    		ver_text_input.setLineWrap(true);
@@ -779,10 +759,14 @@ public class CasecrePanel extends JPanel{
 	    		text_btn_pane.add(buttonVersetTX_re);
 	    		ver_setting_frame.add(text_pane, BorderLayout.NORTH);
 	    		ver_setting_frame.add(text_btn_pane, BorderLayout.SOUTH);
+	    		// kill the thread, same to the others ver_type case
 	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    		ver_setting_frame.setVisible(true);
+	    		// set the popup window's position releat to Main frame
+	    		ver_setting_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
+	    		ver_setting_frame.setLocationRelativeTo(MainEntry.frame);
 
-	    		// button method
+	    		// inside-button method
 	    		buttonVersetTX_add.addActionListener(new ActionListener() {
 		            @Override
 		            public void actionPerformed(ActionEvent e) {
@@ -808,7 +792,7 @@ public class CasecrePanel extends JPanel{
 	                
 	                if(i >= 0) 
 	                {
-	                   model.setValueAt("ver_re", i, 1);
+	                   model.setValueAt("ver_text_re", i, 1);
 	                }
 	                else{
 	                    System.out.println("Update Act Error");
@@ -820,6 +804,7 @@ public class CasecrePanel extends JPanel{
 	            }
 	        });
 	    	}else if (ver_type == 3){
+	    		// Element exist verification method
 	    		ver_setting_frame.setSize(300, 200);
 	    		ver_setting_frame.setTitle("Element Picking");
 	    		ver_setting_frame.setLayout(new GridLayout(4,1));
@@ -851,7 +836,7 @@ public class CasecrePanel extends JPanel{
 	    		comboxEleName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
 	    		
 	    		comboxAppName.addItemListener(new ItemListener() {
-	    			
+	    			// combobox item changed method
 	    			@Override
 	    			public void itemStateChanged(ItemEvent e) {
 	    				if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -888,7 +873,7 @@ public class CasecrePanel extends JPanel{
 	    		buttonVersetEE_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
 	                    ConstantsUI.ICON_ROW_REFRESH_DISABLE, "");
 	    		
-	    		// button method
+	    		// inside-button method
 	    		buttonVersetEE_add.addActionListener(new ActionListener() {
 		            @Override
 		            public void actionPerformed(ActionEvent e) {
@@ -937,14 +922,17 @@ public class CasecrePanel extends JPanel{
 	    		ver_setting_frame.add(app_view_pick);
 	    		ver_setting_frame.add(ele_name_pick);
 	    		ver_setting_frame.add(button_pane);
+	    		ver_setting_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
+	    		ver_setting_frame.setLocationRelativeTo(MainEntry.frame);
 	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    		ver_setting_frame.setVisible(true);
 	    	}else if (ver_type == 4){
+	    		// Timer adding method
 	    		ver_setting_frame.setSize(270, 130);
 	    		ver_setting_frame.setTitle("WaitTime Setting");
 	    		ver_setting_frame.setLayout(new BorderLayout());
 	    		JPanel timer_pane = new JPanel();
-	    		timer_pane.setPreferredSize(new Dimension(200, 60));
+	    		timer_pane.setPreferredSize(new Dimension(270, 50));
 	    		JLabel timer_label = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.timer"));
 	    		timer_label.setFont(ConstantsUI.FONT_NORMAL);
 	    		JTextField timer_num = new JTextField();
@@ -954,7 +942,7 @@ public class CasecrePanel extends JPanel{
 	                    ConstantsUI.ICON_ELE_ADD_DISABLE, "");
 	    		buttonVersetTimer_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
 	                    ConstantsUI.ICON_ROW_REFRESH_DISABLE, "");
-	    		// button method
+	    		// inside-button method
 	    		buttonVersetTimer_add.addActionListener(new ActionListener() {
 		            @Override
 		            public void actionPerformed(ActionEvent e) {
@@ -997,6 +985,8 @@ public class CasecrePanel extends JPanel{
 	    		timer_btn_pane.add(buttonVersetTimer_re);
 	    		ver_setting_frame.add(timer_pane, BorderLayout.NORTH);
 	    		ver_setting_frame.add(timer_btn_pane, BorderLayout.SOUTH);
+	    		ver_setting_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
+	    		ver_setting_frame.setLocationRelativeTo(MainEntry.frame);
 	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    		ver_setting_frame.setVisible(true);
 	    	}
