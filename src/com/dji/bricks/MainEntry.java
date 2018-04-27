@@ -132,6 +132,7 @@ public class MainEntry implements GlobalObserver {
         elecrePanel = new ElecrePanel(obs, sql);
         adb.registerObserver(elecrePanel);
         casecrePanel = new CasecrePanel(sql);
+        adb.registerObserver(casecrePanel);
         caserunPanel = new CaserunPanel();
         adb.registerObserver(caserunPanel);
         settingPanel = new SettingPanel();
@@ -208,6 +209,5 @@ public class MainEntry implements GlobalObserver {
 
 	@Override
 	public void ADBChange(IDevice[] devices) {
-		
 	}
 }

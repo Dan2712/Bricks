@@ -1,4 +1,5 @@
 package com.dji.bricks.UI.panel;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,10 +19,14 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -33,18 +39,22 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.android.ddmlib.IDevice;
+import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.UI.BrickBean;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
+import com.dji.bricks.backgrounder.ExecutionMain;
+import com.dji.bricks.node_selection.RealTimeScreenUI;
 import com.dji.bricks.tools.PropertyUtil;
 import com.dji.bricks.tools.SQLUtils;
-
 
 /**
  * Case create page 
  * @author DraLastat
  */
-public class CasecrePanel extends JPanel{
+public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -63,6 +73,7 @@ public class CasecrePanel extends JPanel{
 	private static MyIconButton buttonRTChart;
 	private static JPanel popuppanel;
 //	private static PopupWindow popupwindow;
+	private JTextArea logArea;
 	private int id;
 	private int type;
 	private LinkedList<BrickBean> caseList = new LinkedList<>();
@@ -72,6 +83,8 @@ public class CasecrePanel extends JPanel{
 	private String act_name = "";
 	private String val = "";
 	private int action;
+	private IDevice device;
+	
 	/**
 	 * Initialize
 	 */
@@ -127,6 +140,7 @@ public class CasecrePanel extends JPanel{
 	
 	private ViewListener vlisten = new ViewListener();
 	private EleListener elisten = new EleListener();
+	
 	private JPanel getCenterPanel(){
 		JPanel panelCenter = new JPanel();
 		panelCenter.setBackground(ConstantsUI.TABLE_LOG_COLOR);
@@ -215,6 +229,7 @@ public class CasecrePanel extends JPanel{
                 ConstantsUI.ICON_ROW_REFRESH_DISABLE, "");
 
 		comboxAppName = new JComboBox<String>();
+		comboxAppName.addItem("General");
 		comboxAppName.addItem("DJI GO3");
 		comboxAppName.addItem("DJI GO4");
 		comboxAppName.addItem("DJI Pilot");
@@ -390,17 +405,17 @@ public class CasecrePanel extends JPanel{
 		JPanel panelLog = new JPanel();
 		panelLog.setBackground(ConstantsUI.TOOL_BAR_BACK_COLOR);
 		panelLog.setLayout(new BorderLayout());
-		JTextArea LogArea = new JTextArea(17, 50);
-		LogArea.setBackground(ConstantsUI.LOG_COLOR);
-		LogArea.setForeground(ConstantsUI.MAIN_BACK_COLOR);
-		LogArea.setEditable(false);
-		PrintStream printStream = new PrintStream(new CustomOutputStream(LogArea));
-		standardOut = System.out;
-        // re-assigns standard output stream and error output stream
-        System.setOut(printStream);
-        System.setErr(printStream);
+		logArea = new JTextArea(17, 50);
+		logArea.setBackground(ConstantsUI.LOG_COLOR);
+		logArea.setForeground(ConstantsUI.MAIN_BACK_COLOR);
+		logArea.setEditable(false);
+		PrintStream printStream = new PrintStream(new CustomOutputStream(logArea));
+//		standardOut = System.out;
+//        // re-assigns standard output stream and error output stream
+//        System.setOut(printStream);
+//        System.setErr(printStream);
         
-        panelLog.add(new JScrollPane(LogArea));
+        panelLog.add(new JScrollPane(logArea));
 		
         LeftPanel.add(DataGrid);
         LeftPanel.add(ElePanel_APP);
@@ -418,133 +433,139 @@ public class CasecrePanel extends JPanel{
 	
 	// Add Bricks button listener
 	public void addListener() {
+		
 		buttonEleAdd.addActionListener(new ActionListener() {
-			  @Override
-	            public void actionPerformed(ActionEvent e) {
-	                try {
-	                	table_row[1] = cus_name;
-	                	table_row[2] = cus_name;
-	                	table_row[3] = cus_name;
-	                	table_row[4] = cus_name;
-	            	    model.addRow(table_row);
-	                	BrickBean brick = new BrickBean();
-	                	brick.setEle_xpath(xpath);
-	                	brick.setCustom_name(cus_name);
-	                	brick.setProperty("ele");
-	                	caseList.add(brick);
-	                } catch (Exception e1) {
-	                	e1.printStackTrace();
-	                }
+		  @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                	table_row[1] = cus_name;
+                	table_row[2] = cus_name;
+                	table_row[3] = cus_name;
+                	table_row[4] = cus_name;
+            	    model.addRow(table_row);
+                	BrickBean brick = new BrickBean();
+                	brick.setEle_xpath(xpath);
+                	brick.setCustom_name(cus_name);
+                	brick.setProperty("ele");
+                	caseList.add(brick);
+                } catch (Exception e1) {
+                	e1.printStackTrace();
+                }
 
-	            }
-	        });
-		  	buttonActAdd.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
+            }
+        });
+		
+	  	buttonActAdd.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
-	                try {
-	                	if(action == 1){
-	                		act_name = "CK";
-	                	}else if(action == 2){
-	                		act_name = "LP";
-	                	}else if(action == 3){
-	                		act_name = "ST";
-	                	}else if(action == 10){
-	                		act_name = "DB";
-	                	}
-	                	table_row[1] = act_name;
-	                	table_row[2] = "N/A";
-	                	table_row[3] = "N/A";
-	                	table_row[4] = "N/A";
-	                	model.addRow(table_row);
-	            	    BrickBean brick = new BrickBean();
-	                	brick.setAction_name(action);
-	                	brick.setProperty("act");
-	                	caseList.add(brick);
-	                } catch (Exception e1) {
-	                	e1.printStackTrace();
-	                }
+                try {
+                	if(action == 1){
+                		act_name = "CK";
+                	}else if(action == 2){
+                		act_name = "LP";
+                	}else if(action == 3){
+                		act_name = "ST";
+                	}else if(action == 10){
+                		act_name = "DB";
+                	}
+                	table_row[1] = act_name;
+                	table_row[2] = "N/A";
+                	table_row[3] = "N/A";
+                	table_row[4] = "N/A";
+                	model.addRow(table_row);
+            	    BrickBean brick = new BrickBean();
+                	brick.setAction_name(action);
+                	brick.setProperty("act");
+                	caseList.add(brick);
+                } catch (Exception e1) {
+                	e1.printStackTrace();
+                }
 
-	            }
-	        });
-		  	buttonVerAdd.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
+            }
+        });
+	  	
+	  	buttonVerAdd.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
-	                try {
-	                	table_row[1] = "Ver";
-	                	table_row[2] = "N/A";
-	                	table_row[3] = "N/A";
-	                	table_row[4] = "N/A";
-	                	model.addRow(table_row);
-	                } catch (Exception e1) {
-	                	e1.printStackTrace();
-	                }
+                try {
+                	table_row[1] = "Ver";
+                	table_row[2] = "N/A";
+                	table_row[3] = "N/A";
+                	table_row[4] = "N/A";
+                	model.addRow(table_row);
+                } catch (Exception e1) {
+                	e1.printStackTrace();
+                }
 
-	            }
-	        });
-		  	buttonRowDelete.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
+            }
+        });
+	  	
+	  	buttonRowDelete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
-	                try {
-	                    // i = the index of the selected row
-	                    int i = casetable.getSelectedRow();
-	                    if(i >= 0){
-	                        model.removeRow(i);
-	                    }
-	                    else{
-	                        System.out.println("Delete Error");
-	                    }
-	                } catch (Exception e1) {
-	                	e1.printStackTrace();
-	                }
+                try {
+                    // i = the index of the selected row
+                    int i = casetable.getSelectedRow();
+                    if(i >= 0){
+                        model.removeRow(i);
+                    }
+                    else{
+                        System.out.println("Delete Error");
+                    }
+                } catch (Exception e1) {
+                	e1.printStackTrace();
+                }
 
-	            }
-	        });
-		  	buttonEleRefresh.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	            	try{
-	                // i = the index of the selected row
-	                int i = casetable.getSelectedRow();
-	                
-	                if(i >= 0) 
-	                {
-	                   model.setValueAt(cus_name, i, 1);
-	                   model.setValueAt(cus_name, i, 2);
-	                   model.setValueAt(cus_name, i, 3);
-	                   model.setValueAt(cus_name, i, 4);
-	                }
-	                else{
-	                    System.out.println("Update Ele Error");
-	                	}
-	                } catch (Exception e1) {
-	                	e1.printStackTrace();
-	                }
+            }
+        });
+	  	
+	  	buttonEleRefresh.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	try{
+                // i = the index of the selected row
+                int i = casetable.getSelectedRow();
+                
+                if(i >= 0) 
+                {
+                   model.setValueAt(cus_name, i, 1);
+                   model.setValueAt(cus_name, i, 2);
+                   model.setValueAt(cus_name, i, 3);
+                   model.setValueAt(cus_name, i, 4);
+                }
+                else{
+                    System.out.println("Update Ele Error");
+                	}
+                } catch (Exception e1) {
+                	e1.printStackTrace();
+                }
 
-	            }
-	        });
-		  	buttonActRefresh.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	            	try{
-	                // i = the index of the selected row
-	                int i = casetable.getSelectedRow();
-	                
-	                if(i >= 0) 
-	                {
-	                   model.setValueAt(act_name, i, 1);
-	                }
-	                else{
-	                    System.out.println("Update Act Error");
-	                	}
-	                } catch (Exception e1) {
-	                	e1.printStackTrace();
-	                }
+            }
+        });
+	  	
+	  	buttonActRefresh.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	try{
+                // i = the index of the selected row
+                int i = casetable.getSelectedRow();
+                
+                if(i >= 0) 
+                {
+                   model.setValueAt(act_name, i, 1);
+                }
+                else{
+                    System.out.println("Update Act Error");
+                	}
+                } catch (Exception e1) {
+                	e1.printStackTrace();
+                }
 
-	            }
-	        });
+            }
+        });
 //		  	buttonVerRefresh.addActionListener(new ActionListener() {
 //	            @Override
 //	            public void actionPerformed(ActionEvent e) {
@@ -565,40 +586,50 @@ public class CasecrePanel extends JPanel{
 //
 //	            }
 //	        });
-		  	buttonPlayList.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
+	  	
+	  	buttonPlayList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
-	                try {
-	                	printLog();
-	                }catch (Exception e1) {
-	                	e1.printStackTrace();
-	                	}
-	            	}
-	            });
-		  	buttonSave.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
+            	String str = JSON.toJSONString(caseList);
+            	JSONArray jsonFile = JSON.parseArray(str);
+            	
+                try {
+                	ExecutionMain.getInstance().RunTestCase(jsonFile, logArea, device, "");
+					RealTimeScreenUI.isRuncase = true;
+                }catch (Exception e1) {
+                	e1.printStackTrace();
+                	}
+            	}
+            });
+	  	
+	  	buttonSave.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
-	                try {
-	                	JDialog savewindow = new JDialog();
-	                	
-	                	File json = new File("json/file1.json");
-	                	if (!json.getParentFile().exists())
-	                		json.getParentFile().mkdirs();
-	                	
-	                	String str = JSON.toJSONString(caseList);
-	                	PrintWriter pw = new PrintWriter(new FileWriter(json));
-	                    pw.print(str);
-	                    pw.flush();
-	                    pw.close();
-	                } catch (Exception e1) {
-	                	e1.printStackTrace();
-	                }
+                try {
+                	JDialog savewindow = new JDialog();
+                	
+                	SimpleDateFormat timeFormat = new SimpleDateFormat("hhmmss");
+                	String time = timeFormat.format(Calendar.getInstance().getTime());
+                	
+                	File json = new File("json/" + appName + "_" + time + ".json");
+                	if (!json.getParentFile().exists())
+                		json.getParentFile().mkdirs();
+                	
+                	String str = JSON.toJSONString(caseList);
+                	PrintWriter pw = new PrintWriter(new FileWriter(json));
+                    pw.print(str);
+                    pw.flush();
+                    pw.close();
+                } catch (Exception e1) {
+                	e1.printStackTrace();
+                }
 
-	            }
-	        });
+            }
+        });
 	}
+	
 	// Log print thread
 	// TODO adding real time log in here
     private void printLog() {
@@ -637,6 +668,7 @@ public class CasecrePanel extends JPanel{
 //		        menu.show(e.getComponent(), e.getX(), e.getY());
 //		    }
 //		}
+    
     // JTextArea output method
     class CustomOutputStream extends OutputStream {
         private JTextArea textArea;
@@ -758,5 +790,27 @@ public class CasecrePanel extends JPanel{
 			}
 		}
 	}
+	
+	public void observe(Observable o) {
+	    o.addObserver(this);
 	}
+	
+	@Override
+	public void frameImageChange(BufferedImage image) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void ADBChange(IDevice[] devices) {
+		// TODO Auto-generated method stub
+		this.device = devices[0];
+	}
+}
 	

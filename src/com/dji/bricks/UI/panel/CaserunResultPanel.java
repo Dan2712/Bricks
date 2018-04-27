@@ -17,12 +17,14 @@ import javax.swing.border.EmptyBorder;
 
 import org.apache.log4j.Logger;
 
+import com.alibaba.fastjson.JSONArray;
 import com.android.ddmlib.IDevice;
 
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
 import com.dji.bricks.backgrounder.ExecutionMain;
 import com.dji.bricks.node_selection.RealTimeScreenUI;
+import com.dji.bricks.tools.FileUtils;
 import com.dji.bricks.tools.PropertyUtil;
 
 public class CaserunResultPanel extends JPanel{
@@ -37,6 +39,9 @@ public class CaserunResultPanel extends JPanel{
 	private String filepath;
 	private JTextArea logprint;
 	private IDevice device;
+	private JSONArray jsonFile;
+	private String appName;
+	
 	/**
 	 * 
 	 */
@@ -136,6 +141,7 @@ public class CaserunResultPanel extends JPanel{
 		panelCenter.add(panelGridLog);
 		return panelCenter;
 	}
+	
 	public void addListener() {
 		
 		buttonCaseFind.addActionListener(new ActionListener() {
@@ -143,10 +149,13 @@ public class CaserunResultPanel extends JPanel{
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    JFileChooser jfc=new JFileChooser();  
+                    JFileChooser jfc = new JFileChooser();  
                     jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES );  
                     jfc.showDialog(new JLabel(), "选择");  
                     filepath = jfc.getSelectedFile().getPath();
+                    
+                    appName = filepath.substring(0, filepath.indexOf("_"));
+                    jsonFile = FileUtils.loadJson(filepath);
                     case_name.setText(filepath);
                 } catch (Exception e1) {
                     logger.error("open table_field file fail:" + e1.toString());
@@ -164,8 +173,25 @@ public class CaserunResultPanel extends JPanel{
 					
 					@Override
 					public void run() {
+						String pkg = "";
+						
+						switch (appName) {
+							case "DJI GO3":
+								pkg = "dji.pilot";
+								break;
+							case "DJI GO4":
+								pkg = "dji.go.v4";
+								break;
+							case "DJI Pilot":
+								pkg = "com.dji.industry.pilot";
+								break;
+							case "General":
+								pkg = "";
+								break;
+						}
+						
 						logprint.setText("");
-						ExecutionMain.RunTestCase(filepath, logprint, device);
+						ExecutionMain.getInstance().RunTestCase(jsonFile, logprint, device, pkg);
 						RealTimeScreenUI.isRuncase = true;
 					}
 				}).start();

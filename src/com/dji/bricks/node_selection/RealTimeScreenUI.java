@@ -95,14 +95,8 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 							mModel = null;
 							result = UiAutomatorHelper.takeSnapshot(device, null, true, mScreenshot);
 							
-							if (result != null) {
+							if (result != null)
 								mModel = result.model;
-								updateScreenshotTransformation();
-								setSize(panel_bounds, panel_bounds);
-							
-								parentPanel.repaint();
-								paintImmediately(new Rectangle(mDx, mDy, width, height));
-							}
 						} catch (UiAutomatorException e) {
 							LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
 //							System.out.println("Loading. Current page doesn't contain UI Hierarchy xml.");
@@ -111,11 +105,11 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 				}));
 			}
 			
-//			this.updateScreenshotTransformation();
-//			this.setSize(panel_bounds, panel_bounds);
-//		
-//			parentPanel.repaint();
-//			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
+			this.updateScreenshotTransformation();
+			this.setSize(panel_bounds, panel_bounds);
+		
+			parentPanel.repaint();
+			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
 		}
 	}
 	
@@ -162,7 +156,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 		
 		if (mModel != null) {
 			if (isExploreMode()) {
-				
+System.out.println("here----exploremode");
 				rect = mModel.getCurrentDrawingRect();
 				if (rect != null) {
 					g2.setColor(Color.RED);
@@ -174,6 +168,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 				}
 				paintTime = 0;
 			} else {
+System.out.println("here----not exploremode");
 				if (paintTime == 0) {
 					if (mScreenshot != null) {
 						g2.drawImage(mScreenshot, mDx, mDy, width, height, this);

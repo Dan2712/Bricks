@@ -27,19 +27,21 @@ public class RunTestCase implements Runnable{
 	private WebElement ele_sub;
 	private String ele_customName;
 	private int runMode;
-	private String path;
+//	private String path;
 	private AndroidDriver driver;
 	private CusAction action;
 	private CusValidation validation;
 	private JTextArea logText;
 	private IDevice device;
+	private JSONArray jsonFile;
 	
-	public RunTestCase(String path, int runMode, AndroidDriver driver, JTextArea logText, IDevice device) {
-		this.path = path;
+	public RunTestCase(JSONArray jsonFile, int runMode, AndroidDriver driver, JTextArea logText, IDevice device) {
+//		this.path = path;
 		this.runMode = runMode;
 		this.driver = driver;
 		this.logText = logText;
 		this.device = device;
+		this.jsonFile = jsonFile;
 		action = new CusAction(driver);
 		validation = new CusValidation(driver);
 	}
@@ -47,7 +49,6 @@ public class RunTestCase implements Runnable{
 	@Override
 	public void run() {
 		
-		JSONArray jsonFile = FileUtils.loadJson(this.path);
 		if (this.runMode == 0) {
 			for (int i=0; i<jsonFile.size(); i++) {
 				JSONObject obj = jsonFile.getJSONObject(i);

@@ -2,6 +2,7 @@ package com.dji.bricks.backgrounder;
 
 import javax.swing.JTextArea;
 
+import com.alibaba.fastjson.JSONArray;
 import com.android.ddmlib.IDevice;
 
 import com.dji.bricks.backgrounder.execution.AppiumInit;
@@ -9,23 +10,58 @@ import com.dji.bricks.backgrounder.execution.RunTestCase;
 
 public class ExecutionMain {
 
-	private String pkg = "com.dji.industry.pilot";
+	private String pkg = "";
+	private String launchActivity = null;
+	private Boolean autoLaunch = false; 
 	private String startAct = "";
 	
 	private static final ExecutionMain instance = new ExecutionMain();
     
-    private ExecutionMain(){}
+    private ExecutionMain(){
+    	
+    }
+    
     public static ExecutionMain getInstance(){
         return instance;
     }
     
-	public static void RunTestCase(String path, JTextArea logText, IDevice device) {
+	public void RunTestCase(JSONArray jsonFile, JTextArea logText, IDevice device, String pkg) {
+
+		this.pkg = pkg;
+		
+		switch (pkg) {
+			case "com.dji.industry.pilot":
+				launchActivity = "com.dji.industry.pilot.SplashActivity";
+				autoLaunch = true;
+				break;
+			case "":
+				autoLaunch = false;
+				break;
+		}
 		
 		try {
-			AppiumInit.setUp(device, "com.dji.industry.pilot", "com.dji.industry.pilot.SplashActivity");
+//			if (path != null) {
+//				if (autoLaunch == true) {
+//					AppiumInit.setUp(device, pkg, launchActivity, autoLaunch);
+//					
+//					RunTestCase testCase = new RunTestCase(path, 0, AppiumInit.driver, logText, device);
+//					testCase.run();
+//				} else {
+//				
+//				}
+//			} else {
+//				if (autoLaunch == true) {
+//					
+//				} else {
+//					AppiumInit.setUp(device, pkg, "", autoLaunch);
+//					RunTestCase testCase = new RunTestCase();
+//				}
+//			}
 			
-			RunTestCase testCase = new RunTestCase(path, 0, AppiumInit.driver, logText, device);
+			AppiumInit.setUp(device, pkg, launchActivity, autoLaunch);
+			RunTestCase testCase = new RunTestCase(jsonFile, 0, AppiumInit.driver, logText, device);
 			testCase.run();
+			
 		}catch (Exception e) {
 			e.printStackTrace();
 		}finally {

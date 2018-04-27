@@ -14,7 +14,7 @@ public class AppiumInit {
 	public static final int WAIT_TIME = 30;
 	public static AndroidDriver driver; 
 	
-	public static void setUp(IDevice device, String appPackage, String launchActivity) throws Exception {
+	public static void setUp(IDevice device, String appPackage, String launchActivity, Boolean autoLaunch) throws Exception {
 		//init appium  
         DesiredCapabilities capabilities = new DesiredCapabilities();  
         capabilities.setCapability("deviceName", device.getSerialNumber());  
@@ -22,6 +22,7 @@ public class AppiumInit {
         capabilities.setCapability("platformVersion", device.getProperty(IDevice.PROP_BUILD_VERSION));  
           
        //configuration
+        capabilities.setCapability("autoLaunch", autoLaunch);
         capabilities.setCapability("appPackage", appPackage);  
         capabilities.setCapability("appActivity", launchActivity);
         capabilities.setCapability("noReset", true);
