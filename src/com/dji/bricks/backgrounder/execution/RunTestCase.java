@@ -57,6 +57,7 @@ public class RunTestCase implements Runnable{
 							ele_sub = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(obj.getString("ele_xpath"));
 							this.ele_customName = obj.getString("custom_name");
 					} else if (obj.getString("property").equals("act")) {
+						System.out.println("action here----");
 						this.actionSwitch(obj);
 					} else if (obj.getString("property").equals("val")) {
 						this.validationSwitch(obj);

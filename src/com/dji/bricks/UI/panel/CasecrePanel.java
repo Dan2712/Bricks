@@ -140,6 +140,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private JTable casetable;
 	private DefaultTableModel model;
 	private String appName = "";
+	private String pkg = "";
 	private SQLUtils sql = null;
 	private ResultSet xpathSet = null;
 	private PrintStream standardOut;
@@ -621,13 +622,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 //	            }
 //	        });
 	  	
-	  	buttonPlayList.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	
-            }
-	    });
-	  	
 	  	buttonEleRefresh.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -676,11 +670,30 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             public void actionPerformed(ActionEvent e) {
 
             	String str = JSON.toJSONString(caseList);
+            	System.out.println(str);
             	JSONArray jsonFile = JSON.parseArray(str);
         	
+            	switch (appName) {
+            		case "DJI GO4":
+            			pkg = "dji.go.v4";
+            			break;
+            		case "DJI GO3":
+            			pkg = "dji.pilot";
+            			break;
+            	}
+            	
             	try {
-            		ExecutionMain.getInstance().RunTestCase(jsonFile, logArea, device, "");
-            		RealTimeScreenUI.isRuncase = true;
+            		Thread thread = new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							ExecutionMain.getInstance().RunTestCase(jsonFile, logArea, device, pkg);
+		            		RealTimeScreenUI.isRuncase = true;
+						}
+					});
+            		MainEntry.cachedThreadPool.submit(thread);
+            		
             	}catch (Exception e1) {
             		e1.printStackTrace();
             	}

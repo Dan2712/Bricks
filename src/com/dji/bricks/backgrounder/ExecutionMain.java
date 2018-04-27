@@ -12,7 +12,6 @@ public class ExecutionMain {
 
 	private String pkg = "";
 	private String launchActivity = null;
-	private Boolean autoLaunch = false; 
 	private String startAct = "";
 	
 	private static final ExecutionMain instance = new ExecutionMain();
@@ -32,10 +31,15 @@ public class ExecutionMain {
 		switch (pkg) {
 			case "com.dji.industry.pilot":
 				launchActivity = "com.dji.industry.pilot.SplashActivity";
-				autoLaunch = true;
 				break;
-			case "":
-				autoLaunch = false;
+			case "dji.system.launcher":
+				launchActivity = "dji.system.launcher.Launcher";
+				break;
+			case "dji.pilot":
+				launchActivity = "dji.pilot.home.cs.activity.DJICsMainActivity";
+				break;
+			case "dji.go.v4":
+				launchActivity = "dji.pilot.main.activity.DJILauncherActivity";
 				break;
 		}
 		
@@ -57,8 +61,8 @@ public class ExecutionMain {
 //					RunTestCase testCase = new RunTestCase();
 //				}
 //			}
-			
-			AppiumInit.setUp(device, pkg, launchActivity, autoLaunch);
+
+			AppiumInit.setUp(device, pkg, launchActivity);
 			RunTestCase testCase = new RunTestCase(jsonFile, 0, AppiumInit.driver, logText, device);
 			testCase.run();
 			
