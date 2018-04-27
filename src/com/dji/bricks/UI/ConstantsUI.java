@@ -256,6 +256,12 @@ public class ConstantsUI {
             CURRENT_DIR + File.separator + "icon" + File.separator + "refreshEnable.png");
     public final static ImageIcon ICON_ROW_REFRESH_DISABLE = new ImageIcon(
             CURRENT_DIR + File.separator + "icon" + File.separator + "refreshEnable.png");
+    public final static ImageIcon ICON_TIMER = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "timer.png");
+    public final static ImageIcon ICON_TIMER_ENABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "timerEnable.png");
+    public final static ImageIcon ICON_TIMER_DISABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "timerEnable.png");
 
     /**
      * 
