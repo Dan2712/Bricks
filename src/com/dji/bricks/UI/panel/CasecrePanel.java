@@ -466,11 +466,11 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                	if(action == 1){
+                	if(action == 0){
                 		act_name = "CK";
-                	}else if(action == 2){
+                	}else if(action == 1){
                 		act_name = "LP";
-                	}else if(action == 3){
+                	}else if(action == 2){
                 		act_name = "ST";
                 	}else if(action == 10){
                 		act_name = "DB";
@@ -828,13 +828,13 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 				String action_name = (String) e.getItem();
 				switch (action_name) {
 				case "click":
-					action = 1;
+					action = 0;
 					break;
 				case "longPress":
-					action = 2;
+					action = 1;
 					break;
 				case "setText":
-					action = 3;
+					action = 2;
 					break;
 				case "dragBar":
 					action = 10;
