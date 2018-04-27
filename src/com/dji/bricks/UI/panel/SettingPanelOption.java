@@ -112,7 +112,6 @@ public class SettingPanelOption extends JPanel {
         panelItem6.setPreferredSize(ConstantsUI.PANEL_ITEM_SIZE);
         panelItem7.setPreferredSize(ConstantsUI.PANEL_ITEM_SIZE);
 
-        // ��Item
 /*        buttionTableFiled = new MyIconButton(ConstantsUI.ICON_TABLE_FIELD, ConstantsUI.ICON_TABLE_FIELD_ENABLE,
                 ConstantsUI.ICON_TABLE_FIELD_DISABLE, "");
         panelItem1.add(buttionTableFiled);
@@ -150,7 +149,6 @@ public class SettingPanelOption extends JPanel {
         checkBoxDebug.setFont(ConstantsUI.FONT_RADIO);
         panelItem7.add(checkBoxDebug);*/
 
-        // ���Ԫ��
         panelGridOption.add(panelItem1);
         panelGridOption.add(panelItem2);
         panelGridOption.add(panelItem3);
