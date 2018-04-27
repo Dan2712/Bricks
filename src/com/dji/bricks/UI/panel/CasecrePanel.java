@@ -498,11 +498,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             public void actionPerformed(ActionEvent e) {
 
                 try {
-                	table_row[1] = "Ver";
-                	table_row[2] = "N/A";
-                	table_row[3] = "N/A";
-                	table_row[4] = "N/A";
-                	model.addRow(table_row);
+                	new VerifiWindow(ver_type);
                 } catch (Exception e1) {
                 	e1.printStackTrace();
                 }
@@ -513,8 +509,15 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	  	buttonRowDelete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                	new VerifiWindow(ver_type);
+            	try {
+                    // i = the index of the selected row
+                    int i = casetable.getSelectedRow();
+                    if(i >= 0){
+                        model.removeRow(i);
+                    }
+                    else{
+                        System.out.println("Delete Error");
+                    }
                 } catch (Exception e1) {
                 	e1.printStackTrace();
                 }
