@@ -233,7 +233,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.reele"));
 
 		comboxAppName = new JComboBox<String>();
-		comboxAppName.addItem("General");
+		comboxAppName.addItem("RM500 launcher");
 		comboxAppName.addItem("DJI GO3");
 		comboxAppName.addItem("DJI GO4");
 		comboxAppName.addItem("DJI Pilot");
@@ -346,17 +346,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 					case "Text Validation":
 						ver_type = 1;
 						val = "TV";
-						String ele_path_text = "//android.widget.TextView[@resource-id='dji.go.v4:id/fpv_error_pop_item_title_tv']";
-						String expect_text = "自动起飞操作失败";
-						
-						BrickBean brick_valText = new BrickBean();
-						brick_valText.setProperty("val");
-						brick_valText.setValidation_name(1);
-						Map<String, String> params_text = new HashMap<>();
-						params_text.put("ele_path", ele_path_text);
-						params_text.put("expect_text", expect_text);
-						brick_valText.setParams(params_text);
-						caseList.add(brick_valText);
 						break;
 					case "Image Validation":
 						ver_type = 2;
@@ -365,19 +354,12 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 					case "Element Exist Validation":
 						ver_type = 3;
 						val = "EEV";
-						String ele_path_eleVal = "//android.widget.TextView[@resource-id='com.dji.industry.pilot:id/home_connect_cameras']";
-						BrickBean brick_valEle = new BrickBean();
-						brick_valEle.setProperty("val");
-						brick_valEle.setValidation_name(2);
-						Map<String, String> params_eleVal = new HashMap<>();
-						params_eleVal.put("ele_path", ele_path_eleVal);
-						brick_valEle.setParams(params_eleVal);
-						caseList.add(brick_valEle);
 						break;
 					}
 				}
 			}
 		});
+		
 		JLabel VerNull = new JLabel();
 		VerNull.setPreferredSize(new Dimension(35, 40));
 		buttonVerAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
@@ -910,6 +892,18 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		                	table_row[3] = "N/A";
 		                	table_row[4] = "N/A";
 		                	model.addRow(table_row);
+		                	
+		                	String ele_path_text = "//android.widget.TextView[@resource-id='dji.go.v4:id/fpv_error_pop_item_title_tv']";
+							String expect_text = "自动起飞操作失败";
+							
+							BrickBean brick_valText = new BrickBean();
+							brick_valText.setProperty("val");
+							brick_valText.setValidation_name(1);
+							Map<String, String> params_text = new HashMap<>();
+							params_text.put("ele_path", ele_path_text);
+							params_text.put("expect_text", expect_text);
+							brick_valText.setParams(params_text);
+							caseList.add(brick_valText);
 		                } catch (Exception e1) {
 		                	e1.printStackTrace();
 		                }
@@ -917,25 +911,25 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		            }
 		        });
 	    		buttonVersetTX_re.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	            	try{
-	                // i = the index of the selected row
-	                int i = casetable.getSelectedRow();
-	                
-	                if(i >= 0) 
-	                {
-	                   model.setValueAt("ver_text_re", i, 1);
-	                }
-	                else{
-	                    System.out.println("Update Act Error");
-	                	}
-	                } catch (Exception e1) {
-	                	e1.printStackTrace();
-	                }
-
-	            }
-	        });
+		            @Override
+		            public void actionPerformed(ActionEvent e) {
+		            	try{
+		                // i = the index of the selected row
+		                int i = casetable.getSelectedRow();
+		                
+		                if(i >= 0) 
+		                {
+		                   model.setValueAt("ver_text_re", i, 1);
+		                }
+		                else{
+		                    System.out.println("Update Act Error");
+		                	}
+		                } catch (Exception e1) {
+		                	e1.printStackTrace();
+		                }
+	
+		            }
+	    		});
 	    	}else if (ver_type == 3){
 	    		// Element exist verification method
 	    		ver_setting_frame.setSize(300, 200);
@@ -1017,6 +1011,15 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		                	table_row[3] = comboxViewName.getSelectedItem();
 		                	table_row[4] = comboxEleName.getSelectedItem();
 		                	model.addRow(table_row);
+		                	
+		                	String ele_path_eleVal = xpath;
+							BrickBean brick_valEle = new BrickBean();
+							brick_valEle.setProperty("val");
+							brick_valEle.setValidation_name(2);
+							Map<String, String> params_eleVal = new HashMap<>();
+							params_eleVal.put("ele_path", ele_path_eleVal);
+							brick_valEle.setParams(params_eleVal);
+							caseList.add(brick_valEle);
 		                } catch (Exception e1) {
 		                	e1.printStackTrace();
 		                }

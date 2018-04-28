@@ -64,8 +64,10 @@ public class RunTestCase implements Runnable{
 				} catch (Exception e) {
 					if (e instanceof NoSuchElementException)
 						logText.append("No such element: " + this.ele_customName);
-					else
+					else {
 						logText.append("Cannot get system info now");
+						e.printStackTrace();
+					}
 					break;
 				}
 			}
@@ -74,20 +76,19 @@ public class RunTestCase implements Runnable{
 	
 	public void actionSwitch(JSONObject action_info) throws Exception {
 		int action_name = action_info.getIntValue("action_name");
-		System.out.println("action heer----");
 		switch (action_name) {
-		case 1:
+		case 0:
 			action.click(ele_sub);
 			logText.append(this.ele_customName + " is clicked" + "\n");
 			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
 			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
 			break;
-		case 2:
+		case 1:
 			action.longPress(ele_sub);
 			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
 			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
 			break;
-		case 3:
+		case 2:
 			action.setText(ele_sub, action_info.getString("inputText"));
 			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
 			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));

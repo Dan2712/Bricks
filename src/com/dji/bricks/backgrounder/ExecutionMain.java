@@ -41,6 +41,9 @@ public class ExecutionMain {
 			case "dji.go.v4":
 				launchActivity = "dji.pilot.main.activity.DJILauncherActivity";
 				break;
+			case "com.dpad.launcher":
+				launchActivity = "com.dpad.launcher.Launcher";
+				break;
 		}
 		
 		try {

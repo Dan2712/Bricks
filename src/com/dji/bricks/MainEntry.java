@@ -7,6 +7,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.concurrent.ExecutorService;
@@ -113,7 +114,19 @@ public class MainEntry implements GlobalObserver {
         	System.exit(0);
         }
         
-        // 
+        //init appium
+    	Thread appium = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Runtime.getRuntime().exec("cmd /k start appium");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+    	cachedThreadPool.submit(appium);
+			
         frame = new JFrame();
         frame.setBounds(ConstantsUI.MAIN_WINDOW_X, ConstantsUI.MAIN_WINDOW_Y, ConstantsUI.MAIN_WINDOW_WIDTH,
                 ConstantsUI.MAIN_WINDOW_HEIGHT);
@@ -181,6 +194,7 @@ public class MainEntry implements GlobalObserver {
             		if (AppiumInit.driver != null)
             			AppiumInit.driver.quit();
             	
+            		Runtime.getRuntime().exec("taskkill /f /im cmd.exe"); 
                     connection.close();
                 }catch(Exception e1) {
                 	e1.printStackTrace();
