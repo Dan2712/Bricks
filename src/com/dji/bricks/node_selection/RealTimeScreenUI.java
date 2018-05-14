@@ -18,13 +18,15 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import javax.imageio.ImageIO;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
 import com.android.ddmlib.IDevice;
-import com.dji.bricks.MainEntry;
 import com.dji.bricks.GlobalObserver;
+import com.dji.bricks.MainEntry;
 import com.dji.bricks.mini_decode.MiniCapUtil;
 import com.dji.bricks.node_selection.UiAutomatorHelper.UiAutomatorException;
 import com.dji.bricks.node_selection.UiAutomatorHelper.UiAutomatorResult;
@@ -48,7 +50,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 	
 	private float mScale = 1.0f;
     private int mDx, mDy;
-    private int panel_bounds = 550;
+    private int panel_bounds = 530;
     
     private BufferedImage mScreenshot;
     private Cursor mOrginialCursor;
@@ -84,8 +86,18 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
         
 	@Override
 	public void frameImageChange(BufferedImage image) {
+		
+//		JFrame waitframe = new JFrame();
+//		JPanel waitpane = new JPanel();
+		
 		if (isPainting && paintTime == 0) {
 			this.mScreenshot = image;
+			
+//			waitframe.setSize(400, 300);
+//			waitframe.setTitle("WAIT");
+//			waitframe.setVisible(true);
+			
+//			System.out.println("start");
 			if (!isRuncase) {
 				cachedThreadPool.submit((new Runnable() {
 					
@@ -97,6 +109,11 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 							
 							if (result != null)
 								mModel = result.model;
+							
+//							waitframe.setVisible(false);
+//							waitframe.dispose();
+//							System.out.println("end");
+							
 						} catch (UiAutomatorException e) {
 							LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
 //							System.out.println("Loading. Current page doesn't contain UI Hierarchy xml.");

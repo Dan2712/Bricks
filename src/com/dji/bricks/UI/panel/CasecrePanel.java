@@ -269,7 +269,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 						}
 						comboxViewName.setSelectedItem(null);
 						comboxViewName.addItemListener(vlisten);
-						
+						comboxViewName.updateUI();
+						comboxEleName.updateUI();
 					} catch (SQLException e1) {
 						e1.printStackTrace();
 					} finally {
@@ -664,7 +665,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 
                 try {
                 	JDialog savewindow = new JDialog();
-                	
+                	savewindow.setVisible(true);
                 	SimpleDateFormat timeFormat = new SimpleDateFormat("hhmmss");
                 	String time = timeFormat.format(Calendar.getInstance().getTime());
                 	

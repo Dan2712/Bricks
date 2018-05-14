@@ -1,5 +1,6 @@
 package com.dji.bricks.UI.panel;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -42,8 +43,11 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	private static JLabel Focustatus;
 	private static JLabel LongClickStatus;
 	private static MyIconButton buttonSave;
+	private static MyIconButton buttonSuspend;
+	private static MyIconButton buttonPlayview;
 	private static CheckButton chkbtn;
-	private JPanel panelCenter;
+	private JPanel panelView;
+	private JPanel panelEreCenter;
 	
 	private RealTimeScreenUI realTimeScreen;
 	private IDevice device;
@@ -102,12 +106,25 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	 * @return
 	 */
 	private JPanel getCenterPanel() {
-		panelCenter = new JPanel();
-		panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
-		panelCenter.setLayout(new BorderLayout());
-		panelCenter.updateUI();
+		panelEreCenter = new JPanel();
+		JPanel panelSuspend = new JPanel();
+		panelView = new JPanel();
+		panelView.setPreferredSize(new Dimension(530,530));
+//		panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
+		panelView.setBackground(Color.BLUE);
+		panelView.setLayout(new BorderLayout());
+		panelView.updateUI();
+		
+        buttonSuspend = new MyIconButton(ConstantsUI.ICON_SUSPEND, ConstantsUI.ICON_SUSPEND_ENABLE,
+                ConstantsUI.ICON_SUSPEND_DISABLE, "");
+        buttonPlayview = new MyIconButton(ConstantsUI.ICON_PLAY, ConstantsUI.ICON_PLAY_ENABLE,
+                ConstantsUI.ICON_PLAY_DISABLE, "");
+        panelSuspend.add(buttonSuspend);
+        panelSuspend.add(buttonPlayview);
+		panelEreCenter.add(panelView);
+		panelEreCenter.add(panelSuspend);
 
-		return panelCenter;
+		return panelEreCenter;
 	}
 
 	/**
@@ -384,14 +401,14 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 			realTimeScreen = new RealTimeScreenUI(device, obs, this);
 			realTimeScreen.addMouseListener(realTimeScreen);
 			realTimeScreen.addMouseMotionListener(realTimeScreen);
-			panelCenter.add(realTimeScreen, BorderLayout.CENTER);
-			panelCenter.updateUI();
+			panelView.add(realTimeScreen, BorderLayout.CENTER);
+			panelView.updateUI();
 		} else {
 			realTimeScreen.stopGetXml();
 			realTimeScreen.removeMouseListener(realTimeScreen);
 			realTimeScreen.removeMouseMotionListener(realTimeScreen);
-			panelCenter.remove(realTimeScreen);
-			panelCenter.updateUI();
+			panelView.remove(realTimeScreen);
+			panelView.updateUI();
 			realTimeScreen = null;
 		} 
 	}
