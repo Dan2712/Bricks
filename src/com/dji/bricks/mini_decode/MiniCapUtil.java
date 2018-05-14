@@ -526,31 +526,6 @@ public class MiniCapUtil implements SubjectForListener{
 		return true;
 	}
 	
-	public boolean compareImage(BufferedImage imgA, BufferedImage imgB) {        
-	    try {
-	        DataBuffer dbA = imgA.getData().getDataBuffer();
-	        int sizeA = dbA.getSize();                      
-	        DataBuffer dbB = imgB.getData().getDataBuffer();
-	        int sizeB = dbB.getSize();
-	        // compare data-buffer objects //
-	        if(sizeA == sizeB) {
-	            for(int i=0; i<sizeA; i++) { 
-	                if(dbA.getElem(i) != dbB.getElem(i)) {
-	                    return false;
-	                }
-	            }
-	            return true;
-	        }
-	        else {
-	            return false;
-	        }
-	    } 
-	    catch (Exception e) { 
-	        LOG.error(("Failed to compare image files ..."));
-	        return  false;
-	    }
-	}
-	
 	public Queue<byte[]> getDataQueue() {
 		return dataQueue;
 	}

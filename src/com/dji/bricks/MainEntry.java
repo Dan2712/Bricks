@@ -57,8 +57,9 @@ public class MainEntry implements GlobalObserver {
 	
 	private SQLUtils sql;
 	private ADB adb;
-	public static ExecutorService cachedThreadPool = Executors.newFixedThreadPool(500);
+	public static ExecutorService cachedThreadPool = Executors.newFixedThreadPool(100);
 	private VariableChangeObserve obs = new VariableChangeObserve();
+	private Process pb = null;
 	
 	/**
      * 
@@ -119,7 +120,7 @@ public class MainEntry implements GlobalObserver {
 			@Override
 			public void run() {
 				try {
-					Runtime.getRuntime().exec("cmd /k start appium");
+					pb = Runtime.getRuntime().exec("cmd /k start appium");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -194,7 +195,7 @@ public class MainEntry implements GlobalObserver {
             		if (AppiumInit.driver != null)
             			AppiumInit.driver.quit();
             	
-            		Runtime.getRuntime().exec("taskkill /f /im cmd.exe"); 
+            		pb.destroyForcibly();
                     connection.close();
                 }catch(Exception e1) {
                 	e1.printStackTrace();

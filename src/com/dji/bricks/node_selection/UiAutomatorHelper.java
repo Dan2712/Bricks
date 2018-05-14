@@ -102,7 +102,7 @@ public class UiAutomatorHelper {
     }
 
     //to maintain a backward compatible api, use non-compressed as default snapshot type
-    public static synchronized UiAutomatorResult takeSnapshot(IDevice device, IProgressMonitor monitor,
+    public static UiAutomatorResult takeSnapshot(IDevice device, IProgressMonitor monitor,
            boolean compressed, Image screenshot) throws UiAutomatorException {
         if (monitor == null) {
             monitor = new NullProgressMonitor();

@@ -12,6 +12,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,9 +65,10 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
     private String screenPath = "";
     public static Boolean isRuncase = false;
     private Rectangle rect;
-	private volatile boolean isPainting = true;
-	private int paintTime = 0;
+	private int showStaticImage = 0;
 	private boolean mExploreMode = true;
+	private BufferedImage tmpImg = null;
+	private boolean staticMode = false;
     
 	public RealTimeScreenUI(IDevice device, VariableChangeObserve obs, JPanel parentPanel) {
     	this.device = device;
@@ -84,32 +86,54 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
         
 	@Override
 	public void frameImageChange(BufferedImage image) {
-		if (isPainting && paintTime == 0) {
-			this.mScreenshot = image;
-			if (!isRuncase) {
-				cachedThreadPool.submit((new Runnable() {
-					
-					@Override
-					public void run() {
-						try {
-							mModel = null;
-							result = UiAutomatorHelper.takeSnapshot(device, null, false, mScreenshot);
-							
-							if (result != null)
-								mModel = result.model;
-						} catch (UiAutomatorException e) {
-							LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
-//							System.out.println("Loading. Current page doesn't contain UI Hierarchy xml.");
-						}
-					}
-				}));
-			}
+		//start
+		if (!staticMode) {
+			if (showStaticImage == 0) {
+				this.mScreenshot = image;
+				tmpImg = image;
+//				if (!isRuncase) {
+//					cachedThreadPool.submit((new Runnable() {
+//						
+//						@Override
+//						public void run() {
+//							try {
+//								mModel = null;
+//								result = UiAutomatorHelper.takeSnapshot(device, null, false, mScreenshot);
+//	
+//								if (result != null)
+//									//get the model	
+//									mModel = result.model;
+//							} catch (UiAutomatorException e) {
+//								LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
+//	//							System.out.println("Loading. Current page doesn't contain UI Hierarchy xml.");
+//							}
+//						}
+//					}));
+//				}
+				
+				this.updateScreenshotTransformation();
+				this.setSize(panel_bounds, panel_bounds);
 			
-			this.updateScreenshotTransformation();
-			this.setSize(panel_bounds, panel_bounds);
-		
-			parentPanel.repaint();
-			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
+				parentPanel.repaint();
+				this.paintImmediately(new Rectangle(mDx, mDy, width, height));
+			}
+		} else {
+			this.mScreenshot = tmpImg;
+			cachedThreadPool.submit((new Runnable() {
+				@Override
+				public void run() {
+					try {
+						mModel = null;
+						result = UiAutomatorHelper.takeSnapshot(device, null, false, mScreenshot);
+
+						if (result != null)
+							mModel = result.model;
+					} catch (UiAutomatorException e) {
+						LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
+//							System.out.println("Loading. Current page doesn't contain UI Hierarchy xml.");
+					}
+				}
+			}));
 		}
 	}
 	
@@ -156,7 +180,12 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 		
 		if (mModel != null) {
 			if (isExploreMode()) {
-System.out.println("here----exploremode");
+System.out.println("-exploremode" + " " + showStaticImage);
+				
+				if (mScreenshot != null) {
+					g2.drawImage(mScreenshot, mDx, mDy, width, height, this);
+					mScreenshot.flush();
+				}
 				rect = mModel.getCurrentDrawingRect();
 				if (rect != null) {
 					g2.setColor(Color.RED);
@@ -166,10 +195,11 @@ System.out.println("here----exploremode");
 					g2.drawRect(mDx + getScaledSize(rect.x), mDy + getScaledSize(rect.y),
 		                    getScaledSize(rect.width), getScaledSize(rect.height));
 				}
-				paintTime = 0;
+				
+				showStaticImage = 0;
 			} else {
 System.out.println("here----not exploremode");
-				if (paintTime == 0) {
+				if (showStaticImage == 0) {
 					if (mScreenshot != null) {
 						g2.drawImage(mScreenshot, mDx, mDy, width, height, this);
 						mScreenshot.flush();
@@ -183,8 +213,8 @@ System.out.println("here----not exploremode");
 						g2.drawRect(mDx + getScaledSize(rect.x), mDy + getScaledSize(rect.y),
 			                    getScaledSize(rect.width), getScaledSize(rect.height));
 					}
-					paintTime = 1;
-				} else if (paintTime == 1) {
+					showStaticImage = 1;
+				} else if (showStaticImage == 1) {
 					if (screenImage != null) {
 						g2.drawImage(screenImage, mDx, mDy, width, height, this);
 						screenImage.flush();
@@ -243,10 +273,6 @@ System.out.println("here----not exploremode");
 		mModel = null;
 		repaint();
 	}
-    
-	public void togglePainting() {
-		this.isPainting = !isPainting;
-	}
 	
 	public boolean isExploreMode() {
         return mExploreMode;
@@ -256,6 +282,17 @@ System.out.println("here----not exploremode");
         mExploreMode = !mExploreMode;
     }
 	
+    public void toggleStaticMode() {
+    	staticMode = !staticMode;
+    	if (staticMode) {
+    		minicap.stopScreenListener();
+    		this.frameImageChange(tmpImg);
+    	} else {
+    		minicap.startScreenListener();
+    		this.mModel = null;
+    	}
+    }
+    
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -273,8 +310,9 @@ System.out.println("here----not exploremode");
             toggleExploreMode();
             
             BufferedImage image = new BufferedImage(panel_bounds, panel_bounds, BufferedImage.TYPE_INT_RGB);
-			RealTimeScreenUI.this.paint(image.getGraphics());
+//			RealTimeScreenUI.this.paint(image.getGraphics());
 			screenImage = image.getSubimage(mDx, mDy, width, height);
+			
 			parentPanel.repaint();
             repaint();
 			
@@ -303,7 +341,7 @@ System.out.println("here----not exploremode");
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
 		setCursor(mCrossCursor);
-		if (mModel != null && paintTime == 0) {
+		if (mModel != null && showStaticImage == 0) {
 			parentPanel.repaint();
 			repaint();
 		}

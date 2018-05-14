@@ -318,43 +318,43 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		buttonSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	if(textFieldEleItem_5.getText().equals(null) && textFieldEleItem_6.getText().equals(null)){
-            		JOptionPane.showMessageDialog(buttonSave,"Failed");
-            	}else{
-            		buttonSave.setEnabled(true);
-                    try {
-                    	app_name_text = textFieldEleItem_4.getText();
-                    	activity_name_text = textFieldEleItem_5.getText();
-                    	custom_name_text = textFieldEleItem_6.getText();
-                    	state_text = node_info.get("clickable") + node_info.get("scrollable") + node_info.get("checkable") + node_info.get("focusable") + node_info.get("long-clickable");
-                    	xpath_text = node_info.get("xpath");
-                    	screen_text = node_info.get("screenPath");
-                    	app_name.put("APP_NAME", app_name_text);
-                    	custom_name.put("CUSTOM_NAME", custom_name_text);
-                    	activity_name.put("ACTIVITY_NAME", activity_name_text);
-                    	xpath.put("XPATH", xpath_text);
-                    	state.put("STATE", state_text);
-                    	screen.put("SCREEN_PATH", screen_text);
-                    	sqllist.add(app_name);
-                    	sqllist.add(custom_name);
-                    	sqllist.add(activity_name);
-                    	sqllist.add(xpath);
-                    	sqllist.add(state);
-                    	sqllist.add(screen);
-                    	sql.insertEle("ELEMENT", sqllist);
-                    	JOptionPane.showMessageDialog(buttonSave,"Save Complete");
-                    	
-                    	textFieldEleItem_5.setText("");
-                    	textFieldEleItem_6.setText("");
+//            	if(textFieldEleItem_5.getText().equals(null) && textFieldEleItem_6.getText().equals(null)){
+//            		JOptionPane.showMessageDialog(buttonSave,"Failed");
+//            	}else{
+//            		buttonSave.setEnabled(true);
+//                    try {
+//                    	app_name_text = textFieldEleItem_4.getText();
+//                    	activity_name_text = textFieldEleItem_5.getText();
+//                    	custom_name_text = textFieldEleItem_6.getText();
+//                    	state_text = node_info.get("clickable") + node_info.get("scrollable") + node_info.get("checkable") + node_info.get("focusable") + node_info.get("long-clickable");
+//                    	xpath_text = node_info.get("xpath");
+//                    	screen_text = node_info.get("screenPath");
+//                    	app_name.put("APP_NAME", app_name_text);
+//                    	custom_name.put("CUSTOM_NAME", custom_name_text);
+//                    	activity_name.put("ACTIVITY_NAME", activity_name_text);
+//                    	xpath.put("XPATH", xpath_text);
+//                    	state.put("STATE", state_text);
+//                    	screen.put("SCREEN_PATH", screen_text);
+//                    	sqllist.add(app_name);
+//                    	sqllist.add(custom_name);
+//                    	sqllist.add(activity_name);
+//                    	sqllist.add(xpath);
+//                    	sqllist.add(state);
+//                    	sqllist.add(screen);
+//                    	sql.insertEle("ELEMENT", sqllist);
+//                    	JOptionPane.showMessageDialog(buttonSave,"Save Complete");
+//                    	
+//                    	textFieldEleItem_5.setText("");
+//                    	textFieldEleItem_6.setText("");
+//
+//                    	
+//                    } catch (Exception e1) {
+//                        e1.printStackTrace();
+//                    }
+//            		
+//            	}
 
-                    	
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
-            		
-            	}
-
-//            	realTimeScreen.togglePainting();
+            	realTimeScreen.toggleStaticMode();
 //            	MainEntry.cachedThreadPool.shutdownNow();
             }
         });
