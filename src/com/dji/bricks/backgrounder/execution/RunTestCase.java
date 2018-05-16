@@ -131,6 +131,7 @@ public class RunTestCase implements Runnable{
 				logText.append("Text validation fail" + "\n");
 			break;
 		case 2:
+			System.out.println("here--------------");
 			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 1000));
 			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 1000));
 			String ele_name_elval = params.getString("ele_path");

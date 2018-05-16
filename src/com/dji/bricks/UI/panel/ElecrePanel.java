@@ -110,8 +110,8 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		JPanel panelSuspend = new JPanel();
 		panelView = new JPanel();
 		panelView.setPreferredSize(new Dimension(530,530));
-//		panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
-		panelView.setBackground(Color.BLUE);
+		panelView.setBackground(ConstantsUI.MAIN_BACK_COLOR);
+//		panelView.setBackground(Color.BLUE);
 		panelView.setLayout(new BorderLayout());
 		panelView.updateUI();
 		
@@ -277,7 +277,9 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		else if (node_info.get("package").equals("com.dji.industry.pilot"))
 			textFieldEleItem_4.setText("DJI Pilot");
 		else if (node_info.get("package").equals("com.dpad.launcher"))
-			textFieldEleItem_4.setText("RM500 launcher");
+			textFieldEleItem_4.setText("RM500 Launcher");
+		else if (node_info.get("package").equals("com.android.settings"))
+			textFieldEleItem_4.setText("RM500 Settings");
 		
 		if(node_info != null && node_info.containsKey("clickable")){
 			if(node_info.get("clickable").equals("1")){
@@ -335,43 +337,42 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		buttonSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//            	if(textFieldEleItem_5.getText().equals(null) && textFieldEleItem_6.getText().equals(null)){
-//            		JOptionPane.showMessageDialog(buttonSave,"Failed");
-//            	}else{
-//            		buttonSave.setEnabled(true);
-//                    try {
-//                    	app_name_text = textFieldEleItem_4.getText();
-//                    	activity_name_text = textFieldEleItem_5.getText();
-//                    	custom_name_text = textFieldEleItem_6.getText();
-//                    	state_text = node_info.get("clickable") + node_info.get("scrollable") + node_info.get("checkable") + node_info.get("focusable") + node_info.get("long-clickable");
-//                    	xpath_text = node_info.get("xpath");
-//                    	screen_text = node_info.get("screenPath");
-//                    	app_name.put("APP_NAME", app_name_text);
-//                    	custom_name.put("CUSTOM_NAME", custom_name_text);
-//                    	activity_name.put("ACTIVITY_NAME", activity_name_text);
-//                    	xpath.put("XPATH", xpath_text);
-//                    	state.put("STATE", state_text);
-//                    	screen.put("SCREEN_PATH", screen_text);
-//                    	sqllist.add(app_name);
-//                    	sqllist.add(custom_name);
-//                    	sqllist.add(activity_name);
-//                    	sqllist.add(xpath);
-//                    	sqllist.add(state);
-//                    	sqllist.add(screen);
-//                    	sql.insertEle("ELEMENT", sqllist);
-//                    	JOptionPane.showMessageDialog(buttonSave,"Save Complete");
-//                    	
-//                    	textFieldEleItem_5.setText("");
-//                    	textFieldEleItem_6.setText("");
-//
-//                    	
-//                    } catch (Exception e1) {
-//                        e1.printStackTrace();
-//                    }
-//            		
-//            	}
+            	if(textFieldEleItem_5.getText().equals(null) && textFieldEleItem_6.getText().equals(null)){
+            		JOptionPane.showMessageDialog(buttonSave,"Failed");
+            	}else{
+            		buttonSave.setEnabled(true);
+                    try {
+                    	app_name_text = textFieldEleItem_4.getText();
+                    	activity_name_text = textFieldEleItem_5.getText();
+                    	custom_name_text = textFieldEleItem_6.getText();
+                    	state_text = node_info.get("clickable") + node_info.get("scrollable") + node_info.get("checkable") + node_info.get("focusable") + node_info.get("long-clickable");
+                    	xpath_text = node_info.get("xpath");
+                    	screen_text = node_info.get("screenPath");
+                    	app_name.put("APP_NAME", app_name_text);
+                    	custom_name.put("CUSTOM_NAME", custom_name_text);
+                    	activity_name.put("ACTIVITY_NAME", activity_name_text);
+                    	xpath.put("XPATH", xpath_text);
+                    	state.put("STATE", state_text);
+                    	screen.put("SCREEN_PATH", screen_text);
+                    	sqllist.add(app_name);
+                    	sqllist.add(custom_name);
+                    	sqllist.add(activity_name);
+                    	sqllist.add(xpath);
+                    	sqllist.add(state);
+                    	sqllist.add(screen);
+                    	sql.insertEle("ELEMENT", sqllist);
+                    	JOptionPane.showMessageDialog(buttonSave,"Save Complete");
+                    	
+                    	textFieldEleItem_5.setText("");
+                    	textFieldEleItem_6.setText("");
 
-            	realTimeScreen.toggleStaticMode();
+                    	
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+            		
+            	}
+
 //            	MainEntry.cachedThreadPool.shutdownNow();
             }
         });
@@ -385,9 +386,23 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	            }
 	        }
 		});
-	
-
-		}
+		
+		buttonSuspend.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				realTimeScreen.startStaticMode();
+			}
+		});
+		
+		buttonPlayview.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				realTimeScreen.stopStaticMode();
+			}
+		});
+	}
 
 	@Override
 	public void frameImageChange(BufferedImage image) {

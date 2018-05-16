@@ -241,8 +241,13 @@ public class MiniCapUtil implements SubjectForListener{
 	 * @return 0 or 90 represented the angle
 	 */
 	private int dumpsOrientation() {
-		String output = this.executeShellCommand(ADB_GET_ORIENTATION);
-		int real_ori = Character.getNumericValue(output.charAt(72));
+		int real_ori = -1;
+		try {
+			String output = this.executeShellCommand(ADB_GET_ORIENTATION);
+			real_ori = Character.getNumericValue(output.charAt(72));
+		} catch (IndexOutOfBoundsException e) {
+			LOG.error("Get screen error");
+		}
 		
 		switch (real_ori) {
 		case 0:
@@ -270,7 +275,7 @@ public class MiniCapUtil implements SubjectForListener{
 		try {
 			bais.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.error("image create failed: " + e);
 		}
 		return image_tmp;
 	}

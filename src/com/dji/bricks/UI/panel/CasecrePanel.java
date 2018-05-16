@@ -41,7 +41,11 @@ import javax.swing.table.DefaultTableModel;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.TimeoutException;
 import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.MainEntry;
 import com.dji.bricks.UI.BrickBean;
@@ -140,6 +144,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private JTable casetable;
 	private DefaultTableModel model;
 	private String appName = "";
+	private String appStartName = "";
 	private String pkg = "";
 	private SQLUtils sql = null;
 	private ResultSet xpathSet = null;
@@ -233,7 +238,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.reele"));
 
 		comboxAppName = new JComboBox<String>();
-		comboxAppName.addItem("RM500 launcher");
+		comboxAppName.addItem("RM500 Launcher");
 		comboxAppName.addItem("DJI GO3");
 		comboxAppName.addItem("DJI GO4");
 		comboxAppName.addItem("DJI Pilot");
@@ -438,6 +443,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 	brick.setEle_xpath(xpath);
                 	brick.setCustom_name(cus_name);
                 	brick.setProperty("ele");
+                	if (caseList.size() == 0)
+                		appStartName = appName;
+                	
                 	caseList.add(brick);
                 } catch (Exception e1) {
                 	e1.printStackTrace();
@@ -627,17 +635,23 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	  	buttonPlayList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+            	
             	String str = JSON.toJSONString(caseList);
             	System.out.println(str);
             	JSONArray jsonFile = JSON.parseArray(str);
         	
-            	switch (appName) {
+            	switch (appStartName) {
             		case "DJI GO4":
             			pkg = "dji.go.v4";
             			break;
             		case "DJI GO3":
             			pkg = "dji.pilot";
+            			break;
+            		case "RM500 Launcher":
+            			pkg = "com.dpad.launcher";
+            			break;
+            		case "RM500 Settings":
+            			pkg = "com.android.settings.Settings";
             			break;
             	}
             	
@@ -951,6 +965,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    		comboxAppName.addItem("DJI GO3");
 	    		comboxAppName.addItem("DJI GO4");
 	    		comboxAppName.addItem("DJI Pilot");
+	    		comboxAppName.addItem("RM500 Launcher");
+	    		comboxAppName.addItem("RM500 Settings");
 	    		comboxAppName.setEditable(false);
 	    		comboxAppName.setSelectedItem(null);
 	    		comboxAppName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);

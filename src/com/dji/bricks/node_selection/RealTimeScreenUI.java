@@ -72,6 +72,10 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 	private BufferedImage tmpImg = null;
 	private boolean staticMode = false;
     
+	public boolean isStaticMode() {
+		return staticMode;
+	}
+
 	public RealTimeScreenUI(IDevice device, VariableChangeObserve obs, JPanel parentPanel) {
     	this.device = device;
     	this.obs = obs;
@@ -131,8 +135,8 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 						if (result != null)
 							mModel = result.model;
 					} catch (UiAutomatorException e) {
-						LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
-//							System.out.println("Loading. Current page doesn't contain UI Hierarchy xml.");
+//						LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
+						System.out.println("Loading. Current page doesn't contain UI Hierarchy xml.");
 					}
 				}
 			}));
@@ -284,15 +288,16 @@ System.out.println("here----not exploremode");
         mExploreMode = !mExploreMode;
     }
 	
-    public void toggleStaticMode() {
-    	staticMode = !staticMode;
-    	if (staticMode) {
-    		minicap.stopScreenListener();
-    		this.frameImageChange(tmpImg);
-    	} else {
-    		minicap.startScreenListener();
-    		this.mModel = null;
-    	}
+    public void startStaticMode() {
+    	minicap.stopScreenListener();
+    	this.staticMode = true;
+    	this.frameImageChange(tmpImg);
+    }
+    
+    public void stopStaticMode() {
+    	minicap.startScreenListener();
+    	this.staticMode = false;
+		this.mModel = null;
     }
     
 	@Override
