@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -88,11 +90,12 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private static MyIconButton buttonVersetTimer_re;
 	private int ver_type;
 	private LinkedList<BrickBean> caseList = new LinkedList<>();
-	
+	public final static String CURRENT_DIR = System.getProperty("user.dir");
 	private String xpath = "";
 	private String cus_name = "";
 	private String act_name = "";
 	private String val = "";
+	private String scrshot_pathname = "";
 	private int action;
 	private IDevice device;
 	
@@ -508,6 +511,18 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             }
         });
 	  	
+	  	buttonScrshot.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                try {
+                	new ScreenshotMethod();
+                } catch (Exception e1) {
+                	e1.printStackTrace();
+                }
+
+            }
+        });
 	  	buttonRowDelete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -799,6 +814,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 				while (xpathSet.next()) {
 					xpath = xpathSet.getString("XPATH");
 					cus_name = xpathSet.getString("CUSTOM_NAME");
+					scrshot_pathname = xpathSet.getString("SCREEN_PATH");
 					String state = xpathSet.getString(5);
 					for (int i = 0; i < state.length(); i++) {
 						if (state.charAt(i) == '1') {
@@ -877,6 +893,24 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		this.device = devices[0];
 	}
 
+	class ScreenshotMethod{
+		//Init popup window
+		JFrame scrshot_frame = new JFrame();
+		public ScreenshotMethod(){
+			scrshot_frame.setSize(500, 500);
+			scrshot_frame.setTitle("ScreenShot View");
+			scrshot_frame.setVisible(true);
+			String scrshotpath = "/screenshot"+ scrshot_pathname;
+			ImageIcon Scrshot_image =new ImageIcon(
+		            CURRENT_DIR + File.separator + "screenshot" + File.separator + scrshot_pathname + ".jpg");
+			JLabel picLabel = new JLabel(Scrshot_image);
+			scrshot_frame.add(picLabel);
+			scrshot_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			scrshot_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
+			scrshot_frame.setLocationRelativeTo(MainEntry.frame);
+		}
+
+	}
 	
 	class VerifiWindow extends JFrame{
 		// init popup window
