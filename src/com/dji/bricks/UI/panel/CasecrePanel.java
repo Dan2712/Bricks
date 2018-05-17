@@ -245,6 +245,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		comboxAppName.addItem("DJI GO3");
 		comboxAppName.addItem("DJI GO4");
 		comboxAppName.addItem("DJI Pilot");
+		comboxAppName.addItem("RM500 Settings");
 		comboxAppName.setEditable(false);
 		comboxAppName.setSelectedItem(null);
 		comboxAppName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
@@ -900,9 +901,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 			scrshot_frame.setSize(500, 500);
 			scrshot_frame.setTitle("ScreenShot View");
 			scrshot_frame.setVisible(true);
-			String scrshotpath = "/screenshot"+ scrshot_pathname;
+	System.out.println(scrshot_pathname);
 			ImageIcon Scrshot_image =new ImageIcon(
-		            CURRENT_DIR + File.separator + "screenshot" + File.separator + scrshot_pathname + ".jpg");
+		            CURRENT_DIR + File.separator + scrshot_pathname);
 			JLabel picLabel = new JLabel(Scrshot_image);
 			scrshot_frame.add(picLabel);
 			scrshot_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

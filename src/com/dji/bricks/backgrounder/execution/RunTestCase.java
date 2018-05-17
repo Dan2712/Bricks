@@ -80,18 +80,18 @@ public class RunTestCase implements Runnable{
 		case 0:
 			action.click(ele_sub);
 			logText.append(this.ele_customName + " is clicked" + "\n");
-			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
-			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
+//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
+//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
 			break;
 		case 1:
 			action.longPress(ele_sub);
-			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
-			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
+//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
+//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
 			break;
 		case 2:
 			action.setText(ele_sub, action_info.getString("inputText"));
-			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
-			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
+//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
+//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
 			break;
 		case 4:
 			break;
@@ -108,8 +108,8 @@ public class RunTestCase implements Runnable{
 		case 10:
 			action.dragBar(ele_sub);
 			logText.setText(this.ele_customName + " is dragged" + "\n");
-			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 1000));
-			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 1000));
+//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 1000));
+//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 1000));
 			break;
 		case 11:
 			break;
@@ -131,9 +131,8 @@ public class RunTestCase implements Runnable{
 				logText.append("Text validation fail" + "\n");
 			break;
 		case 2:
-			System.out.println("here--------------");
-			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 1000));
-			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 1000));
+//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 1000));
+//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 1000));
 			String ele_name_elval = params.getString("ele_path");
 			if (validation.getExactEle(ele_name_elval))
 				logText.append("Element validation success");

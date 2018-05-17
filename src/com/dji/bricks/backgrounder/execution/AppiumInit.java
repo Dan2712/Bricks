@@ -25,6 +25,7 @@ public class AppiumInit {
         capabilities.setCapability("appPackage", appPackage);  
         capabilities.setCapability("appActivity", launchActivity);
         capabilities.setCapability("noReset", true);
+        capabilities.setCapability("full-reset", false);
         capabilities.setCapability("sessionOverride", true);    //override session everytime， otherwise cannot start a new session second time
 //        capabilities.setCapability("ignoreUnimportantViews", true);
 

@@ -94,7 +94,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 	public void frameImageChange(BufferedImage image) {
 		//start
 		if (!staticMode) {
-			if (showStaticImage == 0) {
+//			if (showStaticImage == 0) {
 				this.mScreenshot = image;
 				tmpImg = image;
 //				if (!isRuncase) {
@@ -122,7 +122,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 			
 				parentPanel.repaint();
 				this.paintImmediately(new Rectangle(mDx, mDy, width, height));
-			}
+//			}
 		} else {
 			this.mScreenshot = tmpImg;
 			cachedThreadPool.submit((new Runnable() {
@@ -135,11 +135,14 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 						if (result != null)
 							mModel = result.model;
 					} catch (UiAutomatorException e) {
-//						LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
-						System.out.println("Loading. Current page doesn't contain UI Hierarchy xml.");
+						LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
+//						System.out.println("Loading. Current page doesn't contain UI Hierarchy xml.");
 					}
 				}
 			}));
+			
+			parentPanel.repaint();
+			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
 		}
 	}
 	
@@ -183,11 +186,9 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+System.out.println(mModel);
 		if (mModel != null) {
 			if (isExploreMode()) {
-System.out.println("-exploremode" + " " + showStaticImage);
-				
 				if (mScreenshot != null) {
 					g2.drawImage(mScreenshot, mDx, mDy, width, height, this);
 					mScreenshot.flush();
@@ -204,7 +205,6 @@ System.out.println("-exploremode" + " " + showStaticImage);
 				
 				showStaticImage = 0;
 			} else {
-System.out.println("here----not exploremode");
 				if (showStaticImage == 0) {
 					if (mScreenshot != null) {
 						g2.drawImage(mScreenshot, mDx, mDy, width, height, this);
@@ -330,6 +330,7 @@ System.out.println("here----not exploremode");
 					try {
 						if (!isExploreMode()) {
 							screenPath = "screenshot/" + System.currentTimeMillis() + ".jpg";
+							node_info.replace("screenPath", screenPath);
 							File screenShot = new File(screenPath);
 							if (!screenShot.getParentFile().exists())
 								screenShot.getParentFile().mkdirs();
