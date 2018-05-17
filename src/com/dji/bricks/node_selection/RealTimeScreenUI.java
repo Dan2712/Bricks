@@ -71,6 +71,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 	private boolean mExploreMode = true;
 	private BufferedImage tmpImg = null;
 	private boolean staticMode = false;
+	private JFrame waitframe = null;
     
 	public boolean isStaticMode() {
 		return staticMode;
@@ -85,6 +86,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 //		minicap.takeScreenShotOnce();
 		minicap.startScreenListener();
 		
+		waitframe = new JFrame();
         mOrginialCursor = getCursor();
         mCrossCursor = new Cursor(Cursor.HAND_CURSOR);
         cachedThreadPool = MainEntry.cachedThreadPool;
@@ -94,7 +96,6 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 	public void frameImageChange(BufferedImage image) {
 		//start
 		if (!staticMode) {
-//			if (showStaticImage == 0) {
 				this.mScreenshot = image;
 				tmpImg = image;
 //				if (!isRuncase) {
@@ -122,7 +123,6 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 			
 				parentPanel.repaint();
 				this.paintImmediately(new Rectangle(mDx, mDy, width, height));
-//			}
 		} else {
 			this.mScreenshot = tmpImg;
 			cachedThreadPool.submit((new Runnable() {
@@ -134,15 +134,14 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 
 						if (result != null)
 							mModel = result.model;
+						
+						waitframe.setVisible(false);
+						waitframe.dispose();
 					} catch (UiAutomatorException e) {
 						LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
-//						System.out.println("Loading. Current page doesn't contain UI Hierarchy xml.");
 					}
 				}
 			}));
-			
-			parentPanel.repaint();
-			this.paintImmediately(new Rectangle(mDx, mDy, width, height));
 		}
 	}
 	
@@ -186,7 +185,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-System.out.println(mModel);
+		
 		if (mModel != null) {
 			if (isExploreMode()) {
 				if (mScreenshot != null) {
@@ -289,15 +288,21 @@ System.out.println(mModel);
     }
 	
     public void startStaticMode() {
+    	waitframe.setSize(400, 300);
+		waitframe.setTitle("WAIT");
+		waitframe.setVisible(true);
+		
     	minicap.stopScreenListener();
     	this.staticMode = true;
     	this.frameImageChange(tmpImg);
+    	mExploreMode = true;
     }
     
     public void stopStaticMode() {
     	minicap.startScreenListener();
     	this.staticMode = false;
 		this.mModel = null;
+		mExploreMode = false;
     }
     
 	@Override
@@ -317,7 +322,7 @@ System.out.println(mModel);
             toggleExploreMode();
             
             BufferedImage image = new BufferedImage(panel_bounds, panel_bounds, BufferedImage.TYPE_INT_RGB);
-//			RealTimeScreenUI.this.paint(image.getGraphics());
+			RealTimeScreenUI.this.paint(image.getGraphics());
 			screenImage = image.getSubimage(mDx, mDy, width, height);
 			
 			parentPanel.repaint();
@@ -335,7 +340,7 @@ System.out.println(mModel);
 							if (!screenShot.getParentFile().exists())
 								screenShot.getParentFile().mkdirs();
 							
-							ImageIO.write(image, "jpg", screenShot);
+							ImageIO.write(screenImage, "jpg", screenShot);
 						}
 					} catch (IOException e) {
 						e.printStackTrace();

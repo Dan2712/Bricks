@@ -901,7 +901,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 			scrshot_frame.setSize(500, 500);
 			scrshot_frame.setTitle("ScreenShot View");
 			scrshot_frame.setVisible(true);
-	System.out.println(scrshot_pathname);
 			ImageIcon Scrshot_image =new ImageIcon(
 		            CURRENT_DIR + File.separator + scrshot_pathname);
 			JLabel picLabel = new JLabel(Scrshot_image);

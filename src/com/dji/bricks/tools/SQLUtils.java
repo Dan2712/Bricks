@@ -60,7 +60,7 @@ public class SQLUtils {
 		
 	}
 	
-	public void insertEle(String tableName, ArrayList<Map<String, String>> patterns) {
+	public void insertEle(String tableName, ArrayList<Map<String, String>> patterns) throws SQLException {
 		String activity_name = "";
 		String app_name = "";
 		String custom_name = "";
@@ -75,19 +75,15 @@ public class SQLUtils {
 		state = patterns.get(4).get("STATE");
 		screen_path = patterns.get(5).get("SCREEN_PATH");
 		
-		try {
-			Statement stmt = conn.createStatement();
-			String insert_act = "INSERT INTO ACTIVITY (ACTIVITY_NAME, APP_NAME) "
-					+ "VALUES (\"" + activity_name + "\", \"" + app_name + "\");";
-			stmt.executeUpdate(insert_act);
-			String insert_ele = "INSERT INTO ELEMENT (CUSTOM_NAME, XPATH, ACTIVITY_NAME, APP_NAME, STATE, SCREEN_PATH) "
-					+ "VALUES (\"" + custom_name + "\", \"" + xpath + "\", \"" + activity_name + "\", \"" + app_name + "\", \"" + state + "\", \"" + screen_path + "\");";
-			stmt.executeUpdate(insert_ele);
-			
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		Statement stmt = conn.createStatement();
+		String insert_act = "INSERT INTO ACTIVITY (ACTIVITY_NAME, APP_NAME) "
+				+ "VALUES (\"" + activity_name + "\", \"" + app_name + "\");";
+		stmt.executeUpdate(insert_act);
+		String insert_ele = "INSERT INTO ELEMENT (CUSTOM_NAME, XPATH, ACTIVITY_NAME, APP_NAME, STATE, SCREEN_PATH) "
+				+ "VALUES (\"" + custom_name + "\", \"" + xpath + "\", \"" + activity_name + "\", \"" + app_name + "\", \"" + state + "\", \"" + screen_path + "\");";
+		stmt.executeUpdate(insert_ele);
+		
+		stmt.close();
 	}
 	
 	public ResultSet queryElement(String tableName, String appName) {

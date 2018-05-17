@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -368,8 +369,9 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
                     	textFieldEleItem_6.setText("");
 
                     	
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
+                    } catch (SQLException e1) {
+                    	if (e1.getMessage().equals("[SQLITE_CONSTRAINT_UNIQUE]  A UNIQUE constraint failed (UNIQUE constraint failed: ELEMENT.CUSTOM_NAME)"))
+                    		JOptionPane.showMessageDialog(buttonSave, "Failed! The element already exists");
                     }
             		
             	}

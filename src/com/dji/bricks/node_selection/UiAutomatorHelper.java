@@ -165,27 +165,15 @@ public class UiAutomatorHelper {
         }
 
         UiAutomatorModel model;
-        
-        JFrame waitframe = new JFrame();
-		JPanel waitpane = new JPanel();
 		
         try {
             model = new UiAutomatorModel(xmlDumpFile);
-            
-            waitframe.setSize(400, 300);
-			waitframe.setTitle("WAIT");
-			waitframe.setVisible(true);
-			System.out.println("start");
-			
         } catch (Exception e) {
             String msg = "Error while parsing UI hierarchy XML file: " + e.getMessage()+e.getStackTrace();
             throw new UiAutomatorException(msg, e);
         }
 
         monitor.subTask("Obtaining device screenshot");
-		waitframe.setVisible(false);
-		waitframe.dispose();
-		System.out.println("end");
         return new UiAutomatorResult(xmlDumpFile, model, screenshot);
     }
 

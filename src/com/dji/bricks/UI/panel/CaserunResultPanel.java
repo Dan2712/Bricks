@@ -149,12 +149,13 @@ public class CaserunResultPanel extends JPanel{
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    JFileChooser jfc = new JFileChooser();  
+                    JFileChooser jfc = new JFileChooser(new File("/json"));  
                     jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES );  
                     jfc.showDialog(new JLabel(), "选择");  
                     filepath = jfc.getSelectedFile().getPath();
                     
-                    appName = filepath.substring(0, filepath.indexOf("_"));
+                    appName = filepath.substring(filepath.lastIndexOf("\\")+1, filepath.indexOf("_"));
+                    System.out.println(appName);
                     jsonFile = FileUtils.loadJson(filepath);
                     case_name.setText(filepath);
                 } catch (Exception e1) {
@@ -176,18 +177,18 @@ public class CaserunResultPanel extends JPanel{
 						String pkg = "";
 						
 						switch (appName) {
-							case "DJI GO3":
-								pkg = "dji.pilot";
-								break;
 							case "DJI GO4":
-								pkg = "dji.go.v4";
-								break;
-							case "DJI Pilot":
-								pkg = "com.dji.industry.pilot";
-								break;
-							case "General":
-								pkg = "";
-								break;
+		            			pkg = "dji.go.v4";
+		            			break;
+		            		case "DJI GO3":
+		            			pkg = "dji.pilot";
+		            			break;
+		            		case "RM500 Launcher":
+		            			pkg = "com.dpad.launcher";
+		            			break;
+		            		case "RM500 Settings":
+		            			pkg = "com.android.settings.Settings";
+		            			break;
 						}
 						
 						logprint.setText("");
