@@ -438,7 +438,14 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 	table_row[2] = comboxAppName.getSelectedItem();
                 	table_row[3] = comboxViewName.getSelectedItem();
                 	table_row[4] = comboxEleName.getSelectedItem();
+                	
+                	int i = casetable.getSelectedRow();
+                    if(i >= 0){
+                    	model.insertRow(i+1, table_row);
+                    }else{
             	    model.addRow(table_row);
+                    }
+                    
                 	BrickBean brick = new BrickBean();
                 	brick.setEle_xpath(xpath);
                 	brick.setCustom_name(cus_name);
@@ -470,7 +477,14 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 	table_row[2] = act_name;
                 	table_row[3] = "N/A";
                 	table_row[4] = "N/A";
-                	model.addRow(table_row);
+                	
+                	int i = casetable.getSelectedRow();
+                    if(i >= 0){
+                    	model.insertRow(i+1, table_row);
+                    }else{
+            	    model.addRow(table_row);
+                    }
+                    
             	    BrickBean brick = new BrickBean();
                 	brick.setAction_name(action);
                 	brick.setProperty("act");
@@ -906,7 +920,13 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		                	table_row[2] = "Text";
 		                	table_row[3] = "N/A";
 		                	table_row[4] = "N/A";
-		                	model.addRow(table_row);
+		                	
+		                	int i = casetable.getSelectedRow();
+		                    if(i >= 0){
+		                    	model.insertRow(i+1, table_row);
+		                    }else{
+		            	    model.addRow(table_row);
+		                    }
 		                	
 		                	String ele_path_text = "//android.widget.TextView[@resource-id='dji.go.v4:id/fpv_error_pop_item_title_tv']";
 							String expect_text = "自动起飞操作失败";
@@ -1027,7 +1047,13 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		                	table_row[2] = comboxAppName.getSelectedItem();
 		                	table_row[3] = comboxViewName.getSelectedItem();
 		                	table_row[4] = comboxEleName.getSelectedItem();
-		                	model.addRow(table_row);
+		                	
+		                	int i = casetable.getSelectedRow();
+		                    if(i >= 0){
+		                    	model.insertRow(i+1, table_row);
+		                    }else{
+		            	    model.addRow(table_row);
+		                    }
 		                	
 		                	String ele_path_eleVal = xpath;
 							BrickBean brick_valEle = new BrickBean();
@@ -1105,7 +1131,14 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		                	table_row[2] = timer_num.getText() +"  "+ "S";
 		                	table_row[3] = "N/A";
 		                	table_row[4] = "N/A";
-		                	model.addRow(table_row);
+		                	
+		                	int i = casetable.getSelectedRow();
+		                    if(i >= 0){
+		                    	model.insertRow(i+1, table_row);
+		                    }else{
+		            	    model.addRow(table_row);
+		                    }
+		                    
 		                } catch (Exception e1) {
 		                	e1.printStackTrace();
 		                }
