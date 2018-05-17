@@ -5,11 +5,15 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
@@ -29,8 +33,10 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -39,6 +45,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.event.MouseInputListener;
 import javax.swing.table.DefaultTableModel;
 
 import com.alibaba.fastjson.JSON;
@@ -58,6 +65,7 @@ import com.dji.bricks.node_selection.RealTimeScreenUI;
 import com.dji.bricks.tools.PropertyUtil;
 import com.dji.bricks.tools.SQLUtils;
 
+
 /**
  * Case create page 
  * @author DraLastat
@@ -73,6 +81,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private static MyIconButton buttonEleRefresh;
 	private static MyIconButton buttonActRefresh;
 	private static MyIconButton buttonSave;
+	private static MyIconButton buttonDragAdd;
 	private static MyIconButton buttonScrshot;
 	private static MyIconButton buttonDocRead;
 	private static MyIconButton buttonJsonLoad;
@@ -897,14 +906,23 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	class ScreenshotMethod{
 		//Init popup window
 		JFrame scrshot_frame = new JFrame();
+		Point point = null;
 		public ScreenshotMethod(){
-			scrshot_frame.setSize(500, 500);
+			scrshot_frame.setSize(500, 650);
 			scrshot_frame.setTitle("ScreenShot View");
+			scrshot_frame.setLayout(new BorderLayout());
 			scrshot_frame.setVisible(true);
 			ImageIcon Scrshot_image =new ImageIcon(
 		            CURRENT_DIR + File.separator + scrshot_pathname);
 			JLabel picLabel = new JLabel(Scrshot_image);
-			scrshot_frame.add(picLabel);
+//			picLabel.setPreferredSize(new Dimension(500,500));
+			JPanel posibtn_pane = new JPanel();
+//			posibtn_pane.setPreferredSize(new Dimension(500,150));
+			buttonDragAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
+	                ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addact"));
+			posibtn_pane.add(buttonDragAdd);
+			scrshot_frame.add(picLabel,BorderLayout.NORTH);
+			scrshot_frame.add(posibtn_pane,BorderLayout.SOUTH);
 			scrshot_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			scrshot_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
 			scrshot_frame.setLocationRelativeTo(MainEntry.frame);
@@ -912,6 +930,105 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 
 	}
 	
+//	class CoordinateArea extends JComponent implements MouseInputListener {
+//		   Point point = null;
+//
+//
+//		   Dimension preferredSize = new Dimension(500, 500);
+//
+//		   Color gridColor;
+//
+//		   public CoordinateArea() {
+//
+//		     // Add a border of 5 pixels at the left and bottom,
+//		     // and 1 pixel at the top and right.
+//		     setBorder(BorderFactory.createMatteBorder(1, 5, 5, 1, Color.RED));
+//
+//		     addMouseListener(this);
+//		     addMouseMotionListener(this);
+//		     setBackground(Color.WHITE);
+//		     setOpaque(true);
+//		   }
+//
+//		   public Dimension getPreferredSize() {
+//		     return preferredSize;
+//		   }
+//
+//		   protected void paintComponent(Graphics g) {
+//		     // Paint background if we're opaque.
+//		     if (isOpaque()) {
+//		       g.setColor(getBackground());
+//		       g.fillRect(0, 0, getWidth(), getHeight());
+//		     }
+//
+//		     // Paint 20x20 grid.
+//		     g.setColor(Color.GRAY);
+//		     drawGrid(g, 20);
+//
+//		     // If user has chosen a point, paint a small dot on top.
+//		     if (point != null) {
+//		       g.setColor(getForeground());
+//		       g.fillRect(point.x - 3, point.y - 3, 7, 7);
+//		     }
+//		   }
+//
+//		   // Draws a 20x20 grid using the current color.
+//		   private void drawGrid(Graphics g, int gridSpace) {
+//		     Insets insets = getInsets();
+//		     int firstX = insets.left;
+//		     int firstY = insets.top;
+//		     int lastX = getWidth() - insets.right;
+//		     int lastY = getHeight() - insets.bottom;
+//
+//		     // Draw vertical lines.
+//		     int x = firstX;
+//		     while (x < lastX) {
+//		       g.drawLine(x, firstY, x, lastY);
+//		       x += gridSpace;
+//		     }
+//
+//		     // Draw horizontal lines.
+//		     int y = firstY;
+//		     while (y < lastY) {
+//		       g.drawLine(firstX, y, lastX, y);
+//		       y += gridSpace;
+//		     }
+//		   }
+//
+//		   // Methods required by the MouseInputListener interface.
+//		   public void mouseClicked(MouseEvent e) {
+//		     int x = e.getX();
+//		     int y = e.getY();
+//		     if (point == null) {
+//		       point = new Point(x, y);
+//		     } else {
+//		       point.x = x;
+//		       point.y = y;
+//		     }
+//		     scrshot_frame.updateClickPoint(point);
+//		     repaint();
+//		   }
+//
+//		   public void mouseMoved(MouseEvent e) {
+//		     controller.updateCursorLocation(e.getX(), e.getY());
+//		   }
+//
+//		   public void mouseExited(MouseEvent e) {
+//		     controller.resetLabel();
+//		   }
+//
+//		   public void mouseReleased(MouseEvent e) {
+//		   }
+//
+//		   public void mouseEntered(MouseEvent e) {
+//		   }
+//
+//		   public void mousePressed(MouseEvent e) {
+//		   }
+//
+//		   public void mouseDragged(MouseEvent e) {
+//		   }
+//		 }
 	class VerifiWindow extends JFrame{
 		// init popup window
 		JFrame ver_setting_frame = new JFrame();
