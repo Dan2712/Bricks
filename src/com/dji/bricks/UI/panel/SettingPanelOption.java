@@ -1,20 +1,21 @@
 package com.dji.bricks.UI.panel;
 
-import com.dji.bricks.MainEntry;
-import com.dji.bricks.UI.ConstantsUI;
-import com.dji.bricks.UI.MyIconButton;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 //import logic.ConstantsLogic;
 import org.apache.log4j.Logger;
-import com.dji.bricks.tools.ConstantsUtils;
-import com.dji.bricks.tools.PropertyUtil;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.dji.bricks.UI.ConstantsUI;
+import com.dji.bricks.UI.MyIconButton;
+import com.dji.bricks.tools.PropertyUtil;
 
 /**
  * �߼�ѡ�����

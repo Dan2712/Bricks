@@ -1,10 +1,15 @@
 package com.dji.bricks.UI;
 
-import com.dji.bricks.tools.PropertyUtil;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.File;
+
+import javax.swing.ImageIcon;
+
+import com.dji.bricks.tools.PropertyUtil;
 
 /**
  * 

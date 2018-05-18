@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.dom4j.Element;
+
 import com.dji.bricks.tools.ConstantsUtils;
 
 public class UiNode extends BasicTreeNode {

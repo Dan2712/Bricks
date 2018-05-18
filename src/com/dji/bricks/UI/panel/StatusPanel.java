@@ -1,10 +1,16 @@
 package com.dji.bricks.UI.panel;
 
-import com.dji.bricks.UI.ConstantsUI;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import org.apache.log4j.Logger;
+
+import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.tools.PropertyUtil;
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * ��ҳ��״̬��Ϣ

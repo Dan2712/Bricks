@@ -1,15 +1,9 @@
 package com.dji.bricks.backgrounder;
 
-import java.io.IOException;
-
 import javax.swing.JTextArea;
 
 import com.alibaba.fastjson.JSONArray;
-import com.android.ddmlib.AdbCommandRejectedException;
-import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
-import com.android.ddmlib.ShellCommandUnresponsiveException;
-import com.android.ddmlib.TimeoutException;
 import com.dji.bricks.backgrounder.execution.AppiumInit;
 import com.dji.bricks.backgrounder.execution.RunTestCase;
 

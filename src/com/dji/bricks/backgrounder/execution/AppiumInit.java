@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.remote.DesiredCapabilities;
+
 import com.alibaba.fastjson.JSONObject;
 import com.android.ddmlib.IDevice;
 

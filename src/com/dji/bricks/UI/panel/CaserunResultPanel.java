@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 
 import com.alibaba.fastjson.JSONArray;
 import com.android.ddmlib.IDevice;
-
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
 import com.dji.bricks.backgrounder.ExecutionMain;

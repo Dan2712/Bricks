@@ -1,6 +1,5 @@
 package com.dji.bricks.mini_decode;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +10,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
+
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
@@ -23,8 +23,8 @@ import com.android.ddmlib.IDevice.DeviceUnixSocketNamespace;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.SyncException;
 import com.android.ddmlib.TimeoutException;
-import com.dji.bricks.MainEntry;
 import com.dji.bricks.GlobalObserver;
+import com.dji.bricks.MainEntry;
 import com.dji.bricks.SubjectForListener;
 import com.dji.bricks.tools.ConstantsUtils;
 

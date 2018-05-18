@@ -1,6 +1,5 @@
 package com.dji.bricks.UI.panel;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -23,7 +22,6 @@ import org.apache.log4j.Logger;
 
 import com.android.ddmlib.IDevice;
 import com.dji.bricks.GlobalObserver;
-import com.dji.bricks.MainEntry;
 import com.dji.bricks.UI.CheckButton;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;

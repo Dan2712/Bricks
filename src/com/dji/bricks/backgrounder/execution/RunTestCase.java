@@ -1,7 +1,5 @@
 package com.dji.bricks.backgrounder.execution;
 
-import java.io.IOException;
-
 import javax.swing.JTextArea;
 
 import org.openqa.selenium.NoSuchElementException;
@@ -9,16 +7,10 @@ import org.openqa.selenium.WebElement;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.android.ddmlib.AdbCommandRejectedException;
-import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
-import com.android.ddmlib.ShellCommandUnresponsiveException;
-import com.android.ddmlib.TimeoutException;
-import com.dji.bricks.backgrounder.ExecutionMain;
 import com.dji.bricks.backgrounder.base.CusAction;
 import com.dji.bricks.backgrounder.base.CusElement;
 import com.dji.bricks.backgrounder.base.CusValidation;
-import com.dji.bricks.tools.FileUtils;
 
 import io.appium.java_client.android.AndroidDriver;
 
