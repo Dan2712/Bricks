@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
@@ -113,9 +114,12 @@ public class ADB implements IDeviceChangeListener, SubjectForListener {
 
 	@Override
 	public void notifyObservers(Object obj) {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		if (obj instanceof IDevice[]) {
-			//TODO popup window
-			JOptionPane.showMessageDialog(null,"ADB Error");
 			IDevice[] devices = (IDevice[]) obj;
 			for (GlobalObserver observer : observers) {
 				observer.ADBChange(devices);

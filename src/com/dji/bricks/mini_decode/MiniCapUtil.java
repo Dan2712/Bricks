@@ -12,6 +12,8 @@ import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
+
 import org.apache.log4j.Logger;
 
 import com.android.ddmlib.AdbCommandRejectedException;
@@ -161,8 +163,9 @@ public class MiniCapUtil implements SubjectForListener{
 		try {
 			device.executeShellCommand(command, receiver, 0);
 		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+//			if (e.getMessage().contains("not found"))
+			JOptionPane.showMessageDialog(null,"Device ADB error, please check your device");
 		}
 		receiver.flush();
 		return receiver.getOutput();

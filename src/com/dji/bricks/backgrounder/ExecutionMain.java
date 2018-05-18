@@ -37,9 +37,6 @@ public class ExecutionMain {
 			case "com.dji.industry.pilot":
 				launchActivity = "com.dji.industry.pilot.SplashActivity";
 				break;
-			case "dji.system.launcher":
-				launchActivity = "dji.system.launcher.Launcher";
-				break;
 			case "dji.pilot":
 				launchActivity = "dji.pilot.home.cs.activity.DJICsMainActivity";
 				break;

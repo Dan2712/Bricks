@@ -722,7 +722,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 	SimpleDateFormat timeFormat = new SimpleDateFormat("hhmmss");
                 	String time = timeFormat.format(Calendar.getInstance().getTime());
                 	
-                	File json = new File("json/" + appName + "_" + time + ".json");
+                	File json = new File("json/" + appStartName + "_" + time + ".json");
                 	if (!json.getParentFile().exists())
                 		json.getParentFile().mkdirs();
                 	
