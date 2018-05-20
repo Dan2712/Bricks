@@ -1,5 +1,7 @@
 package com.dji.bricks.backgrounder.execution;
 
+import java.awt.Point;
+
 import javax.swing.JTextArea;
 
 import org.openqa.selenium.NoSuchElementException;
@@ -86,6 +88,9 @@ public class RunTestCase implements Runnable{
 //			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
 			break;
 		case 4:
+			JSONObject params = action_info.getJSONObject("params");
+			Point des = (Point) params.get("DesPoint");
+			action.pointDrag(ele_sub, des);
 			break;
 		case 5:
 			break;
@@ -115,8 +120,8 @@ public class RunTestCase implements Runnable{
 		
 		switch (validation_name) {
 		case 1:
-			String ele_name_text = params.getString("ele_path");
-			String except_text = params.getString("expect_text");
+			String ele_name_text = (String) params.get("ele_path");
+			String except_text = (String) params.get("expect_text");
 			if (validation.getText(ele_name_text, except_text))
 				logText.append("Text validation success" + "\n");
 			else
@@ -125,7 +130,7 @@ public class RunTestCase implements Runnable{
 		case 2:
 //			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 1000));
 //			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 1000));
-			String ele_name_elval = params.getString("ele_path");
+			String ele_name_elval = (String) params.get("ele_path");
 			if (validation.getExactEle(ele_name_elval))
 				logText.append("Element validation success");
 			else

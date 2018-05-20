@@ -322,8 +322,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		comboxActName.setSelectedItem(null);
 		comboxActName.addItem("Single-Click");
 		comboxActName.addItem("Long-Press");
-		comboxActName.addItem("SetText");
-		comboxActName.addItem("DragBar");
+		comboxActName.addItem("Set Text");
+		comboxActName.addItem("Point Drag");
+		comboxActName.addItem("SeekBar Drag");
 		comboxActName.setSelectedItem(null);
 		comboxActName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
 		comboxActName.addItemListener(new ActListener());
@@ -472,6 +473,10 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	  	buttonActAdd.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            	BrickBean brick = new BrickBean();
+            	brick.setAction_name(action);
+            	brick.setProperty("act");
+            	
                 try {
                 	if(action == 0){
                 		act_name = "CK";
@@ -481,6 +486,10 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 		act_name = "ST";
                 	}else if(action == 10){
                 		act_name = "DB";
+                		screenPointGet();
+                		Map point = new HashMap();
+                		point.put("DesPoint", point_chosen);
+                		brick.setParams(point);
                 	}
                 	table_row[1] = "ACT";
                 	table_row[2] = act_name;
@@ -494,9 +503,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             	    model.addRow(table_row);
                     }
                     
-            	    BrickBean brick = new BrickBean();
-                	brick.setAction_name(action);
-                	brick.setProperty("act");
                 	caseList.add(brick);
                 } catch (Exception e1) {
                 	e1.printStackTrace();
@@ -522,7 +528,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             public void actionPerformed(ActionEvent e) {
 
                 try {
-                	new ScreenshotMethod();
+                	screenPointGet();
                 } catch (Exception e1) {
                 	e1.printStackTrace();
                 }
@@ -842,16 +848,19 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 			if (e.getStateChange() == ItemEvent.SELECTED) {
 				String action_name = (String) e.getItem();
 				switch (action_name) {
-				case "click":
+				case "Single-Click":
 					action = 0;
 					break;
-				case "longPress":
+				case "Long-Press":
 					action = 1;
 					break;
-				case "setText":
+				case "Set Text":
 					action = 2;
 					break;
-				case "dragBar":
+				case "Point Drag":
+					action = 4;
+					break;
+				case "SeekBar Drag":
 					action = 10;
 					break;
 				}
@@ -881,48 +890,44 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		this.device = devices[0];
 	}
 	
-	    
-	class ScreenshotMethod{
-		//Init popup window
-		JFrame scrshot_frame = new JFrame();
-		JLabel label = new JLabel();
-		Point point = null;
-		
-		public ScreenshotMethod(){
-			//TODO scrshot_x&y will be the number u need @Dan.ge
-			scrshot_frame.setSize(500, 650);
-			scrshot_frame.setTitle("ScreenShot View");
-			scrshot_frame.setLayout(new BorderLayout());
-			scrshot_frame.setVisible(true);
-			ImageIcon Scrshot_image =new ImageIcon(
-		            CURRENT_DIR + File.separator + scrshot_pathname);
-			JLabel picLabel = new JLabel(Scrshot_image);
+	//Init popup window
+	private JFrame scrshot_frame = new JFrame();
+	private Point point_chosen = null;
+	
+	public void screenPointGet(){
+		//TODO scrshot_x&y will be the number u need @Dan.ge
+		scrshot_frame.setSize(500, 650);
+		scrshot_frame.setTitle("ScreenShot View");
+		scrshot_frame.setLayout(new BorderLayout());
+		scrshot_frame.setVisible(true);
+		ImageIcon Scrshot_image =new ImageIcon(
+	            CURRENT_DIR + File.separator + scrshot_pathname);
+		JLabel picLabel = new JLabel(Scrshot_image);
 //			picLabel.setPreferredSize(new Dimension(500,500));
-			JPanel posibtn_pane = new JPanel();
+		JPanel posibtn_pane = new JPanel();
 //			posibtn_pane.setPreferredSize(new Dimension(500,150));
-			buttonDragAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
-	                ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addact"));
-			posibtn_pane.add(buttonDragAdd);
-			scrshot_frame.add(picLabel,BorderLayout.NORTH);
-			scrshot_frame.add(posibtn_pane,BorderLayout.SOUTH);
-			scrshot_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-			scrshot_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
-			scrshot_frame.setLocationRelativeTo(MainEntry.frame);
-			
-			picLabel.addMouseListener(new MouseAdapter() {
-			    public void mouseClicked(MouseEvent e) {
-			    	scrshot_X = e.getX();
-			    	scrshot_Y = e.getY();
-			    	if(point == null){
-			    		point = new Point(scrshot_X, scrshot_Y);
-			    	}else{
-			    		point.x = scrshot_X;
-			    		point.y = scrshot_Y;
-			    	}
-			    	System.out.println(point);
-			    }
-			});
-		}
+		buttonDragAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
+                ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addact"));
+		posibtn_pane.add(buttonDragAdd);
+		scrshot_frame.add(picLabel,BorderLayout.NORTH);
+		scrshot_frame.add(posibtn_pane,BorderLayout.SOUTH);
+		scrshot_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		scrshot_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
+		scrshot_frame.setLocationRelativeTo(MainEntry.frame);
+		
+		picLabel.addMouseListener(new MouseAdapter() {
+		    public void mouseClicked(MouseEvent e) {
+		    	scrshot_X = e.getX();
+		    	scrshot_Y = e.getY();
+		    	if(point_chosen == null){
+		    		point_chosen = new Point(scrshot_X, scrshot_Y);
+		    	}else{
+		    		point_chosen.x = scrshot_X;
+		    		point_chosen.y = scrshot_Y;
+		    	}
+		    	System.out.println(point_chosen);
+		    }
+		});
 	}
 
 	class VerifiWindow extends JFrame{
@@ -981,7 +986,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 							BrickBean brick_valText = new BrickBean();
 							brick_valText.setProperty("val");
 							brick_valText.setValidation_name(1);
-							Map<String, String> params_text = new HashMap<>();
+							Map<String, Object> params_text = new HashMap<>();
 							params_text.put("ele_path", ele_path_text);
 							params_text.put("expect_text", expect_text);
 							brick_valText.setParams(params_text);
@@ -1106,7 +1111,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 							BrickBean brick_valEle = new BrickBean();
 							brick_valEle.setProperty("val");
 							brick_valEle.setValidation_name(2);
-							Map<String, String> params_eleVal = new HashMap<>();
+							Map<String, Object> params_eleVal = new HashMap<>();
 							params_eleVal.put("ele_path", ele_path_eleVal);
 							brick_valEle.setParams(params_eleVal);
 							caseList.add(brick_valEle);

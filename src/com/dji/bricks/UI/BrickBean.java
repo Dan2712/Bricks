@@ -7,13 +7,13 @@ public class BrickBean {
 	private String custom_name;
 	private int action_name;
 	private String property;
-	private Map<String, String> params;
+	private Map<String, Object> params;
 	private int validation_name;
 	
-	public Map<String, String> getParams() {
+	public Map<String, Object> getParams() {
 		return params;
 	}
-	public void setParams(Map<String, String> params) {
+	public void setParams(Map<String, Object> params) {
 		this.params = params;
 	}
 	public int getValidation_name() {

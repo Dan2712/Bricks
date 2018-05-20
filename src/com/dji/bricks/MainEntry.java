@@ -116,17 +116,17 @@ public class MainEntry implements GlobalObserver {
         }
         
         //init appium
-    	Thread appium = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					pb = Runtime.getRuntime().exec("cmd /k start appium");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-    	cachedThreadPool.submit(appium);
+//    	Thread appium = new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				try {
+////					pb = Runtime.getRuntime().exec("cmd /k start appium");
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//    	cachedThreadPool.submit(appium);
 			
         frame = new JFrame();
         frame.setBounds(ConstantsUI.MAIN_WINDOW_X, ConstantsUI.MAIN_WINDOW_Y, ConstantsUI.MAIN_WINDOW_WIDTH,
@@ -191,15 +191,15 @@ public class MainEntry implements GlobalObserver {
 
             @Override
             public void windowClosing(WindowEvent e) {
-            	try {
-            		if (AppiumInit.driver != null)
-            			AppiumInit.driver.quit();
-            	
-            		pb.destroyForcibly();
-                    connection.close();
-                }catch(Exception e1) {
-                	e1.printStackTrace();
-                } 
+//            	try {
+//            		if (AppiumInit.driver != null)
+//            			AppiumInit.driver.quit();
+//            	
+//            		pb.destroyForcibly();
+//                    connection.close();
+//                }catch(Exception e1) {
+//                	e1.printStackTrace();
+//                } 
             	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 LOG.info("==================BricksEnd==================");
                 

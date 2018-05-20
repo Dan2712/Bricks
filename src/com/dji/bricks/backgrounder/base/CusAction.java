@@ -1,5 +1,7 @@
 package com.dji.bricks.backgrounder.base;
 
+import java.awt.Point;
+
 import org.openqa.selenium.WebElement;
 
 import io.appium.java_client.TouchAction;
@@ -29,6 +31,20 @@ public class CusAction {
 	public void setText(WebElement ele, String text) {
 		ele.clear();
 		ele.sendKeys("120");
+	}
+	
+	//4.point drag
+	public void pointDrag(WebElement ele, Point desPoint) {
+		int xAxisStartPoint = ele.getLocation().x;
+		int xAxisEndPoint = desPoint.x;
+		int yAxisStartPoint = ele.getLocation().y;
+		int yAxisEndPoint = desPoint.y;
+		
+		touchAction.press(xAxisStartPoint, yAxisStartPoint)
+					.waitAction(500)
+					.moveTo(xAxisEndPoint, yAxisEndPoint)
+					.release();
+		touchAction.perform();
 	}
 	
 	//10.seekbar drag
