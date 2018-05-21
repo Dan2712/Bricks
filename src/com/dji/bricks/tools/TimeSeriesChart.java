@@ -1,3 +1,5 @@
+package com.dji.bricks.tools;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.text.DateFormat;
@@ -79,13 +81,13 @@ public class TimeSeriesChart extends JFrame {
         }
     }
     
-    public static void main (String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new TimeSeriesChart().setVisible(true);
-            }
-        });
-    }
+//    public static void main (String args[]) {
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new TimeSeriesChart().setVisible(true);
+//            }
+//        });
+//    }
     
     /** This method is called from within the constructor to
      * initialize the form.

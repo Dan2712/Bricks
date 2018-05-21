@@ -319,12 +319,11 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		ActPick.setFont(ConstantsUI.FONT_NORMAL);
 		comboxActName = new JComboBox<String>();
 		comboxActName.setEditable(false);
-		comboxActName.setSelectedItem(null);
-		comboxActName.addItem("Single-Click");
-		comboxActName.addItem("Long-Press");
-		comboxActName.addItem("Set Text");
-		comboxActName.addItem("Point Drag");
-		comboxActName.addItem("SeekBar Drag");
+//		comboxActName.addItem("Single-Click");
+//		comboxActName.addItem("Long-Press");
+//		comboxActName.addItem("Set Text");
+//		comboxActName.addItem("Point Drag");
+//		comboxActName.addItem("SeekBar Drag");
 		comboxActName.setSelectedItem(null);
 		comboxActName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
 		comboxActName.addItemListener(new ActListener());
@@ -814,19 +813,19 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 						if (state.charAt(i) == '1') {
 					        switch (i) {
 					        case 0:
-					        	comboxActName.addItem("click");
+					        	comboxActName.addItem("Single-Click");
 					        	break;
 					        case 1:
-					        	comboxActName.addItem("scroll");
+					        	comboxActName.addItem("Long-Press");
 					        	break;
 					        case 2:
-					        	comboxActName.addItem("check");
+					        	comboxActName.addItem("Set Text");
 					        	break;
 					        case 3:
-					        	comboxActName.addItem("focus");
+					        	comboxActName.addItem("Point Drag");
 					        	break;
 					        case 4:
-					        	comboxActName.addItem("long-click");
+					        	comboxActName.addItem("SeekBar Drag");
 					        	break;
 					        }
 						}
@@ -900,6 +899,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		scrshot_frame.setTitle("ScreenShot View");
 		scrshot_frame.setLayout(new BorderLayout());
 		scrshot_frame.setVisible(true);
+		scrshot_frame.repaint();
 		ImageIcon Scrshot_image =new ImageIcon(
 	            CURRENT_DIR + File.separator + scrshot_pathname);
 		JLabel picLabel = new JLabel(Scrshot_image);
