@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -38,6 +39,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -57,6 +59,7 @@ import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
 import com.dji.bricks.backgrounder.ExecutionMain;
 import com.dji.bricks.node_selection.RealTimeScreenUI;
+import com.dji.bricks.tools.FileUtils;
 import com.dji.bricks.tools.PropertyUtil;
 import com.dji.bricks.tools.SQLUtils;
 
@@ -154,6 +157,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private String appName = "";
 	private String appStartName = "";
 	private String pkg = "";
+	private String filepath;
+	private JSONArray jsonFile;
 	private SQLUtils sql = null;
 	private ResultSet xpathSet = null;
 	private PrintStream standardOut;
@@ -193,6 +198,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	 * caselist editing & log print Panel 
 	 * @return
 	 */
+	private JTextField DataFrom;
 	private JPanel getDownPanel() {
 		JPanel panelDown = new JPanel();
 		panelDown.setBackground(ConstantsUI.TOOL_BAR_BACK_COLOR);
@@ -208,8 +214,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		DataGrid.setPreferredSize(new Dimension(420, 40));
 		DataGrid.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
 		DataGrid.setBackground(ConstantsUI.TABLE_LINE_COLOR);
-		JTextField DataFrom = new JTextField();
+		DataFrom = new JTextField();
 		DataFrom.setPreferredSize(new Dimension(180, 24));
+		//TODO
 		buttonDocRead = new MyIconButton(ConstantsUI.ICON_DOCREAD, ConstantsUI.ICON_DOCREAD_ENABLE,
                 ConstantsUI.ICON_DOCREAD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.docread"));
 		buttonJsonLoad = new MyIconButton(ConstantsUI.ICON_JSONLOAD, ConstantsUI.ICON_JSONLOAD_ENABLE,
@@ -437,6 +444,32 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	
 	// Bricks button listener
 	public void addListener() {
+		
+		buttonDocRead.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    JFileChooser jfc = new JFileChooser(new File("/json"));  
+                    jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES );  
+                    jfc.showDialog(new JLabel(), "选择");  
+                    filepath = jfc.getSelectedFile().getPath();
+                    System.out.println(filepath);
+                    DataFrom.setText(filepath);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+		
+		buttonJsonLoad.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
 		
 		buttonEleAdd.addActionListener(new ActionListener() {
 
@@ -889,31 +922,33 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		this.device = devices[0];
 	}
 	
-	//Init popup window
-	private JFrame scrshot_frame = new JFrame();
 	private Point point_chosen = null;
 	
 	public void screenPointGet(){
-		//TODO scrshot_x&y will be the number u need @Dan.ge
-		scrshot_frame.setSize(500, 650);
+		//Init popup window
+		JFrame scrshot_frame = new JFrame();
+		scrshot_frame.setSize(550, 650);
 		scrshot_frame.setTitle("ScreenShot View");
 		scrshot_frame.setLayout(new BorderLayout());
 		scrshot_frame.setVisible(true);
-		scrshot_frame.repaint();
 		ImageIcon Scrshot_image =new ImageIcon(
 	            CURRENT_DIR + File.separator + scrshot_pathname);
 		JLabel picLabel = new JLabel(Scrshot_image);
 //			picLabel.setPreferredSize(new Dimension(500,500));
 		JPanel posibtn_pane = new JPanel();
+//		revalidate();
+//		repaint();
 //			posibtn_pane.setPreferredSize(new Dimension(500,150));
 		buttonDragAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
-                ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addact"));
+                ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.dragpoint"));
 		posibtn_pane.add(buttonDragAdd);
 		scrshot_frame.add(picLabel,BorderLayout.NORTH);
 		scrshot_frame.add(posibtn_pane,BorderLayout.SOUTH);
+		repaint();
 		scrshot_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		scrshot_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
 		scrshot_frame.setLocationRelativeTo(MainEntry.frame);
+//		System.out.println(scrshot_frame);
 		
 		picLabel.addMouseListener(new MouseAdapter() {
 		    public void mouseClicked(MouseEvent e) {
