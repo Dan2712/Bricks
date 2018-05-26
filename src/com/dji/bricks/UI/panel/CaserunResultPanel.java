@@ -1,7 +1,10 @@
 package com.dji.bricks.UI.panel;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,9 +14,11 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
 
@@ -21,8 +26,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.android.ddmlib.IDevice;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
-import com.dji.bricks.backgrounder.ExecutionMain;
-import com.dji.bricks.node_selection.RealTimeScreenUI;
 import com.dji.bricks.tools.FileUtils;
 import com.dji.bricks.tools.PropertyUtil;
 
@@ -30,8 +33,11 @@ public class CaserunResultPanel extends JPanel{
 	
 	private static final long serialVersionUID = 1L;
 	private static MyIconButton buttonCaseFind;
+	private static MyIconButton buttonCaseDelte;
 	private static MyIconButton buttonStart;
-	private static MyIconButton buttonStop;
+	private static MyIconButton buttonChart;
+	private static int run_time = 1;
+	private Object[] table_row = new Object[1];
 
 	private static Logger logger = Logger.getLogger(CaserunResultPanel.class);
 	
@@ -72,6 +78,10 @@ public class CaserunResultPanel extends JPanel{
 	 * @return
 	 */
 	JTextField case_name;
+	JTable List_table;
+	DefaultTableModel model;
+	JTextField run_num;
+	String pass_num;
 	private JPanel getCenterPanel() {
 		JPanel panelCenter = new JPanel();
 		panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
@@ -86,28 +96,67 @@ public class CaserunResultPanel extends JPanel{
 
         JPanel panelGrid1 = new JPanel();
         panelGrid1.setBackground(ConstantsUI.MAIN_BACK_COLOR);
-        panelGrid1.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 15));
+        panelGrid1.setLayout(new BorderLayout());
         JPanel panelGrid2 = new JPanel();
         panelGrid2.setBackground(ConstantsUI.MAIN_BACK_COLOR);
-        panelGrid2.setLayout(new FlowLayout(FlowLayout.RIGHT, ConstantsUI.MAIN_H_GAP, 15));
+//        panelGrid2.setLayout(new FlowLayout(FlowLayout.RIGHT, ConstantsUI.MAIN_H_GAP, 15));
         
 		case_name = new JTextField();
 		case_name.setEditable(false);
 		case_name.setFont(ConstantsUI.FONT_NORMAL);
 		case_name.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
-
-        buttonCaseFind = new MyIconButton(ConstantsUI.ICON_FINDCASE, ConstantsUI.ICON_FINDCASE_ENABLE,
-                ConstantsUI.ICON_FINDCASE_DISABLE, "");
-        buttonStart = new MyIconButton(ConstantsUI.ICON_START, ConstantsUI.ICON_START_ENABLE,
-                ConstantsUI.ICON_START_DISABLE, "");
+		
+		JPanel panelList = new JPanel();
+		JPanel panelListBtn = new JPanel();
+		panelList.setBackground(Color.WHITE);
+		panelListBtn.setBackground(Color.WHITE);
+		panelListBtn.setLayout(new GridLayout(2,1));
+		List_table = new JTable();
+		Object[] columns = {"JSON Name"};
+		model = new DefaultTableModel();
+        model.setColumnIdentifiers(columns);
+        List_table.setModel(model);
+        List_table.setBackground(Color.LIGHT_GRAY);
+        List_table.setForeground(Color.black);
+        Font font = new Font("",1,10);
+        List_table.setFont(font);
+        List_table.setRowHeight(30);
+        List_table.setPreferredScrollableViewportSize(new Dimension(500, 100));
+        
+        JLabel multirun_label1 = new JLabel(PropertyUtil.getProperty("bricks.ui.caserun.runtimes1"));
+        JLabel multirun_label2 = new JLabel(PropertyUtil.getProperty("bricks.ui.caserun.runtimes2"));
+        JLabel label_null = new JLabel();
+        run_num = new JTextField();
+        
+        multirun_label1.setFont(ConstantsUI.FONT_NORMAL);
+        multirun_label2.setFont(ConstantsUI.FONT_NORMAL);
+        run_num.setPreferredSize(new Dimension(25,20));
+        run_num.setBackground(Color.WHITE);
+        run_num.setText("1");
+        label_null.setPreferredSize(new Dimension(400,20));
+		
+		buttonCaseFind = new MyIconButton(ConstantsUI.ICON_DOCREAD, ConstantsUI.ICON_DOCREAD_ENABLE,
+                ConstantsUI.ICON_DOCREAD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.docread"));
+		buttonCaseDelte = new MyIconButton(ConstantsUI.ICON_ROW_DELETE, ConstantsUI.ICON_ROW_DELETE_ENABLE,
+                ConstantsUI.ICON_ROW_DELETE_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.docdelte"));
+        buttonStart = new MyIconButton(ConstantsUI.ICON_PLAY_LIST, ConstantsUI.ICON_PLAY_LIST_ENABLE,
+				ConstantsUI.ICON_PLAY_LIST_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.playlist"));
         //buttonStart.setEnabled(false);
-        buttonStop = new MyIconButton(ConstantsUI.ICON_STOP, ConstantsUI.ICON_STOP_ENABLE,
-                ConstantsUI.ICON_STOP_DISABLE, "");
+        buttonChart = new MyIconButton(ConstantsUI.ICON_RTCHART, ConstantsUI.ICON_RTCHART_ENABLE,
+				ConstantsUI.ICON_RTCHART_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.rtchart"));
         //buttonStop.setEnabled(false);
-        panelGrid1.add(buttonCaseFind);
-        panelGrid1.add(case_name);
+        
+        panelList.add(new JScrollPane(List_table));
+        panelListBtn.add(buttonCaseFind);
+        panelListBtn.add(buttonCaseDelte);
+        panelGrid1.add(panelList, BorderLayout.WEST);
+        panelGrid1.add(panelListBtn, BorderLayout.CENTER);
+        panelGrid2.add(multirun_label1);
+        panelGrid2.add(run_num);
+        panelGrid2.add(multirun_label2);
+        panelGrid2.add(label_null);
+        panelGrid2.add(buttonChart);
         panelGrid2.add(buttonStart);
-        panelGrid2.add(buttonStop);
 
         panelGridCaseFind.add(panelGrid1);
         panelGridCaseFind.add(panelGrid2);
@@ -153,10 +202,9 @@ public class CaserunResultPanel extends JPanel{
                     jfc.showDialog(new JLabel(), "选择");  
                     filepath = jfc.getSelectedFile().getPath();
                     
-                    appName = filepath.substring(filepath.lastIndexOf("\\")+1, filepath.indexOf("_"));
-                    System.out.println(appName);
-                    jsonFile = FileUtils.loadJson(filepath);
-                    case_name.setText(filepath);
+                    String filename = filepath.substring(filepath.lastIndexOf("\\")+1);
+                    table_row[0] = filename;
+                    model.addRow(table_row);
                 } catch (Exception e1) {
                     logger.error("open table_field file fail:" + e1.toString());
                     e1.printStackTrace();
@@ -164,6 +212,24 @@ public class CaserunResultPanel extends JPanel{
 
             }
         });
+		buttonCaseDelte.addActionListener(new ActionListener() {
+			@Override
+            public void actionPerformed(ActionEvent e) {
+            	try {
+                    // i = the index of the selected row
+                    int i = List_table.getSelectedRow();
+                    if(i >= 0){
+                        model.removeRow(i);
+                    }
+                    else{
+                        System.out.println("Delete Error");
+                    }
+                } catch (Exception e1) {
+                	e1.printStackTrace();
+                }
+
+            }
+	  	});
 		
 		buttonStart.addActionListener(new ActionListener() {
 			
@@ -173,26 +239,29 @@ public class CaserunResultPanel extends JPanel{
 					
 					@Override
 					public void run() {
-						String pkg = "";
-						
-						switch (appName) {
-							case "DJI GO4":
-		            			pkg = "dji.go.v4";
-		            			break;
-		            		case "DJI GO3":
-		            			pkg = "dji.pilot";
-		            			break;
-		            		case "RM500 Launcher":
-		            			pkg = "com.dpad.launcher";
-		            			break;
-		            		case "RM500 Settings":
-		            			pkg = "com.android.settings.Settings";
-		            			break;
-						}
-						
-						logprint.setText("");
-						ExecutionMain.getInstance().RunTestCase(jsonFile, logprint, device, pkg);
-						RealTimeScreenUI.isRuncase = true;
+//						String pkg = "";
+//						
+//						switch (appName) {
+//							case "DJI GO4":
+//		            			pkg = "dji.go.v4";
+//		            			break;
+//		            		case "DJI GO3":
+//		            			pkg = "dji.pilot";
+//		            			break;
+//		            		case "RM500 Launcher":
+//		            			pkg = "com.dpad.launcher";
+//		            			break;
+//		            		case "RM500 Settings":
+//		            			pkg = "com.android.settings.Settings";
+//		            			break;
+//						}
+//						
+//						logprint.setText("");
+//						ExecutionMain.getInstance().RunTestCase(jsonFile, logprint, device, pkg);
+//						RealTimeScreenUI.isRuncase = true;
+				        pass_num = run_num.getText();
+						run_time = Integer.parseInt(pass_num);
+						System.out.println(run_time);
 					}
 				}).start();
 			}

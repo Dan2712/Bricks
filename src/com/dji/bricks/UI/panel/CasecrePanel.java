@@ -216,7 +216,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		DataGrid.setBackground(ConstantsUI.TABLE_LINE_COLOR);
 		DataFrom = new JTextField();
 		DataFrom.setPreferredSize(new Dimension(180, 24));
-		//TODO
 		buttonDocRead = new MyIconButton(ConstantsUI.ICON_DOCREAD, ConstantsUI.ICON_DOCREAD_ENABLE,
                 ConstantsUI.ICON_DOCREAD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.docread"));
 		buttonJsonLoad = new MyIconButton(ConstantsUI.ICON_JSONLOAD, ConstantsUI.ICON_JSONLOAD_ENABLE,
@@ -460,7 +459,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 }
             }
         });
-		
+		//TODO 
 		buttonJsonLoad.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
