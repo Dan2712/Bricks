@@ -19,7 +19,9 @@ import java.util.concurrent.ExecutorService;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 
 import org.apache.log4j.Logger;
 
@@ -85,6 +87,8 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 		minicap.startScreenListener();
 		
 		waitframe = new JFrame();
+		JLabel wait_label = new JLabel("Loading...");
+		waitframe.add(wait_label);
         mOrginialCursor = getCursor();
         mCrossCursor = new Cursor(Cursor.HAND_CURSOR);
         cachedThreadPool = MainEntry.cachedThreadPool;
@@ -132,7 +136,6 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 
 						if (result != null)
 							mModel = result.model;
-						
 						waitframe.setVisible(false);
 						waitframe.dispose();
 					} catch (UiAutomatorException e) {
@@ -286,10 +289,11 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
     }
 	
     public void startStaticMode() {
-    	waitframe.setSize(400, 300);
+    	waitframe.setSize(200, 100);
 		waitframe.setTitle("WAIT");
+		waitframe.setLocation(MainEntry.frame.getLocationOnScreen());  
+		waitframe.setLocationRelativeTo(MainEntry.frame);
 		waitframe.setVisible(true);
-		
     	minicap.stopScreenListener();
     	this.staticMode = true;
     	this.frameImageChange(tmpImg);

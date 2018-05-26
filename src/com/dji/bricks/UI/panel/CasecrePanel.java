@@ -5,8 +5,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -26,7 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -37,6 +39,7 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -47,7 +50,6 @@ import javax.swing.table.DefaultTableModel;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.android.ddmlib.IDevice;
 import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.MainEntry;
@@ -162,6 +164,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private ResultSet xpathSet = null;
 	private PrintStream standardOut;
 	private Object[] table_row = new Object[5];
+	private boolean scrshotbtn_type;
 	
 	private ViewListener vlisten = new ViewListener();
 	private EleListener elisten = new EleListener();
@@ -559,6 +562,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 	} else if(action == 2) {
                 		act_name = "Set Text";
                 	} else if(action == 4) {
+                		scrshotbtn_type = true;
                 		act_name = "Point Drag";
                 		screenPointGet(brick);
                 	} else if(action == 10){
@@ -573,7 +577,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                     if(i >= 0){
                     	model.insertRow(i+1, table_row);
                     }else{
-            	    model.addRow(table_row);
+                    	if(action != 4){
+                    		model.addRow(table_row);
+                    	}
                     }
                     
                 	caseList.add(brick);
@@ -601,7 +607,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             public void actionPerformed(ActionEvent e) {
 
                 try {
-//                	screenPointGet();
+                	screenPointGet(null);
                 } catch (Exception e1) {
                 	e1.printStackTrace();
                 }
@@ -735,8 +741,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             public void actionPerformed(ActionEvent e) {
 
                 try {
-                	JDialog savewindow = new JDialog();
-                	savewindow.setVisible(true);
+                	JOptionPane.showMessageDialog(buttonSave,"Save Complete");
                 	SimpleDateFormat timeFormat = new SimpleDateFormat("hhmmss");
                 	String time = timeFormat.format(Calendar.getInstance().getTime());
                 	
@@ -905,11 +910,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		// TODO Auto-generated method stub
 		this.device = devices[0];
 	}
-	
+		
 	private Point point_chosen = null;
-	
 	public void screenPointGet(BrickBean brick){
-		//Init popup window
 		JFrame scrshot_frame = new JFrame();
 		scrshot_frame.setSize(550, 650);
 		scrshot_frame.setTitle("ScreenShot View");
@@ -918,40 +921,71 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		ImageIcon Scrshot_image =new ImageIcon(
 	            CURRENT_DIR + File.separator + scrshot_pathname);
 		JLabel picLabel = new JLabel(Scrshot_image);
-//			picLabel.setPreferredSize(new Dimension(500,500));
 		JPanel posibtn_pane = new JPanel();
-//		revalidate();
-//		repaint();
-//			posibtn_pane.setPreferredSize(new Dimension(500,150));
 		buttonDragAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
                 ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.dragpoint"));
+		JLabel pointx = new JLabel();
+		JLabel pointy = new JLabel();
+		posibtn_pane.add(pointx);
+		posibtn_pane.add(pointy);
 		posibtn_pane.add(buttonDragAdd);
+//		if(scrshotbtn_type = true){
+//			buttonDragAdd.isFalse();
+//			System.out.println("1");
+//		}else{
+//			buttonDragAdd.isTrue();
+//			System.out.println("2");
+//		}
 		scrshot_frame.add(picLabel,BorderLayout.NORTH);
 		scrshot_frame.add(posibtn_pane,BorderLayout.SOUTH);
-		repaint();
 		scrshot_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		scrshot_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
 		scrshot_frame.setLocationRelativeTo(MainEntry.frame);
-//		System.out.println(scrshot_frame);
 		
-		picLabel.addMouseListener(new MouseAdapter() {
-		    public void mouseClicked(MouseEvent e) {
-		    	scrshot_X = e.getX();
-		    	scrshot_Y = e.getY();
-		    	if(point_chosen == null){
-		    		point_chosen = new Point(scrshot_X, scrshot_Y);
-		    	}else{
-		    		point_chosen.x = scrshot_X;
-		    		point_chosen.y = scrshot_Y;
-		    	}
-		    	
-		    	Map point = new HashMap();
-        		point.put("DesPoint", point_chosen);
-        		brick.setParams(point);
-        		caseList.set(caseList.size()-1, brick);
-		    }
-		});
-	}
+		if(brick != null){
+			picLabel.addMouseListener(new MouseAdapter() {
+			    public void mouseClicked(MouseEvent e) {
+			    	scrshot_X = e.getX();
+			    	scrshot_Y = e.getY();
+			    	if(point_chosen == null){
+			    		point_chosen = new Point(scrshot_X, scrshot_Y);
+			    	}else{
+			    		point_chosen.x = scrshot_X;
+			    		point_chosen.y = scrshot_Y;
+			    	}
+			    	pointx.setText("X:"+ scrshot_X);
+			    	pointy.setText("Y:"+ scrshot_Y);
+			    	
+			    	buttonDragAdd.addActionListener(new ActionListener() {
+			            @Override
+			            public void actionPerformed(ActionEvent e) {
+
+			                try {
+						    	Map point = new HashMap();
+				        		point.put("DesPoint", point_chosen);
+				        		table_row[1] = "ACT";
+			                	table_row[2] = "PD";
+			                	table_row[3] = "X:"+ scrshot_X;
+			                	table_row[4] = "Y:"+ scrshot_Y;
+			                	int i = casetable.getSelectedRow();
+			                    if(i >= 0){
+			                    	model.insertRow(i+1, table_row);
+			                    }else{
+			                    	model.addRow(table_row);
+			                    }
+			                    brick.setParams(point);
+			                    caseList.set(caseList.size()-1, brick);
+			                } catch (Exception e1) {
+			                	e1.printStackTrace();
+			                }
+
+			            }
+			        });
+			    }
+			});
+		}
+	 }
+
 
 //	private void tableAdd(int addType) {
 //		switch (addType) {
