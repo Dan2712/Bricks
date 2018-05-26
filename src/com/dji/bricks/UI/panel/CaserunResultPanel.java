@@ -28,7 +28,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.android.ddmlib.IDevice;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
-import com.dji.bricks.tools.FileUtils;
 import com.dji.bricks.tools.PropertyUtil;
 
 public class CaserunResultPanel extends JPanel{
@@ -201,7 +200,7 @@ public class CaserunResultPanel extends JPanel{
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    JFileChooser jfc = new JFileChooser(new File("/json"));  
+                    JFileChooser jfc = new JFileChooser(new File(System.getProperty("user.dir") + "/json"));  
                     jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES );  
                     jfc.showDialog(new JLabel(), "选择");  
                     filepath = jfc.getSelectedFile().getPath();

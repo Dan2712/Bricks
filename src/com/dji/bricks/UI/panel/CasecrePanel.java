@@ -57,11 +57,14 @@ import com.dji.bricks.UI.BrickBean;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
 import com.dji.bricks.backgrounder.ExecutionMain;
+import com.dji.bricks.backgrounder.execution.AppiumInit;
 import com.dji.bricks.node_selection.RealTimeScreenUI;
 import com.dji.bricks.tools.FileUtils;
 import com.dji.bricks.tools.PropertyUtil;
 import com.dji.bricks.tools.SQLUtils;
 import com.dji.bricks.tools.TimeSeriesChart;
+
+import io.appium.java_client.android.AndroidDriver;
 
 /**
  * Case create page 
@@ -458,6 +461,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                     
                     caseList.clear();
                     JSONArray tmp = FileUtils.loadJson(filepath);
+                    appStartName = filepath.substring(filepath.lastIndexOf("\\")+1, filepath.indexOf("_"));
 //                    String str = JSONObject.toJSONString(tmp, SerializerFeature.WriteClassName);
 //                    caseList = JSONArray.parseArray(str, BrickBean.class);
                     for (int i=0; i<tmp.size(); i++) {
@@ -715,21 +719,12 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             	}
             	
             	try {
-            		MainEntry.cachedThreadPool.submit(new Thread(new Runnable() {
+            		MainEntry.cachedThreadPool.submit(new Runnable() {
 						public void run() {
 							ExecutionMain.getInstance().RunTestCase(jsonFile, logArea, device, pkg);
 		            		RealTimeScreenUI.isRuncase = true;
 						}
-					}));
-            		
-            		MainEntry.cachedThreadPool.submit(new Thread(new Runnable() {
-						
-						@Override
-						public void run() {
-							new TimeSeriesChart().setVisible(true);
-						}
-					}));
-            		
+					});
             	}catch (Exception e1) {
             		e1.printStackTrace();
             	}
@@ -760,6 +755,33 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 
             }
         });
+	
+	  	buttonRTChart.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				MainEntry.cachedThreadPool.submit(new Runnable() {
+					
+					@Override
+					public void run() {
+						TimeSeriesChart chart = new TimeSeriesChart();
+						while (true) {
+							AndroidDriver driver = AppiumInit.driver;
+							if (driver != null ) {
+								try {
+									System.out.println("here");
+									chart.addCPUValue((Integer) driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000).get(0).get(0));
+									chart.addMemValue((Integer) driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memory", 6000).get(0).get(0));
+									chart.repaint();
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+				});
+			}
+		});
 	}
 	
     // JTextArea output method
@@ -985,7 +1007,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 			});
 		}
 	 }
-
 
 //	private void tableAdd(int addType) {
 //		switch (addType) {

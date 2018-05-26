@@ -78,8 +78,6 @@ public class RunTestCase implements Runnable{
 		case 0:
 			action.click(ele_sub);
 			logText.append(this.ele_customName + " is clicked" + "\n");
-			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
-			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
 			break;
 		case 1:
 			action.longPress(ele_sub);
