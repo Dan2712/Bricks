@@ -210,7 +210,7 @@ public class CaserunResultPanel extends JPanel{
                     table_row[1] = filepath;
                     model.addRow(table_row);
                     case_list.add(filepath);
-                    System.out.println(case_list);
+//                    System.out.println(case_list);
                 } catch (Exception e1) {
                     logger.error("open table_field file fail:" + e1.toString());
                     e1.printStackTrace();
