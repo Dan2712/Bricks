@@ -9,6 +9,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -26,7 +28,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.android.ddmlib.IDevice;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
-import com.dji.bricks.tools.FileUtils;
 import com.dji.bricks.tools.PropertyUtil;
 
 public class CaserunResultPanel extends JPanel{
@@ -37,7 +38,7 @@ public class CaserunResultPanel extends JPanel{
 	private static MyIconButton buttonStart;
 	private static MyIconButton buttonChart;
 	private static int run_time = 1;
-	private Object[] table_row = new Object[1];
+	private Object[] table_row = new Object[2];
 
 	private static Logger logger = Logger.getLogger(CaserunResultPanel.class);
 	
@@ -46,6 +47,7 @@ public class CaserunResultPanel extends JPanel{
 	private IDevice device;
 	private JSONArray jsonFile;
 	private String appName;
+	private List<String> case_list;
 	
 	/**
 	 * 
@@ -105,6 +107,7 @@ public class CaserunResultPanel extends JPanel{
 		case_name.setEditable(false);
 		case_name.setFont(ConstantsUI.FONT_NORMAL);
 		case_name.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
+		case_list = new ArrayList();
 		
 		JPanel panelList = new JPanel();
 		JPanel panelListBtn = new JPanel();
@@ -112,7 +115,7 @@ public class CaserunResultPanel extends JPanel{
 		panelListBtn.setBackground(Color.WHITE);
 		panelListBtn.setLayout(new GridLayout(2,1));
 		List_table = new JTable();
-		Object[] columns = {"JSON Name"};
+		Object[] columns = {"JSON Name","Path"};
 		model = new DefaultTableModel();
         model.setColumnIdentifiers(columns);
         List_table.setModel(model);
@@ -204,7 +207,10 @@ public class CaserunResultPanel extends JPanel{
                     
                     String filename = filepath.substring(filepath.lastIndexOf("\\")+1);
                     table_row[0] = filename;
+                    table_row[1] = filepath;
                     model.addRow(table_row);
+                    case_list.add(filepath);
+                    System.out.println(case_list);
                 } catch (Exception e1) {
                     logger.error("open table_field file fail:" + e1.toString());
                     e1.printStackTrace();
@@ -220,6 +226,8 @@ public class CaserunResultPanel extends JPanel{
                     int i = List_table.getSelectedRow();
                     if(i >= 0){
                         model.removeRow(i);
+                        case_list.remove(i);
+                        System.out.println(case_list);
                     }
                     else{
                         System.out.println("Delete Error");
