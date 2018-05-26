@@ -40,8 +40,8 @@ public class CusAction {
 		int yAxisStartPoint = ele.getLocation().y;
 		int yAxisEndPoint = desPoint.y;
 		
-		touchAction.press(xAxisStartPoint, yAxisStartPoint)
-					.waitAction(500)
+		touchAction.longPress(ele)
+					.waitAction(3000)
 					.moveTo(xAxisEndPoint, yAxisEndPoint)
 					.release();
 		touchAction.perform();

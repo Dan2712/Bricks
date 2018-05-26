@@ -5,12 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -27,15 +23,14 @@ import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -51,6 +46,8 @@ import javax.swing.table.DefaultTableModel;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.android.ddmlib.IDevice;
 import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.MainEntry;
@@ -62,6 +59,7 @@ import com.dji.bricks.node_selection.RealTimeScreenUI;
 import com.dji.bricks.tools.FileUtils;
 import com.dji.bricks.tools.PropertyUtil;
 import com.dji.bricks.tools.SQLUtils;
+import com.dji.bricks.tools.TimeSeriesChart;
 
 /**
  * Case create page 
@@ -95,8 +93,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private static MyIconButton buttonVersetTimer_add;
 	private static MyIconButton buttonVersetTimer_re;
 	private int ver_type;
-	private LinkedList<BrickBean> caseList = new LinkedList<>();
-	public final static String CURRENT_DIR = System.getProperty("user.dir");
+	private ArrayList<BrickBean> caseList = null;
+	private final static String CURRENT_DIR = System.getProperty("user.dir");
 	private String xpath = "";
 	private String cus_name = "";
 	private String act_name = "";
@@ -120,6 +118,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private void initialize() {
 		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		this.setLayout(new BorderLayout());
+		caseList = new ArrayList<>();
 	}
 
 	private JPanel CaseCre;
@@ -448,12 +447,20 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    JFileChooser jfc = new JFileChooser(new File("/json"));  
+                    JFileChooser jfc = new JFileChooser(new File(CURRENT_DIR + "/json"));  
                     jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES );  
                     jfc.showDialog(new JLabel(), "选择");  
                     filepath = jfc.getSelectedFile().getPath();
-                    System.out.println(filepath);
-                    DataFrom.setText(filepath);
+                    DataFrom.setText(filepath.substring(filepath.lastIndexOf("\\")+1));
+                    
+                    caseList.clear();
+                    JSONArray tmp = FileUtils.loadJson(filepath);
+//                    String str = JSONObject.toJSONString(tmp, SerializerFeature.WriteClassName);
+//                    caseList = JSONArray.parseArray(str, BrickBean.class);
+                    for (int i=0; i<tmp.size(); i++) {
+                    	String str = JSONObject.toJSONString(tmp.get(i));
+                    	caseList.add(JSON.parseObject(str, BrickBean.class));
+                    }
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -464,6 +471,41 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                	model.getDataVector().clear();
+                	for (BrickBean brick : caseList) {
+                		if (brick.getProperty().equals("ele")) {
+                			table_row[1] = "ELE";
+                        	table_row[2] = filepath.substring(filepath.lastIndexOf("\\")+1, filepath.indexOf("_"));
+                        	table_row[3] = brick.getEle_page();
+                        	table_row[4] = brick.getCustom_name();
+                        	model.addRow(table_row);
+                		} else if (brick.getProperty().equals("act")) {
+                			if(action == 0) {
+                        		act_name = "Click";
+                        	} else if(action == 1) {
+                        		act_name = "Long Press";
+                        	} else if(action == 2) {
+                        		act_name = "Set Text";
+                        	} else if(action == 4) {
+                        		act_name = "Point Drag";
+                        		screenPointGet(brick);
+                        	} else if(action == 10){
+                        		act_name = "DB";
+                        	}
+                        	table_row[1] = "ACT";
+                        	table_row[2] = act_name;
+                        	table_row[3] = "N/A";
+                        	table_row[4] = "N/A";
+                        	model.addRow(table_row);
+                		} else if (brick.getProperty().equals("val")) {
+                			switch (brick.getValidation_name()) {
+                				case 1:
+                					break;
+                				case 2:
+                					break;
+                			}
+                		}
+                	}
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -484,13 +526,14 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                     if(i >= 0){
                     	model.insertRow(i+1, table_row);
                     }else{
-            	    model.addRow(table_row);
+                    	model.addRow(table_row);
                     }
                     
                 	BrickBean brick = new BrickBean();
                 	brick.setEle_xpath(xpath);
                 	brick.setCustom_name(cus_name);
                 	brick.setProperty("ele");
+                	brick.setEle_page(comboxViewName.getSelectedItem().toString());
                 	if (caseList.size() == 0)
                 		appStartName = appName;
                 	
@@ -509,18 +552,17 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             	brick.setProperty("act");
             	
                 try {
-                	if(action == 0){
-                		act_name = "CK";
-                	}else if(action == 1){
-                		act_name = "LP";
-                	}else if(action == 2){
-                		act_name = "ST";
-                	}else if(action == 10){
+                	if(action == 0) {
+                		act_name = "Click";
+                	} else if(action == 1) {
+                		act_name = "Long Press";
+                	} else if(action == 2) {
+                		act_name = "Set Text";
+                	} else if(action == 4) {
+                		act_name = "Point Drag";
+                		screenPointGet(brick);
+                	} else if(action == 10){
                 		act_name = "DB";
-                		screenPointGet();
-                		Map point = new HashMap();
-                		point.put("DesPoint", point_chosen);
-                		brick.setParams(point);
                 	}
                 	table_row[1] = "ACT";
                 	table_row[2] = act_name;
@@ -559,13 +601,13 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             public void actionPerformed(ActionEvent e) {
 
                 try {
-                	screenPointGet();
+//                	screenPointGet();
                 } catch (Exception e1) {
                 	e1.printStackTrace();
                 }
-
             }
         });
+	  	
 	  	buttonRowDelete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -574,8 +616,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                     int i = casetable.getSelectedRow();
                     if(i >= 0){
                         model.removeRow(i);
-                    }
-                    else{
+                        caseList.remove(i);
+                    } else {
                         System.out.println("Delete Error");
                     }
                 } catch (Exception e1) {
@@ -598,24 +640,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             }
         });
 
-	  	buttonRowDelete.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-	            try {
-	                // i = the index of the selected row
-	                int i = casetable.getSelectedRow();
-	                if(i >= 0){
-	                    model.removeRow(i);
-	                }
-	                else{
-	                    System.out.println("Delete Error");
-	                }
-	            } catch (Exception e1) {
-	            	e1.printStackTrace();
-	            }
-            }
-        });
-	  	
 	  	buttonEleRefresh.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -661,49 +685,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             }
         });
 	  	
-	  	buttonEleRefresh.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	try{
-                // i = the index of the selected row
-                int i = casetable.getSelectedRow();
-                if(i >= 0) 
-                {
-                   model.setValueAt(cus_name, i, 1);
-                   model.setValueAt(cus_name, i, 2);
-                   model.setValueAt(cus_name, i, 3);
-                   model.setValueAt(cus_name, i, 4);
-                }
-                else{
-                    System.out.println("Update Ele Error");
-                	}
-                } catch (Exception e1) {
-                	e1.printStackTrace();
-                }
-
-            }
-        });
-	  	
-	  	buttonActRefresh.addActionListener(new ActionListener() {
-	  		@Override
-	  		public void actionPerformed(ActionEvent e) {
-	  			try{
-	  				// i = the index of the selected row
-	  				int i = casetable.getSelectedRow();
-	  				if(i >= 0) 
-	  				{
-	  					model.setValueAt(act_name, i, 1);
-	  				}
-	  				else{
-	  					System.out.println("Update Act Error");
-	  				}
-	  			} catch (Exception e1) {
-	  				e1.printStackTrace();
-                }
-
-            }
-        });
-
 	  	buttonPlayList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -728,16 +709,20 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             	}
             	
             	try {
-            		Thread thread = new Thread(new Runnable() {
-						
-						@Override
+            		MainEntry.cachedThreadPool.submit(new Thread(new Runnable() {
 						public void run() {
-							// TODO Auto-generated method stub
 							ExecutionMain.getInstance().RunTestCase(jsonFile, logArea, device, pkg);
 		            		RealTimeScreenUI.isRuncase = true;
 						}
-					});
-            		MainEntry.cachedThreadPool.submit(thread);
+					}));
+            		
+            		MainEntry.cachedThreadPool.submit(new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+							new TimeSeriesChart().setVisible(true);
+						}
+					}));
             		
             	}catch (Exception e1) {
             		e1.printStackTrace();
@@ -772,7 +757,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
         });
 	}
 	
-
     // JTextArea output method
     class CustomOutputStream extends OutputStream {
         private JTextArea textArea;
@@ -835,6 +819,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 				xpathSet = sql.queryElement("ELEMENT", ele_cus);
 			}
 			
+			comboxActName.removeAllItems();
 			try {
 				while (xpathSet.next()) {
 					xpath = xpathSet.getString("XPATH");
@@ -923,7 +908,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	
 	private Point point_chosen = null;
 	
-	public void screenPointGet(){
+	public void screenPointGet(BrickBean brick){
 		//Init popup window
 		JFrame scrshot_frame = new JFrame();
 		scrshot_frame.setSize(550, 650);
@@ -959,11 +944,26 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		    		point_chosen.x = scrshot_X;
 		    		point_chosen.y = scrshot_Y;
 		    	}
-		    	System.out.println(point_chosen);
+		    	
+		    	Map point = new HashMap();
+        		point.put("DesPoint", point_chosen);
+        		brick.setParams(point);
+        		caseList.set(caseList.size()-1, brick);
 		    }
 		});
 	}
 
+//	private void tableAdd(int addType) {
+//		switch (addType) {
+//			case 0:				//type is ele
+//				break;
+//			case 1:				//type is action
+//				break;
+//			case 2:				//type is ver
+//				break;
+//		}
+//	}
+	
 	class VerifiWindow extends JFrame{
 		// init popup window
 		JFrame ver_setting_frame = new JFrame();
@@ -1015,7 +1015,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		                    }
 		                	
 		                	String ele_path_text = "//android.widget.TextView[@resource-id='dji.go.v4:id/fpv_error_pop_item_title_tv']";
-							String expect_text = "自动起飞操作失败";
+							String expect_text = ver_text_input.getText();
 							
 							BrickBean brick_valText = new BrickBean();
 							brick_valText.setProperty("val");
@@ -1138,7 +1138,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		                    if(i >= 0){
 		                    	model.insertRow(i+1, table_row);
 		                    }else{
-		            	    model.addRow(table_row);
+		                    	model.addRow(table_row);
 		                    }
 		                	
 		                	String ele_path_eleVal = xpath;
@@ -1155,26 +1155,27 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 
 		            }
 		        });
+	    		
 	    		buttonVersetEE_re.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	            	try{
-	                // i = the index of the selected row
-	                int i = casetable.getSelectedRow();
+	    			@Override
+	    			public void actionPerformed(ActionEvent e) {
+	    				try{
+	    					// i = the index of the selected row
+	    					int i = casetable.getSelectedRow();
 	                
-	                if(i >= 0) 
-	                {
-	                   model.setValueAt("ver_re", i, 1);
-	                }
-	                else{
-	                    System.out.println("Update Act Error");
-	                	}
-	                } catch (Exception e1) {
-	                	e1.printStackTrace();
-	                }
+	    					if(i >= 0) 
+	    					{
+	    						model.setValueAt("ver_re", i, 1);
+	    					}
+	    					else{
+	    						System.out.println("Update Act Error");
+	    					}
+	    				} catch (Exception e1) {
+	    					e1.printStackTrace();
+	    				}
 
-	            }
-	        });
+	    			}
+	    		});
 	    		app_name_pick.add(app_name);
 	    		app_name_pick.add(comboxAppName);
 	    		app_view_pick.add(app_view);
@@ -1231,25 +1232,26 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 
 		            }
 		        });
+	    		
 	    		buttonVersetTimer_re.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	            	try{
-	                // i = the index of the selected row
-	                int i = casetable.getSelectedRow();
+	    			@Override
+	    			public void actionPerformed(ActionEvent e) {
+	    				try{
+	    					// i = the index of the selected row
+	    					int i = casetable.getSelectedRow();
 	                
-	                if(i >= 0) 
-	                {
-	                   model.setValueAt("timer_re", i, 1);
-	                }
-	                else{
-	                    System.out.println("Update Act Error");
-	                	}
-	                } catch (Exception e1) {
-	                	e1.printStackTrace();
-	                }
+	    					if(i >= 0) 
+	    					{
+	    						model.setValueAt("timer_re", i, 1);
+	    					}
+	    					else{
+	    						System.out.println("Update Act Error");
+	    					}
+	    				} catch (Exception e1) {
+	    					e1.printStackTrace();
+	    				}
 
-	            }
+	    			}
 	        });
 	    		timer_pane.add(timer_label);
 	    		timer_pane.add(timer_num);

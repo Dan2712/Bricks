@@ -43,29 +43,13 @@ public class ExecutionMain {
 		}
 		
 		try {
-//			if (path != null) {
-//				if (autoLaunch == true) {
-//					AppiumInit.setUp(device, pkg, launchActivity, autoLaunch);
-//					
-//					RunTestCase testCase = new RunTestCase(path, 0, AppiumInit.driver, logText, device);
-//					testCase.run();
-//				} else {
-//				
-//				}
-//			} else {
-//				if (autoLaunch == true) {
-//					
-//				} else {
-//					AppiumInit.setUp(device, pkg, "", autoLaunch);
-//					RunTestCase testCase = new RunTestCase();
-//				}
-//			}
-
 			AppiumInit.setUp(device, pkg, launchActivity);
 			RunTestCase testCase = new RunTestCase(jsonFile, 0, AppiumInit.driver, logText, device);
 			testCase.run();
 			
-		}catch (Exception e) {
+		} catch (NullPointerException e1) {
+			
+		} catch (Exception e) {
 			e.printStackTrace();
 		}finally {
 			try {

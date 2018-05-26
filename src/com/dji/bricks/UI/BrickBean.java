@@ -5,6 +5,7 @@ import java.util.Map;
 public class BrickBean {
 	private String ele_xpath;
 	private String custom_name;
+	private String ele_page;
 	private int action_name;
 	private String property;
 	private Map<String, Object> params;
@@ -46,5 +47,11 @@ public class BrickBean {
 	}
 	public void setEle_xpath(String ele_xpath) {
 		this.ele_xpath = ele_xpath;
+	}
+	public String getEle_page() {
+		return ele_page;
+	}
+	public void setEle_page(String ele_page) {
+		this.ele_page = ele_page;
 	}
 }

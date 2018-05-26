@@ -164,8 +164,8 @@ public class MiniCapUtil implements SubjectForListener{
 			device.executeShellCommand(command, receiver, 0);
 		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
 			e.printStackTrace();
-//			if (e.getMessage().contains("not found"))
-			JOptionPane.showMessageDialog(null,"Device ADB error, please check your device");
+			if (e.getMessage().contains("not found"))
+				JOptionPane.showMessageDialog(null,"Device ADB error, please check your device");
 		}
 		receiver.flush();
 		return receiver.getOutput();

@@ -1,6 +1,7 @@
 package com.dji.bricks.backgrounder.execution;
 
 import java.awt.Point;
+import java.util.List;
 
 import javax.swing.JTextArea;
 
@@ -10,6 +11,7 @@ import org.openqa.selenium.WebElement;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.android.ddmlib.IDevice;
+import com.dji.bricks.backgrounder.ExecutionMain;
 import com.dji.bricks.backgrounder.base.CusAction;
 import com.dji.bricks.backgrounder.base.CusElement;
 import com.dji.bricks.backgrounder.base.CusValidation;
@@ -28,6 +30,8 @@ public class RunTestCase implements Runnable{
 	private JTextArea logText;
 	private IDevice device;
 	private JSONArray jsonFile;
+	private List<WebElement> dragedElement;
+	private Boolean isDraged = false;
 	
 	public RunTestCase(JSONArray jsonFile, int runMode, AndroidDriver driver, JTextArea logText, IDevice device) {
 //		this.path = path;
@@ -74,23 +78,21 @@ public class RunTestCase implements Runnable{
 		case 0:
 			action.click(ele_sub);
 			logText.append(this.ele_customName + " is clicked" + "\n");
-//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
-//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
+			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
+			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
 			break;
 		case 1:
 			action.longPress(ele_sub);
-//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
-//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
+			logText.append(this.ele_customName + " is long pressed" + "\n");
 			break;
 		case 2:
 			action.setText(ele_sub, action_info.getString("inputText"));
-//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000));
-//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 6000));
+			logText.append(this.ele_customName + " set text successed" + "\n");
 			break;
 		case 4:
 			JSONObject params = action_info.getJSONObject("params");
-			Point des = (Point) params.get("DesPoint");
-			action.pointDrag(ele_sub, des);
+			action.pointDrag(ele_sub, new Point(params.getJSONObject("DesPoint").getIntValue("x"), params.getJSONObject("DesPoint").getIntValue("y")));
+			logText.append(this.ele_customName + " is draged to the position" + "\n");
 			break;
 		case 5:
 			break;
@@ -105,8 +107,6 @@ public class RunTestCase implements Runnable{
 		case 10:
 			action.dragBar(ele_sub);
 			logText.setText(this.ele_customName + " is dragged" + "\n");
-//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 1000));
-//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 1000));
 			break;
 		case 11:
 			break;
@@ -128,8 +128,6 @@ public class RunTestCase implements Runnable{
 				logText.append("Text validation fail" + "\n");
 			break;
 		case 2:
-//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 1000));
-//			System.out.println(driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memoryinfo", 1000));
 			String ele_name_elval = (String) params.get("ele_path");
 			if (validation.getExactEle(ele_name_elval))
 				logText.append("Element validation success");

@@ -32,7 +32,7 @@ import com.dji.bricks.UI.panel.StatusPanel;
 import com.dji.bricks.UI.panel.ToolBarPanel;
 import com.dji.bricks.backgrounder.execution.AppiumInit;
 import com.dji.bricks.node_selection.VariableChangeObserve;
-import com.dji.bricks.tools.ADB;
+import com.dji.bricks.tools.DeviceConnection;
 import com.dji.bricks.tools.SQLUtils;
 
 /**
@@ -56,7 +56,7 @@ public class MainEntry implements GlobalObserver {
 	private Connection connection;
 	
 	private SQLUtils sql;
-	private ADB adb;
+	private DeviceConnection adb;
 	public static ExecutorService cachedThreadPool = Executors.newFixedThreadPool(100);
 	private VariableChangeObserve obs = new VariableChangeObserve();
 	private Process pb = null;
@@ -92,7 +92,7 @@ public class MainEntry implements GlobalObserver {
                 .configure(ConstantsUI.CURRENT_DIR + File.separator + "config" + File.separator + "log4j.properties");
         LOG.info("==================BricksInitStart====================");
         
-		adb = new ADB();
+		adb = new DeviceConnection();
 		adb.registerObserver(MainEntry.this);
 
         try {

@@ -14,7 +14,7 @@ import com.dji.bricks.SubjectForListener;
 * @author Dan
 */
 
-public class ADB implements IDeviceChangeListener, SubjectForListener {
+public class DeviceConnection implements IDeviceChangeListener, SubjectForListener {
 	
 	private AndroidDebugBridge mAndroidDebugBridge = null;
 	private String adbPath = null;
