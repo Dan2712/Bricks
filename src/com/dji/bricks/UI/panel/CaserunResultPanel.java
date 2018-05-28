@@ -26,8 +26,12 @@ import org.apache.log4j.Logger;
 
 import com.alibaba.fastjson.JSONArray;
 import com.android.ddmlib.IDevice;
+import com.dji.bricks.MainEntry;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
+import com.dji.bricks.backgrounder.ExecutionMain;
+import com.dji.bricks.node_selection.RealTimeScreenUI;
+import com.dji.bricks.tools.FileUtils;
 import com.dji.bricks.tools.PropertyUtil;
 
 public class CaserunResultPanel extends JPanel{
@@ -48,6 +52,7 @@ public class CaserunResultPanel extends JPanel{
 	private JSONArray jsonFile;
 	private String appName;
 	private List<String> case_list;
+	private String pkg = "";
 	
 	/**
 	 * 
@@ -79,11 +84,10 @@ public class CaserunResultPanel extends JPanel{
 	 * 
 	 * @return
 	 */
-	JTextField case_name;
-	JTable List_table;
-	DefaultTableModel model;
-	JTextField run_num;
-	String pass_num;
+	private JTextField case_name;
+	private JTable List_table;
+	private DefaultTableModel model;
+	private JTextField run_num;
 	private JPanel getCenterPanel() {
 		JPanel panelCenter = new JPanel();
 		panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
@@ -206,18 +210,19 @@ public class CaserunResultPanel extends JPanel{
                     filepath = jfc.getSelectedFile().getPath();
                     
                     String filename = filepath.substring(filepath.lastIndexOf("\\")+1);
+                    appName = filename.substring(0, filename.lastIndexOf("_"));
+                    jsonFile = FileUtils.loadJson(filepath);
                     table_row[0] = filename;
                     table_row[1] = filepath;
                     model.addRow(table_row);
                     case_list.add(filepath);
-//                    System.out.println(case_list);
                 } catch (Exception e1) {
                     logger.error("open table_field file fail:" + e1.toString());
                     e1.printStackTrace();
                 }
-
             }
         });
+		
 		buttonCaseDelte.addActionListener(new ActionListener() {
 			@Override
             public void actionPerformed(ActionEvent e) {
@@ -247,29 +252,24 @@ public class CaserunResultPanel extends JPanel{
 					
 					@Override
 					public void run() {
-//						String pkg = "";
-//						
-//						switch (appName) {
-//							case "DJI GO4":
-//		            			pkg = "dji.go.v4";
-//		            			break;
-//		            		case "DJI GO3":
-//		            			pkg = "dji.pilot";
-//		            			break;
-//		            		case "RM500 Launcher":
-//		            			pkg = "com.dpad.launcher";
-//		            			break;
-//		            		case "RM500 Settings":
-//		            			pkg = "com.android.settings.Settings";
-//		            			break;
-//						}
-//						
-//						logprint.setText("");
-//						ExecutionMain.getInstance().RunTestCase(jsonFile, logprint, device, pkg);
-//						RealTimeScreenUI.isRuncase = true;
-				        pass_num = run_num.getText();
-						run_time = Integer.parseInt(pass_num);
-						System.out.println(run_time);
+						switch (appName) {
+							case "DJI GO4":
+		            			pkg = "dji.go.v4";
+		            			break;
+		            		case "DJI GO3":
+		            			pkg = "dji.pilot";
+		            			break;
+		            		case "RM500 Launcher":
+		            			pkg = "com.dpad.launcher";
+		            			break;
+		            		case "RM500 Settings":
+		            			pkg = "com.android.settings.Settings";
+		            			break;
+						}
+						
+						logprint.setText("");
+						ExecutionMain.getInstance().RunTestCase(jsonFile, logprint, device, pkg, Integer.parseInt(run_num.getText()));
+						RealTimeScreenUI.isRuncase = true;
 					}
 				}).start();
 			}

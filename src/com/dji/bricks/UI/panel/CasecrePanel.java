@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -47,21 +48,20 @@ import javax.swing.table.DefaultTableModel;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.MultiLineReceiver;
 import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.MainEntry;
 import com.dji.bricks.UI.BrickBean;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
 import com.dji.bricks.backgrounder.ExecutionMain;
-import com.dji.bricks.backgrounder.execution.AppiumInit;
 import com.dji.bricks.node_selection.RealTimeScreenUI;
 import com.dji.bricks.tools.FileUtils;
 import com.dji.bricks.tools.PropertyUtil;
 import com.dji.bricks.tools.SQLUtils;
 import com.dji.bricks.tools.TimeSeriesChart;
-
-import io.appium.java_client.android.AndroidDriver;
 
 /**
  * Case create page 
@@ -106,6 +106,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private int scrshot_X;
 	private int scrshot_Y;
 	private IDevice device;
+	private JSONArray tmpJson;
+	private int CPUValue;
+	private int MemValue;
 	
 	/**
 	 * Initialize
@@ -159,12 +162,11 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private String appStartName = "";
 	private String pkg = "";
 	private String filepath;
-	private JSONArray jsonFile;
 	private SQLUtils sql = null;
 	private ResultSet xpathSet = null;
 	private PrintStream standardOut;
 	private Object[] table_row = new Object[5];
-	private boolean scrshotbtn_type;
+	private Boolean scrshotbtn_type;
 	
 	private ViewListener vlisten = new ViewListener();
 	private EleListener elisten = new EleListener();
@@ -460,14 +462,13 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                     else {
                     	filepath = jfc.getSelectedFile().getPath();
                         DataFrom.setText(filepath.substring(filepath.lastIndexOf("\\")+1));
-                        caseList.clear();
-                        JSONArray tmp = FileUtils.loadJson(filepath);
+                        tmpJson = FileUtils.loadJson(filepath);
                         appStartName = filepath.substring(filepath.lastIndexOf("\\")+1, filepath.lastIndexOf("_"));
                         
 //                        String str = JSONObject.toJSONString(tmp, SerializerFeature.WriteClassName);
 //                        caseList = JSONArray.parseArray(str, BrickBean.class);
-                        for (int i=0; i<tmp.size(); i++) {
-                        	String str = JSONObject.toJSONString(tmp.get(i));
+                        for (int i=0; i<tmpJson.size(); i++) {
+                        	String str = JSONObject.toJSONString(tmpJson.get(i));
                         	caseList.add(JSON.parseObject(str, BrickBean.class));
                         }
                     }
@@ -480,7 +481,12 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                	model.getDataVector().clear();
+//                	model.getDataVector().clear();
+                	for (int i=0; i<tmpJson.size(); i++) {
+                    	String str = JSONObject.toJSONString(tmpJson.get(i));
+                    	caseList.add(JSON.parseObject(str, BrickBean.class));
+                    }
+                	
                 	for (BrickBean brick : caseList) {
                 		if (brick.getProperty().equals("ele")) {
                 			table_row[1] = "ELE";
@@ -723,7 +729,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             	try {
             		MainEntry.cachedThreadPool.submit(new Runnable() {
 						public void run() {
-							ExecutionMain.getInstance().RunTestCase(jsonFile, logArea, device, pkg);
+							ExecutionMain.getInstance().RunTestCase(jsonFile, logArea, device, pkg, 1);
 		            		RealTimeScreenUI.isRuncase = true;
 						}
 					});
@@ -799,17 +805,46 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 					@Override
 					public void run() {
 						TimeSeriesChart chart = new TimeSeriesChart();
-						while (true) {
-							AndroidDriver driver = AppiumInit.driver;
-							if (driver != null ) {
-								try {
-									System.out.println("here");
-									chart.addCPUValue((Integer) driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "cpuinfo", 6000).get(0).get(0));
-									chart.addMemValue((Integer) driver.getPerformanceData(ExecutionMain.getInstance().getPkg(), "memory", 6000).get(0).get(0));
-									chart.repaint();
-								} catch (Exception e) {
-									e.printStackTrace();
+						CollectingOutputReceiver receiver = new CollectingOutputReceiver();
+						
+						MultiLineReceiver mReceiver = new MultiLineReceiver() {
+							
+							private List<String> tmp = new ArrayList<String>();
+							
+							@Override
+							public boolean isCancelled() {
+								return false;
+							}
+							
+							@Override
+							public void processNewLines(String[] lines) {
+								for(String line : lines) { 
+						            tmp.add(line);
+						            if(line.contains("TOTAL")) {
+						                MemValue = Integer.parseInt(line.split("\\s+")[1]);
+//						                System.out.println(MemValue);
+						                tmp.clear();
+						            }
+						        }
+							}
+						};
+						
+						String pid = "";
+						while (device != null && !pkg.equals("")) {
+							try {
+								if (pid.equals("")) {
+									device.executeShellCommand("ps | grep " + pkg, receiver);
+									receiver.flush();
+									pid = receiver.getOutput().split("\\s+")[1];
 								}
+								device.executeShellCommand("dumpsys meminfo " + pid, mReceiver, 5000);
+//								chart.addCPUValue(CPUValue);
+								chart.addMemValue(MemValue/10240);
+								chart.repaint();
+//								Thread.sleep(1000);
+							} catch (Exception e) {
+								e.printStackTrace();
+								break;
 							}
 						}
 					}
@@ -1040,7 +1075,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 			    }
 			});
 		}
-	 }
+	}
+	
 
 //	private void tableAdd(int addType) {
 //		switch (addType) {
@@ -1052,6 +1088,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 //				break;
 //		}
 //	}
+	
 	
 	class VerifiWindow extends JFrame{
 		// init popup window

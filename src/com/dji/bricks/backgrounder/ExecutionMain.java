@@ -2,6 +2,8 @@ package com.dji.bricks.backgrounder;
 
 import javax.swing.JTextArea;
 
+import org.openqa.selenium.NoSuchSessionException;
+
 import com.alibaba.fastjson.JSONArray;
 import com.android.ddmlib.IDevice;
 import com.dji.bricks.backgrounder.execution.AppiumInit;
@@ -23,7 +25,7 @@ public class ExecutionMain {
         return instance;
     }
     
-	public void RunTestCase(JSONArray jsonFile, JTextArea logText, IDevice device, String pkg) {
+	public void RunTestCase(JSONArray jsonFile, JTextArea logText, IDevice device, String pkg, int runTime) {
 
 		this.pkg = pkg;
 		
@@ -43,19 +45,23 @@ public class ExecutionMain {
 		}
 		
 		try {
-			AppiumInit.setUp(device, pkg, launchActivity);
-			RunTestCase testCase = new RunTestCase(jsonFile, 0, AppiumInit.driver, logText, device);
-			testCase.run();
+			for (int i=0; i<runTime; i++) { 
+				AppiumInit.setUp(device, pkg, launchActivity);
+				RunTestCase testCase = new RunTestCase(jsonFile, 0, AppiumInit.driver, logText, device);
+				testCase.run();
+			}
 			
 		} catch (NullPointerException e1) {
 			
+		} catch (NoSuchSessionException e2) {
+			
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}finally {
 			try {
 				AppiumInit.driver.quit();
 			} catch (Exception e1) {
-				e1.printStackTrace();
+//				e1.printStackTrace();
 			}
 		}
 	}

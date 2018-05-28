@@ -407,7 +407,6 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 
 	@Override
 	public void ADBChange(IDevice[] devices) {
-		// TODO Auto-generated method stub
 		
 	}
 	

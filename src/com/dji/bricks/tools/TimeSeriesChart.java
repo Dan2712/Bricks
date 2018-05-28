@@ -19,7 +19,6 @@ public class TimeSeriesChart extends JFrame {
 	private String title = "";
 	private List<Integer> CPU_values;
 	private List<Integer> Mem_values;
-	private static final int MAX_VALUE = 180;
 	private static final int MAX_COUNT_OF_VALUES = 50;
 	private MyCanvas trendChartCanvas = new MyCanvas();
 
@@ -61,7 +60,7 @@ public class TimeSeriesChart extends JFrame {
 //
 //		}).start();
 
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+//		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setBounds(300, 200, 900, 600);
 		this.add(trendChartCanvas, BorderLayout.CENTER);
 		this.setVisible(true);
@@ -72,6 +71,7 @@ public class TimeSeriesChart extends JFrame {
 			CPU_values.remove(0);
 		}
 		CPU_values.add(value);
+		System.out.println(CPU_values.get(CPU_values.size()-1));
 	}
 	
 	public void addMemValue(int value) {
@@ -99,10 +99,11 @@ public class TimeSeriesChart extends JFrame {
 			g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			int w = XAxis_X;
 			int xDelta = w / MAX_COUNT_OF_VALUES;
-			int length = CPU_values.size() - 10;
+			int length = CPU_values.size();
 
 			for (int i = 0; i < length - 1; ++i) {
-				System.out.println(CPU_values.get(i));
+//				System.out.println(xDelta * (MAX_COUNT_OF_VALUES - length + i));
+//				System.out.println(CPU_values.get(i));
 				g2D.drawLine(xDelta * (MAX_COUNT_OF_VALUES - length + i), CPU_values.get(i),
 						xDelta * (MAX_COUNT_OF_VALUES - length + i + 1), CPU_values.get(i + 1));
 			}
