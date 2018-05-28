@@ -455,11 +455,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                     JFileChooser jfc = new JFileChooser(new File(CURRENT_DIR + "/json"));  
                     jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES );  
                     jfc.showDialog(new JLabel(), "选择");  
-                    filepath = jfc.getSelectedFile().getPath();
-                    DataFrom.setText(filepath.substring(filepath.lastIndexOf("\\")+1));
-                    
-                    tmpJson = FileUtils.loadJson(filepath);
-                    appStartName = filepath.substring(filepath.lastIndexOf("\\")+1, filepath.indexOf("_"));
                     File selectedFile = jfc.getSelectedFile();
                     if (selectedFile == null) {
                         appStartName = "";
@@ -467,14 +462,13 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                     else {
                     	filepath = jfc.getSelectedFile().getPath();
                         DataFrom.setText(filepath.substring(filepath.lastIndexOf("\\")+1));
-                        caseList.clear();
-                        JSONArray tmp = FileUtils.loadJson(filepath);
+                        tmpJson = FileUtils.loadJson(filepath);
                         appStartName = filepath.substring(filepath.lastIndexOf("\\")+1, filepath.lastIndexOf("_"));
                         
 //                        String str = JSONObject.toJSONString(tmp, SerializerFeature.WriteClassName);
 //                        caseList = JSONArray.parseArray(str, BrickBean.class);
-                        for (int i=0; i<tmp.size(); i++) {
-                        	String str = JSONObject.toJSONString(tmp.get(i));
+                        for (int i=0; i<tmpJson.size(); i++) {
+                        	String str = JSONObject.toJSONString(tmpJson.get(i));
                         	caseList.add(JSON.parseObject(str, BrickBean.class));
                         }
                     }
@@ -483,7 +477,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 }
             }
         });
-		
+
 		buttonJsonLoad.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
