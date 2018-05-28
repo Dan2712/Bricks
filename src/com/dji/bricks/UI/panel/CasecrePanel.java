@@ -32,6 +32,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -459,6 +460,24 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                     
                     tmpJson = FileUtils.loadJson(filepath);
                     appStartName = filepath.substring(filepath.lastIndexOf("\\")+1, filepath.indexOf("_"));
+                    File selectedFile = jfc.getSelectedFile();
+                    if (selectedFile == null) {
+                        appStartName = "";
+                    }
+                    else {
+                    	filepath = jfc.getSelectedFile().getPath();
+                        DataFrom.setText(filepath.substring(filepath.lastIndexOf("\\")+1));
+                        caseList.clear();
+                        JSONArray tmp = FileUtils.loadJson(filepath);
+                        appStartName = filepath.substring(filepath.lastIndexOf("\\")+1, filepath.lastIndexOf("_"));
+                        
+//                        String str = JSONObject.toJSONString(tmp, SerializerFeature.WriteClassName);
+//                        caseList = JSONArray.parseArray(str, BrickBean.class);
+                        for (int i=0; i<tmp.size(); i++) {
+                        	String str = JSONObject.toJSONString(tmp.get(i));
+                        	caseList.add(JSON.parseObject(str, BrickBean.class));
+                        }
+                    }
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -478,7 +497,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 	for (BrickBean brick : caseList) {
                 		if (brick.getProperty().equals("ele")) {
                 			table_row[1] = "ELE";
-                        	table_row[2] = filepath.substring(filepath.lastIndexOf("\\")+1, filepath.indexOf("_"));
+                        	table_row[2] = filepath.substring(filepath.lastIndexOf("\\")+1, filepath.lastIndexOf("_"));
                         	table_row[3] = brick.getEle_page();
                         	table_row[4] = brick.getCustom_name();
                         	model.addRow(table_row);
@@ -732,19 +751,51 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             public void actionPerformed(ActionEvent e) {
 
                 try {
-                	JOptionPane.showMessageDialog(buttonSave,"Save Complete");
-                	SimpleDateFormat timeFormat = new SimpleDateFormat("hhmmss");
-                	String time = timeFormat.format(Calendar.getInstance().getTime());
-                	
-                	File json = new File("json/" + appStartName + "_" + time + ".json");
-                	if (!json.getParentFile().exists())
-                		json.getParentFile().mkdirs();
-                	
-                	String str = JSON.toJSONString(caseList);
-                	PrintWriter pw = new PrintWriter(new FileWriter(json));
-                    pw.print(str);
-                    pw.flush();
-                    pw.close();
+                	JFrame cus_save_frame = new JFrame("SAVE");
+                	JLabel cus_save_label = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.cussave"));
+                	JTextField cus_save_text = new JTextField();
+                	JButton cus_save_btn = new JButton("SAVE");
+                	JPanel cus_type_pane = new JPanel();
+                	JPanel cus_btn_pane = new JPanel();
+                	cus_save_frame.setSize(250,120);
+                	cus_save_frame.setVisible(true);
+                	cus_save_frame.setLayout(new BorderLayout());
+                	cus_save_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
+                	cus_save_frame.setLocationRelativeTo(MainEntry.frame);
+                	cus_save_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            		cus_save_label.setFont(ConstantsUI.FONT_NORMAL);
+            		cus_save_text.setPreferredSize(new Dimension(100,30));
+            		
+            		cus_type_pane.add(cus_save_label);
+            		cus_type_pane.add(cus_save_text);
+            		cus_btn_pane.add(cus_save_btn);
+            		cus_save_frame.add(cus_type_pane, BorderLayout.NORTH);
+            		cus_save_frame.add(cus_btn_pane, BorderLayout.SOUTH);
+            		
+            		cus_save_btn.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                        	try {
+                            	SimpleDateFormat timeFormat = new SimpleDateFormat("hhmmss");
+//                            	String time = timeFormat.format(Calendar.getInstance().getTime());
+                            	String cus_name = cus_save_text.getText();
+                            	
+                            	File json = new File("json/" + appStartName + "_" + cus_name + ".json");
+                            	if (!json.getParentFile().exists())
+                            		json.getParentFile().mkdirs();
+                            	
+                            	String str = JSON.toJSONString(caseList);
+                            	PrintWriter pw = new PrintWriter(new FileWriter(json));
+                                pw.print(str);
+                                pw.flush();
+                                pw.close();
+                                cus_save_frame.dispose();
+                        	}catch (Exception e1) {
+                        		e1.printStackTrace();
+                        	}
+                    	}
+                    });
+
                 } catch (Exception e1) {
                 	e1.printStackTrace();
                 }
@@ -797,7 +848,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 //								chart.addCPUValue(CPUValue);
 								chart.addMemValue(MemValue/10240);
 								chart.repaint();
-//								Thread.sleep(1000);
+								Thread.sleep(1000);
 							} catch (Exception e) {
 								e.printStackTrace();
 								break;
@@ -1033,7 +1084,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		}
 	}
 	
-
 //	private void tableAdd(int addType) {
 //		switch (addType) {
 //			case 0:				//type is ele
@@ -1044,7 +1094,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 //				break;
 //		}
 //	}
-	
 	
 	class VerifiWindow extends JFrame{
 		// init popup window
