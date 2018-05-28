@@ -211,7 +211,7 @@ public class CaserunResultPanel extends JPanel{
                     
                     String filename = filepath.substring(filepath.lastIndexOf("\\")+1);
                     appName = filename.substring(0, filename.lastIndexOf("_"));
-                    jsonFile = FileUtils.loadJson(filepath);
+                    
                     table_row[0] = filename;
                     table_row[1] = filepath;
                     model.addRow(table_row);
@@ -268,8 +268,13 @@ public class CaserunResultPanel extends JPanel{
 						}
 						
 						logprint.setText("");
-						ExecutionMain.getInstance().RunTestCase(jsonFile, logprint, device, pkg, Integer.parseInt(run_num.getText()));
-						RealTimeScreenUI.isRuncase = true;
+						for (int i=0; i<Integer.parseInt(run_num.getText()); i++) {
+							for (int j=0; j<case_list.size(); j++) {
+								jsonFile = FileUtils.loadJson(case_list.get(j));
+								ExecutionMain.getInstance().RunTestCase(jsonFile, logprint, device, pkg);
+								RealTimeScreenUI.isRuncase = true;
+							}
+						}
 					}
 				}).start();
 			}

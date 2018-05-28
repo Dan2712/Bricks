@@ -25,7 +25,7 @@ public class ExecutionMain {
         return instance;
     }
     
-	public void RunTestCase(JSONArray jsonFile, JTextArea logText, IDevice device, String pkg, int runTime) {
+	public void RunTestCase(JSONArray jsonFile, JTextArea logText, IDevice device, String pkg) {
 
 		this.pkg = pkg;
 		
@@ -45,11 +45,9 @@ public class ExecutionMain {
 		}
 		
 		try {
-			for (int i=0; i<runTime; i++) { 
-				AppiumInit.setUp(device, pkg, launchActivity);
-				RunTestCase testCase = new RunTestCase(jsonFile, 0, AppiumInit.driver, logText, device);
-				testCase.run();
-			}
+			AppiumInit.setUp(device, pkg, launchActivity);
+			RunTestCase testCase = new RunTestCase(jsonFile, 0, AppiumInit.driver, logText, device);
+			testCase.run();
 			
 		} catch (NullPointerException e1) {
 			

@@ -467,10 +467,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                         
 //                        String str = JSONObject.toJSONString(tmp, SerializerFeature.WriteClassName);
 //                        caseList = JSONArray.parseArray(str, BrickBean.class);
-                        for (int i=0; i<tmpJson.size(); i++) {
-                        	String str = JSONObject.toJSONString(tmpJson.get(i));
-                        	caseList.add(JSON.parseObject(str, BrickBean.class));
-                        }
                     }
                 } catch (Exception e1) {
                     e1.printStackTrace();
@@ -730,7 +726,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             	try {
             		MainEntry.cachedThreadPool.submit(new Runnable() {
 						public void run() {
-							ExecutionMain.getInstance().RunTestCase(jsonFile, logArea, device, pkg, 1);
+							ExecutionMain.getInstance().RunTestCase(jsonFile, logArea, device, pkg);
 		            		RealTimeScreenUI.isRuncase = true;
 						}
 					});
@@ -832,6 +828,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 						
 						String pid = "";
 						while (device != null && !pkg.equals("")) {
+							System.out.println("here");
 							try {
 								if (pid.equals("")) {
 									device.executeShellCommand("ps | grep " + pkg, receiver);
@@ -1377,7 +1374,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    				}
 
 	    			}
-	        });
+	    		});
 	    		timer_pane.add(timer_label);
 	    		timer_pane.add(timer_num);
 	    		timer_btn_pane.add(buttonVersetTimer_add);
