@@ -5,6 +5,8 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ import com.dji.bricks.node_selection.RealTimeScreenUI;
 import com.dji.bricks.node_selection.VariableChangeObserve;
 import com.dji.bricks.tools.PropertyUtil;
 import com.dji.bricks.tools.SQLUtils;
+import com.dji.bricks.tools.SwitchButton;
 
 /**
  *
@@ -43,9 +46,6 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	private static JLabel Focustatus;
 	private static JLabel LongClickStatus;
 	private static MyIconButton buttonSave;
-	private static MyIconButton buttonSuspend;
-	private static MyIconButton buttonPlayview;
-	private static CheckButton chkbtn;
 	private JPanel panelView;
 	private JPanel panelEreCenter;
 	
@@ -107,20 +107,30 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	 */
 	private JPanel getCenterPanel() {
 		panelEreCenter = new JPanel();
+		panelEreCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		JPanel panelSuspend = new JPanel();
+		panelSuspend.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelView = new JPanel();
 		panelView.setPreferredSize(new Dimension(530,530));
 		panelView.setBackground(ConstantsUI.MAIN_BACK_COLOR);
-//		panelView.setBackground(Color.BLUE);
 		panelView.setLayout(new BorderLayout());
 		panelView.updateUI();
 		
-        buttonSuspend = new MyIconButton(ConstantsUI.ICON_SUSPEND, ConstantsUI.ICON_SUSPEND_ENABLE,
-                ConstantsUI.ICON_SUSPEND_DISABLE, "");
-        buttonPlayview = new MyIconButton(ConstantsUI.ICON_PLAY, ConstantsUI.ICON_PLAY_ENABLE,
-                ConstantsUI.ICON_PLAY_DISABLE, "");
-        panelSuspend.add(buttonSuspend);
-        panelSuspend.add(buttonPlayview);
+        SwitchButton switch_btn = new SwitchButton();
+        
+        switch_btn.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (switch_btn.isSelected()) {
+                	realTimeScreen.startStaticMode();
+                    System.out.println("open");
+                } else {
+                	realTimeScreen.stopStaticMode();
+                	System.out.println("close");
+                }
+            }
+        });
+        panelSuspend.add(switch_btn);
 		panelEreCenter.add(panelView);
 		panelEreCenter.add(panelSuspend);
 
@@ -386,22 +396,6 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	                buttonSave.setEnabled(true);
 	            }
 	        }
-		});
-		
-		buttonSuspend.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				realTimeScreen.startStaticMode();
-			}
-		});
-		
-		buttonPlayview.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				realTimeScreen.stopStaticMode();
-			}
 		});
 	}
 
