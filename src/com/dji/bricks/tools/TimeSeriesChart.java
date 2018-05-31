@@ -14,6 +14,8 @@ import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.dji.bricks.UI.ConstantsUI;
+
 public class TimeSeriesChart extends JFrame {
 
 	private String title = "";
@@ -96,18 +98,6 @@ public class TimeSeriesChart extends JFrame {
 			g.setColor(c);
 			super.paintComponent(g);
 
-			g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			int w = XAxis_X;
-			int xDelta = w / MAX_COUNT_OF_VALUES;
-			int length = CPU_values.size();
-
-			for (int i = 0; i < length - 1; ++i) {
-//				System.out.println(xDelta * (MAX_COUNT_OF_VALUES - length + i));
-//				System.out.println(CPU_values.get(i));
-				g2D.drawLine(xDelta * (MAX_COUNT_OF_VALUES - length + i), CPU_values.get(i),
-						xDelta * (MAX_COUNT_OF_VALUES - length + i + 1), CPU_values.get(i + 1));
-			}
-
 			g2D.setStroke(new BasicStroke(Float.parseFloat("2.0F")));
 
 			g.drawLine(Origin_X, Origin_Y, XAxis_X, XAxis_Y);
@@ -130,33 +120,25 @@ public class TimeSeriesChart extends JFrame {
 				g.drawString(j + " ", Origin_X - 30, i + 3);
 			}
 			g.drawString("CPU", YAxis_X - 5, YAxis_Y - 5);
-			g.setColor(Color.BLACK);
 			
-			for (int i = Origin_Y; i > YAxis_Y; i -= PRESS_INTERVAL) {
-				g.drawLine(Origin_X, i, Origin_X + 65 * TIME_INTERVAL, i);
-			}
-			
-			for (int i = Origin_X; i < XAxis_X; i += TIME_INTERVAL * 5) {
-				g.drawLine(i, Origin_Y, i, Origin_Y - 6 * PRESS_INTERVAL);
+			g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			int w = XAxis_X;
+			int xDelta = w / MAX_COUNT_OF_VALUES;
+			int length = CPU_values.size() - 2;
+
+			g2D.setColor(Color.BLUE);
+			g2D.setStroke(new BasicStroke(Float.parseFloat("1.5f")));
+			for (int i = 0; i < length - 1; ++i) {
+				g2D.drawLine(xDelta * (MAX_COUNT_OF_VALUES - length + i), Origin_Y - CPU_values.get(i),
+						xDelta * (MAX_COUNT_OF_VALUES - length + i + 1), Origin_Y - CPU_values.get(i + 1));
 			}
 		}
 		
 		private void paintMemory(Graphics g) {
 			Graphics2D g2D = (Graphics2D) g;
 
-			Color c = new Color(200, 70, 0);
+			Color c = ConstantsUI.TABLE_LOG_COLOR;
 			g.setColor(c);
-
-			g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			int w = XAxis_X;
-			int xDelta = w / MAX_COUNT_OF_VALUES;
-			int length = Mem_values.size() - 10;
-
-			for (int i = 0; i < length - 1; ++i) {
-				System.out.println(Mem_values.get(i));
-				g2D.drawLine(xDelta * (MAX_COUNT_OF_VALUES - length + i), Mem_values.get(i) + 240,
-						xDelta * (MAX_COUNT_OF_VALUES - length + i + 1), Mem_values.get(i + 1) + 240);
-			}
 
 			g2D.setStroke(new BasicStroke(Float.parseFloat("2.0F")));
 
@@ -168,32 +150,39 @@ public class TimeSeriesChart extends JFrame {
 			g.drawLine(YAxis_X, YAxis_Y + 240, YAxis_X - 5, YAxis_Y + 245);
 			g.drawLine(YAxis_X, YAxis_Y + 240, YAxis_X + 5, YAxis_Y + 245);
 
-			g.setColor(Color.BLUE);
+			g.setColor(Color.BLACK);
 			g2D.setStroke(new BasicStroke(Float.parseFloat("1.0f")));
 
-			for (int i = Origin_X, j = 0; i < XAxis_X; i += TIME_INTERVAL * 5, j += TIME_INTERVAL) {
-				g.drawString(" " + j, i - 10, Origin_Y + 260);
-			}
+//			for (int i = Origin_X, j = 0; i < XAxis_X; i += TIME_INTERVAL * 5, j += TIME_INTERVAL) {
+//				g.drawString(" " + j, i - 10, Origin_Y + 260);
+//			}
 			g.drawString("time(s)", XAxis_X + 5, XAxis_Y + 245);
 
 			for (int i = Origin_Y, j = 0; i > YAxis_Y; i -= PRESS_INTERVAL, j += TIME_INTERVAL * 3) {
 				g.drawString(j + " ", Origin_X - 30, i + 243);
 			}
 			g.drawString("Memory", YAxis_X - 5, YAxis_Y + 235);
-			g.setColor(Color.BLACK);
 			
-			for (int i = Origin_Y + 240; i > YAxis_Y + 240; i -= PRESS_INTERVAL) {
-				g.drawLine(Origin_X, i, Origin_X + 65 * TIME_INTERVAL, i);
-			}
-			
-			for (int i = Origin_X; i < XAxis_X; i += TIME_INTERVAL * 5) {
-				g.drawLine(i, Origin_Y + 240, i, Origin_Y + 240 - 6 * PRESS_INTERVAL);
+			g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			int w = XAxis_X;
+			int xDelta = w / MAX_COUNT_OF_VALUES;
+			int length = Mem_values.size() - 2;
+
+			g2D.setColor(Color.BLUE);
+			g2D.setStroke(new BasicStroke(Float.parseFloat("1.5f")));
+			for (int i = 0; i < length - 1; ++i) {
+				int x_pre_value = xDelta * (MAX_COUNT_OF_VALUES - length + i);
+				int x_now_value = xDelta * (MAX_COUNT_OF_VALUES - length + i + 1);
+				System.out.println(x_pre_value + "-" + x_now_value);
+				
+				if (x_pre_value >= Origin_X && x_now_value >= Origin_X) {
+					g2D.drawLine(x_pre_value, Origin_Y + 240 - Mem_values.get(i),
+							x_now_value, Origin_Y + 240 - Mem_values.get(i + 1));
+					
+					if (i % 5 == 0)
+						g.drawString(" " + i, x_pre_value - 10, Origin_Y + 260);
+				}
 			}
 		}
 	}
-
-//	public static void main(String[] args) {
-//		// TODO Auto-generated method stub
-//		new TimeSeriesChart();
-//	}
 }

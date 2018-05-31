@@ -20,11 +20,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +37,6 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -51,6 +50,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.MultiLineReceiver;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.MainEntry;
 import com.dji.bricks.UI.BrickBean;
@@ -107,6 +107,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private int scrshot_Y;
 	private IDevice device;
 	private JSONArray tmpJson;
+	private String tmp;
 	private int CPUValue;
 	private int MemValue;
 	
@@ -288,7 +289,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 					comboxViewName.removeItemListener(vlisten);
 					try {
 						while (rs.next()) {
-							String viewName = rs.getString("ACTIVITY_NAME");
+							String viewName = new String(rs.getBytes("ACTIVITY_NAME"), "UTF-8");
 							comboxViewName.addItem(viewName);
 						}
 						comboxViewName.setSelectedItem(null);
@@ -296,6 +297,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 						comboxViewName.updateUI();
 						comboxEleName.updateUI();
 					} catch (SQLException e1) {
+						e1.printStackTrace();
+					} catch (UnsupportedEncodingException e1) {
 						e1.printStackTrace();
 					} finally {
 						if (rs != null) {
@@ -806,8 +809,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 						
 						MultiLineReceiver mReceiver = new MultiLineReceiver() {
 							
-							private List<String> tmp = new ArrayList<String>();
-							
 							@Override
 							public boolean isCancelled() {
 								return false;
@@ -816,11 +817,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 							@Override
 							public void processNewLines(String[] lines) {
 								for(String line : lines) { 
-						            tmp.add(line);
 						            if(line.contains("TOTAL")) {
-						                MemValue = Integer.parseInt(line.split("\\s+")[1]);
-//						                System.out.println(MemValue);
-						                tmp.clear();
+						            	tmp = line;
 						            }
 						        }
 							}
@@ -828,18 +826,21 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 						
 						String pid = "";
 						while (device != null && !pkg.equals("")) {
-							System.out.println("here");
 							try {
 								if (pid.equals("")) {
 									device.executeShellCommand("ps | grep " + pkg, receiver);
 									receiver.flush();
 									pid = receiver.getOutput().split("\\s+")[1];
 								}
-								device.executeShellCommand("dumpsys meminfo " + pid, mReceiver, 5000);
+								device.executeShellCommand("dumpsys meminfo " + pid, mReceiver);
+								System.out.println(tmp);
+								MemValue = Integer.parseInt(tmp.split("\\s+")[1]);
 //								chart.addCPUValue(CPUValue);
 								chart.addMemValue(MemValue/10240);
 								chart.repaint();
 								Thread.sleep(1000);
+							} catch (ShellCommandUnresponsiveException ignore) {
+								continue;
 							} catch (Exception e) {
 								e.printStackTrace();
 								break;
@@ -880,7 +881,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 				comboxEleName.removeItemListener(elisten);
 				try {
 					rs.next();
-					String eleFirst = rs.getString(1);
+					String eleFirst = new String(rs.getBytes(1), "UTF-8");
 					comboxEleName.addItem(eleFirst);
 					while ((rs.next())) {
 						String eleName = rs.getString(1);
@@ -889,6 +890,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 					comboxEleName.setSelectedItem(null);
 					comboxEleName.addItemListener(elisten);
 				} catch (SQLException e1) {
+					e1.printStackTrace();
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} finally {
 					if (rs != null) {
@@ -1212,15 +1216,17 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    			@Override
 	    			public void itemStateChanged(ItemEvent e) {
 	    				if (e.getStateChange() == ItemEvent.SELECTED) {
-	    					appName = (String) e.getItem();
-	    					ResultSet rs = sql.queryElement("ACTIVITY", appName);
-	    					
-	    					comboxViewName.removeAllItems();
-	    					comboxEleName.removeAllItems();
-	    					comboxViewName.removeItemListener(vlisten);
+	    					ResultSet rs = null;
 	    					try {
+								appName = new String(((String) e.getItem()).getBytes(), "UTF-8");
+		    					rs = sql.queryElement("ACTIVITY", appName);
+		    					
+		    					comboxViewName.removeAllItems();
+		    					comboxEleName.removeAllItems();
+		    					comboxViewName.removeItemListener(vlisten);
+	    					
 	    						while (rs.next()) {
-	    							String viewName = rs.getString("ACTIVITY_NAME");
+	    							String viewName = new String(rs.getBytes("ACTIVITY_NAME"), "UTF-8");
 	    							comboxViewName.addItem(viewName);
 	    						}
 	    						comboxViewName.setSelectedItem(null);
@@ -1228,7 +1234,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    						
 	    					} catch (SQLException e1) {
 	    						e1.printStackTrace();
-	    					} finally {
+	    					} catch (UnsupportedEncodingException e1) {
+								e1.printStackTrace();
+							} finally {
 	    						if (rs != null) {
 	    							try {
 	    								rs.close();
@@ -1240,6 +1248,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    				}
 	    			}
 	    		});
+	    		
 	    		buttonVersetEE_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
 	                    ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
 	    		buttonVersetEE_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
@@ -1314,6 +1323,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    		ver_setting_frame.setLocationRelativeTo(MainEntry.frame);
 	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    		ver_setting_frame.setVisible(true);
+	    		
 	    	}else if (ver_type == 4){
 	    		// Timer adding method
 	    		ver_setting_frame.setSize(270, 130);

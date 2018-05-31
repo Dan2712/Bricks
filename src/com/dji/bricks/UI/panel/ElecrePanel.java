@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -353,8 +354,8 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
             		buttonSave.setEnabled(true);
                     try {
                     	app_name_text = textFieldEleItem_4.getText();
-                    	activity_name_text = textFieldEleItem_5.getText();
-                    	custom_name_text = textFieldEleItem_6.getText();
+                    	activity_name_text = new String(textFieldEleItem_5.getText().getBytes(), "UTF-8");
+                    	custom_name_text = new String(textFieldEleItem_6.getText().getBytes(), "UTF-8");
                     	state_text = node_info.get("clickable") + node_info.get("scrollable") + node_info.get("checkable") + node_info.get("focusable") + node_info.get("long-clickable");
                     	xpath_text = node_info.get("xpath");
                     	screen_text = node_info.get("screenPath");
@@ -380,7 +381,9 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
                     } catch (SQLException e1) {
                     	if (e1.getMessage().equals("[SQLITE_CONSTRAINT_UNIQUE]  A UNIQUE constraint failed (UNIQUE constraint failed: ELEMENT.CUSTOM_NAME)"))
                     		JOptionPane.showMessageDialog(buttonSave, "Failed! The element already exists");
-                    }
+                    } catch (UnsupportedEncodingException e1) {
+						e1.printStackTrace();
+					}
             		
             	}
 
