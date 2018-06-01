@@ -65,7 +65,6 @@ import com.dji.bricks.tools.TimeSeriesChart;
 
 /**
  * Case create page 
- * @author DraLastat
  */
 public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	
@@ -100,7 +99,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private String xpath = "";
 	private String cus_name = "";
 	private String act_name = "";
-	private String val = "";
 	private String scrshot_pathname = "";
 	private int action;
 	private int scrshot_X;
@@ -256,62 +254,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		buttonEleRefresh = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
                 ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.reele"));
 
-		comboxAppName = new JComboBox<String>();
-		comboxAppName.addItem("RM500 Launcher");
-		comboxAppName.addItem("DJI GO3");
-		comboxAppName.addItem("DJI GO4");
-		comboxAppName.addItem("DJI Pilot");
-		comboxAppName.addItem("RM500 Settings");
-		comboxAppName.setEditable(false);
-		comboxAppName.setSelectedItem(null);
-		comboxAppName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
-		
-		comboxViewName = new JComboBox<String>();
-		comboxViewName.setEditable(false);
-		comboxViewName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
-		
-		comboxEleName = new JComboBox<String>();
-		comboxEleName.setEditable(false);
-		comboxEleName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
-
-		
-		// App_Name selection change listener
-		comboxAppName.addItemListener(new ItemListener() {
-			
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-					appName = (String) e.getItem();
-					ResultSet rs = sql.queryElement("ACTIVITY", appName);
-					
-					comboxViewName.removeAllItems();
-					comboxEleName.removeAllItems();
-					comboxViewName.removeItemListener(vlisten);
-					try {
-						while (rs.next()) {
-							String viewName = new String(rs.getBytes("ACTIVITY_NAME"), "UTF-8");
-							comboxViewName.addItem(viewName);
-						}
-						comboxViewName.setSelectedItem(null);
-						comboxViewName.addItemListener(vlisten);
-						comboxViewName.updateUI();
-						comboxEleName.updateUI();
-					} catch (SQLException e1) {
-						e1.printStackTrace();
-					} catch (UnsupportedEncodingException e1) {
-						e1.printStackTrace();
-					} finally {
-						if (rs != null) {
-							try {
-								rs.close();
-							} catch (SQLException e1) {
-								e1.printStackTrace();
-							}
-						}
-					}
-				}
-			}
-		});
+		addEleCombox();
 		
 		ElePanel_APP.add(ElePick);
 		ElePanel_APP.add(comboxAppName);
@@ -373,15 +316,12 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 					switch ((String) e.getItem()) {
 					case "Text Validation":
 						ver_type = 1;
-						val = "TV";
 						break;
 					case "Image Validation":
-						ver_type = 2;
-						val = "IV";
+//						ver_type = 2;
 						break;
 					case "Element Exist Validation":
-						ver_type = 3;
-						val = "EEV";
+						ver_type = 2;
 						break;
 					}
 				}
@@ -484,10 +424,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 //                	model.getDataVector().clear();
                 	for (int i=0; i<tmpJson.size(); i++) {
                     	String str = JSONObject.toJSONString(tmpJson.get(i));
-                    	caseList.add(JSON.parseObject(str, BrickBean.class));
-                    }
-                	
-                	for (BrickBean brick : caseList) {
+                    	BrickBean brick = JSON.parseObject(str, BrickBean.class);
+                   
                 		if (brick.getProperty().equals("ele")) {
                 			table_row[1] = "ELE";
                         	table_row[2] = filepath.substring(filepath.lastIndexOf("\\")+1, filepath.lastIndexOf("_"));
@@ -495,17 +433,23 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                         	table_row[4] = brick.getCustom_name();
                         	model.addRow(table_row);
                 		} else if (brick.getProperty().equals("act")) {
-                			if(action == 0) {
+                			switch (action) {
+                				case 0:
                         		act_name = "Click";
-                        	} else if(action == 1) {
+                        		break;
+                				case 1:
                         		act_name = "Long Press";
-                        	} else if(action == 2) {
+                        		break;
+                				case 2:
                         		act_name = "Set Text";
-                        	} else if(action == 4) {
+                        		break;
+                				case 4:
                         		act_name = "Point Drag";
                         		screenPointGet(brick);
-                        	} else if(action == 10){
+                        		break;
+                				case 10:
                         		act_name = "DB";
+                        		break;
                         	}
                         	table_row[1] = "ACT";
                         	table_row[2] = act_name;
@@ -515,11 +459,28 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 		} else if (brick.getProperty().equals("val")) {
                 			switch (brick.getValidation_name()) {
                 				case 1:
-                					break;
+                					table_row[1] = "Ver_text";
+                					table_row[2] = brick.getParams().get("expect_text");
+                					table_row[3] = "N/A";
+                					table_row[4] = "N/A";
+                 					break;
                 				case 2:
+                					table_row[1] = "Ver_ele";
+                					table_row[2] = "N/A";
+                					table_row[3] = "N/A";
+                					table_row[4] = "N/A";
                 					break;
                 			}
+                			model.addRow(table_row);
+                		} else if (brick.getProperty().equals("time")) {
+                			table_row[1] = "Timer";
+        					table_row[2] = brick.getParams().get("time");
+        					table_row[3] = "N/A";
+        					table_row[4] = "N/A";
+        					model.addRow(table_row);
                 		}
+                		
+                		caseList.add(brick);
                 	}
                 } catch (Exception e1) {
                     e1.printStackTrace();
@@ -928,7 +889,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 						if (state.charAt(i) == '1') {
 					        switch (i) {
 					        case 0:
-					        	comboxActName.addItem("Single-Click");
+					        	comboxActName.addItem("Single Click");
 					        	break;
 					        case 1:
 					        	comboxActName.addItem("Long-Press");
@@ -1079,6 +1040,65 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		}
 	}
 	
+	private void addEleCombox() {
+		comboxAppName = new JComboBox<String>();
+		comboxAppName.addItem("DJI GO3");
+		comboxAppName.addItem("DJI GO4");
+		comboxAppName.addItem("DJI Pilot");
+		comboxAppName.addItem("RM500 Launcher");
+		comboxAppName.addItem("RM500 Settings");
+		comboxAppName.setEditable(false);
+		comboxAppName.setSelectedItem(null);
+		comboxAppName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
+		
+		comboxViewName = new JComboBox<String>();
+		comboxViewName.setEditable(false);
+		comboxViewName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
+		
+		comboxEleName = new JComboBox<String>();
+		comboxEleName.setEditable(false);
+		comboxEleName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
+		
+		comboxAppName.addItemListener(new ItemListener() {
+			// combobox item changed method
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					ResultSet rs = null;
+					try {
+						appName = new String(((String) e.getItem()).getBytes(), "UTF-8");
+    					rs = sql.queryElement("ACTIVITY", appName);
+    					
+    					comboxViewName.removeAllItems();
+    					comboxEleName.removeAllItems();
+    					comboxViewName.removeItemListener(vlisten);
+					
+						while (rs.next()) {
+							String viewName = new String(rs.getBytes("ACTIVITY_NAME"), "UTF-8");
+							comboxViewName.addItem(viewName);
+						}
+						comboxViewName.setSelectedItem(null);
+						comboxViewName.addItemListener(vlisten);
+						
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					} catch (UnsupportedEncodingException e1) {
+						e1.printStackTrace();
+					} finally {
+						if (rs != null) {
+							try {
+								rs.close();
+							} catch (SQLException e1) {
+								e1.printStackTrace();
+							}
+						}
+					}
+				}
+			}
+		});
+	}
+	
+	
 //	private void tableAdd(int addType) {
 //		switch (addType) {
 //			case 0:				//type is ele
@@ -1100,11 +1120,28 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    		ver_setting_frame.setSize(400, 300);
 	    		ver_setting_frame.setTitle("Text Verification");
 	    		ver_setting_frame.setVisible(true);
-	    		ver_setting_frame.setLayout(new BorderLayout());
+	    		ver_setting_frame.setLayout(new GridLayout(5, 1));
+	    		JPanel app_name_pick = new JPanel();
+	    		JPanel app_view_pick = new JPanel();
+	    		JPanel ele_name_pick = new JPanel();
+	    		JLabel app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appname"));
+	    		app_name.setFont(ConstantsUI.FONT_NORMAL);
+	    		JLabel app_view = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appview"));
+	    		app_view.setFont(ConstantsUI.FONT_NORMAL);
+	    		JLabel ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.elename"));
+	    		ele_name.setFont(ConstantsUI.FONT_NORMAL);
+	    		
+	    		addEleCombox();
+	    		app_name_pick.add(app_name);
+	    		app_name_pick.add(comboxAppName);
+	    		app_view_pick.add(app_view);
+	    		app_view_pick.add(comboxViewName);
+	    		ele_name_pick.add(ele_name);
+	    		ele_name_pick.add(comboxEleName);
+	    		
 	    		JPanel text_pane = new JPanel();
-//	    		text_pane.setBackground(Color.gray);
 	    		JPanel text_btn_pane = new JPanel();
-	    		JTextArea ver_text_input = new JTextArea(11,45);
+	    		JTextArea ver_text_input = new JTextArea(1,25);
 	    		ver_text_input.setLineWrap(true);
 	    		buttonVersetTX_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
 	                    ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
@@ -1113,6 +1150,10 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    		text_pane.add(new JScrollPane(ver_text_input));
 	    		text_btn_pane.add(buttonVersetTX_add);
 	    		text_btn_pane.add(buttonVersetTX_re);
+	    		
+	    		ver_setting_frame.add(app_name_pick);
+	    		ver_setting_frame.add(app_view_pick);
+	    		ver_setting_frame.add(ele_name_pick);
 	    		ver_setting_frame.add(text_pane, BorderLayout.NORTH);
 	    		ver_setting_frame.add(text_btn_pane, BorderLayout.SOUTH);
 	    		// kill the thread, same to the others ver_type case
@@ -1129,7 +1170,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 
 		                try {
 		                	table_row[1] = "Ver_text";
-		                	table_row[2] = "Text";
+		                	table_row[2] = ver_text_input.getText();
 		                	table_row[3] = "N/A";
 		                	table_row[4] = "N/A";
 		                	
@@ -1137,10 +1178,10 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		                    if(i >= 0){
 		                    	model.insertRow(i+1, table_row);
 		                    }else{
-		            	    model.addRow(table_row);
+		                    	model.addRow(table_row);
 		                    }
 		                	
-		                	String ele_path_text = "//android.widget.TextView[@resource-id='dji.go.v4:id/fpv_error_pop_item_title_tv']";
+		                	String ele_path_text = xpath;
 							String expect_text = ver_text_input.getText();
 							
 							BrickBean brick_valText = new BrickBean();
@@ -1177,7 +1218,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	
 		            }
 	    		});
-	    	}else if (ver_type == 3){
+	    		
+	    	}else if (ver_type == 2){
 	    		// Element exist verification method
 	    		ver_setting_frame.setSize(300, 200);
 	    		ver_setting_frame.setTitle("Element Picking");
@@ -1193,61 +1235,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    		JLabel ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.elename"));
 	    		ele_name.setFont(ConstantsUI.FONT_NORMAL);
 	    		
-	    		comboxAppName = new JComboBox<String>();
-	    		comboxAppName.addItem("DJI GO3");
-	    		comboxAppName.addItem("DJI GO4");
-	    		comboxAppName.addItem("DJI Pilot");
-	    		comboxAppName.addItem("RM500 Launcher");
-	    		comboxAppName.addItem("RM500 Settings");
-	    		comboxAppName.setEditable(false);
-	    		comboxAppName.setSelectedItem(null);
-	    		comboxAppName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
-	    		
-	    		comboxViewName = new JComboBox<String>();
-	    		comboxViewName.setEditable(false);
-	    		comboxViewName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
-	    		
-	    		comboxEleName = new JComboBox<String>();
-	    		comboxEleName.setEditable(false);
-	    		comboxEleName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
-	    		
-	    		comboxAppName.addItemListener(new ItemListener() {
-	    			// combobox item changed method
-	    			@Override
-	    			public void itemStateChanged(ItemEvent e) {
-	    				if (e.getStateChange() == ItemEvent.SELECTED) {
-	    					ResultSet rs = null;
-	    					try {
-								appName = new String(((String) e.getItem()).getBytes(), "UTF-8");
-		    					rs = sql.queryElement("ACTIVITY", appName);
-		    					
-		    					comboxViewName.removeAllItems();
-		    					comboxEleName.removeAllItems();
-		    					comboxViewName.removeItemListener(vlisten);
-	    					
-	    						while (rs.next()) {
-	    							String viewName = new String(rs.getBytes("ACTIVITY_NAME"), "UTF-8");
-	    							comboxViewName.addItem(viewName);
-	    						}
-	    						comboxViewName.setSelectedItem(null);
-	    						comboxViewName.addItemListener(vlisten);
-	    						
-	    					} catch (SQLException e1) {
-	    						e1.printStackTrace();
-	    					} catch (UnsupportedEncodingException e1) {
-								e1.printStackTrace();
-							} finally {
-	    						if (rs != null) {
-	    							try {
-	    								rs.close();
-	    							} catch (SQLException e1) {
-	    								e1.printStackTrace();
-	    							}
-	    						}
-	    					}
-	    				}
-	    			}
-	    		});
+	    		addEleCombox();
 	    		
 	    		buttonVersetEE_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
 	                    ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
@@ -1260,7 +1248,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		            public void actionPerformed(ActionEvent e) {
 
 		                try {
-		                	table_row[1] = "Ver";
+		                	table_row[1] = "Ver_ele";
 		                	table_row[2] = comboxAppName.getSelectedItem();
 		                	table_row[3] = comboxViewName.getSelectedItem();
 		                	table_row[4] = comboxEleName.getSelectedItem();
@@ -1358,6 +1346,12 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		            	    model.addRow(table_row);
 		                    }
 		                    
+		                    Map<String, Object> params_time = new HashMap<>();
+		                    params_time.put("time", Integer.parseInt(timer_num.getText()));
+		                    BrickBean timeBrick = new BrickBean();
+		                    timeBrick.setProperty("time");
+		                    timeBrick.setParams(params_time);
+		                    caseList.add(timeBrick);
 		                } catch (Exception e1) {
 		                	e1.printStackTrace();
 		                }

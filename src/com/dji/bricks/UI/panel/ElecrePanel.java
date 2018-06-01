@@ -36,7 +36,6 @@ import com.dji.bricks.tools.SwitchButton;
 
 /**
  *
- * @author DraLastat
  */
 public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	private static final long serialVersionUID = 1L;

@@ -33,4 +33,11 @@ public class CusValidation {
 			return true;
 		return false;
 	}
+	
+	public int getEleShowNum(String eleName) {
+		WebElement ele = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(eleName);
+		int num = Integer.parseInt(ele.getAttribute("text"));
+		
+		return num;
+	}
 }

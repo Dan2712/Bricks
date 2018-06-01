@@ -58,6 +58,10 @@ public class RunTestCase implements Runnable{
 						this.actionSwitch(obj);
 					} else if (obj.getString("property").equals("val")) {
 						this.validationSwitch(obj);
+					} else if (obj.getString("property").equals("time")) {
+						int time = ((Integer)obj.getJSONObject("params").get("time")) * 1000;
+						System.out.println(time);
+						Thread.sleep(time);
 					}
 				} catch (Exception e) {
 					if (e instanceof NoSuchElementException)
@@ -117,21 +121,23 @@ public class RunTestCase implements Runnable{
 		JSONObject params = validation_info.getJSONObject("params");
 		
 		switch (validation_name) {
-		case 1:
-			String ele_name_text = (String) params.get("ele_path");
-			String except_text = (String) params.get("expect_text");
-			if (validation.getText(ele_name_text, except_text))
-				logText.append("Text validation success" + "\n");
-			else
-				logText.append("Text validation fail" + "\n");
-			break;
-		case 2:
-			String ele_name_elval = (String) params.get("ele_path");
-			if (validation.getExactEle(ele_name_elval))
-				logText.append("Element validation success");
-			else
-				logText.append("Element validation fail");
-			break;
+			case 1:
+				String ele_name_text = (String) params.get("ele_path");
+				String except_text = (String) params.get("expect_text");
+				if (validation.getText(ele_name_text, except_text))
+					logText.append("Text validation success" + "\n");
+				else
+					logText.append("Text validation fail" + "\n");
+				break;
+			case 2:
+				String ele_name_elval = (String) params.get("ele_path");
+				if (validation.getExactEle(ele_name_elval))
+					logText.append("Element validation success" + "\n");
+				else
+					logText.append("Element validation fail" + "\n");
+				break;
+			case 3:
+				String ele_name_numVal = (String) params.get("ele_path");
 		}
 	}
 }

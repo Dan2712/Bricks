@@ -22,6 +22,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.panel.CasecrePanel;
@@ -59,7 +60,6 @@ public class MainEntry implements GlobalObserver {
 	private DeviceConnection adb;
 	public static ExecutorService cachedThreadPool = Executors.newFixedThreadPool(100);
 	private VariableChangeObserve obs = new VariableChangeObserve();
-	private Process pb = null;
 	
 	/**
      * 
@@ -120,7 +120,7 @@ public class MainEntry implements GlobalObserver {
 			@Override
 			public void run() {
 				try {
-					pb = Runtime.getRuntime().exec("cmd /k start appium");
+					Runtime.getRuntime().exec("cmd /c start appium");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -195,7 +195,9 @@ public class MainEntry implements GlobalObserver {
             		if (AppiumInit.driver != null)
             			AppiumInit.driver.quit();
             	
-            		pb.destroyForcibly();
+//            		Runtime.getRuntime().exec("cmd start " + System.getProperty("user.dir") + "/close.bat");
+            		Runtime.getRuntime().exec("taskkill /F /IM node.exe");
+            		
                     connection.close();
                 }catch(Exception e1) {
                 	e1.printStackTrace();
