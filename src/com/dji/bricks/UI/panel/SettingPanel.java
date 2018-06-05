@@ -23,24 +23,18 @@ public class SettingPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
+	public static JPanel settingPanelMain;
 	private static JPanel panelOption;
 	private static JPanel panelAbout;
-	public static JPanel settingPanelMain;
 	private static JPanel settingPanelOption;
 	private static JPanel settingPanelAbout;
 
-	/**
-	 * 
-	 */
 	public SettingPanel() {
 		initialize();
 		addComponent();
 		addListener();
 	}
 
-	/**
-	 * 
-	 */
 	private void initialize() {
 		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		this.setLayout(new BorderLayout());
@@ -48,9 +42,6 @@ public class SettingPanel extends JPanel {
 		settingPanelAbout = new SettingPanelAbout();
 	}
 
-	/**
-	 * 
-	 */
 	private void addComponent() {
 
 		this.add(getUpPanel(), BorderLayout.NORTH);
@@ -58,11 +49,6 @@ public class SettingPanel extends JPanel {
 
 	}
 
-	/**
-	 * 
-	 * 
-	 * @return
-	 */
 	private JPanel getUpPanel() {
 		JPanel panelUp = new JPanel();
 		panelUp.setBackground(ConstantsUI.MAIN_BACK_COLOR);
@@ -76,18 +62,11 @@ public class SettingPanel extends JPanel {
 		return panelUp;
 	}
 
-	/**
-	 * 
-	 * 
-	 * @return
-	 */
 	private JPanel getCenterPanel() {
-		// �м����
 		JPanel panelCenter = new JPanel();
 		panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelCenter.setLayout(new BorderLayout());
 
-		// �б�Panel
 		JPanel panelList = new JPanel();
 		Dimension preferredSize = new Dimension(245, ConstantsUI.MAIN_WINDOW_HEIGHT);
 		panelList.setPreferredSize(preferredSize);
@@ -104,8 +83,8 @@ public class SettingPanel extends JPanel {
 		panelAbout.setLayout(new FlowLayout(FlowLayout.LEFT, 30, 13));
 		panelAbout.setPreferredSize(preferredSizeListItem);
 
-		JLabel labelOption = new JLabel(PropertyUtil.getProperty("ds.ui.setting.option"));
-		JLabel labelAbout = new JLabel(PropertyUtil.getProperty("ds.ui.setting.about"));
+		JLabel labelOption = new JLabel(PropertyUtil.getProperty("bricks.ui.setting.option"));
+		JLabel labelAbout = new JLabel(PropertyUtil.getProperty("bricks.ui.setting.about"));
 		Font fontListItem = new Font(PropertyUtil.getProperty("ds.ui.font.family"), 0, 15);
 		labelOption.setFont(fontListItem);
 		labelAbout.setFont(fontListItem);
@@ -117,7 +96,6 @@ public class SettingPanel extends JPanel {
 		panelList.add(panelOption);
 		panelList.add(panelAbout);
 
-		// ����Panel
 		settingPanelMain = new JPanel();
 		settingPanelMain.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		settingPanelMain.setLayout(new BorderLayout());
@@ -129,9 +107,6 @@ public class SettingPanel extends JPanel {
 		return panelCenter;
 	}
 
-	/**
-	 * 
-	 */
 	private void addListener() {
 		panelOption.addMouseListener(new MouseListener() {
 

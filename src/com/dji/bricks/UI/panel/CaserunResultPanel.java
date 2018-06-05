@@ -9,10 +9,17 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -41,6 +48,7 @@ public class CaserunResultPanel extends JPanel{
 	private static MyIconButton buttonCaseDelte;
 	private static MyIconButton buttonStart;
 	private static MyIconButton buttonChart;
+	private static MyIconButton buttonLogSave;
 	private static int run_time = 1;
 	private Object[] table_row = new Object[2];
 
@@ -54,9 +62,6 @@ public class CaserunResultPanel extends JPanel{
 	private List<String> case_list;
 	private String pkg = "";
 	
-	/**
-	 * 
-	 */
 	public CaserunResultPanel(IDevice device) {
 		this.device = device;
 		initialize();
@@ -64,26 +69,16 @@ public class CaserunResultPanel extends JPanel{
 		addListener();
 	}
 
-	/**
-	 * 
-	 */
 	private void initialize() {
 		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		this.setLayout(new BorderLayout());
 	}
 
-	/**
-	 * 
-	 */
 	private void addComponent() {
 		this.add(getCenterPanel(), BorderLayout.CENTER);
 
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	private JTextField case_name;
 	private JTable List_table;
 	private DefaultTableModel model;
@@ -93,9 +88,6 @@ public class CaserunResultPanel extends JPanel{
 		panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelCenter.setLayout(new GridLayout(2, 1));
 		
-		/**
-		 *
-		 */
 		JPanel panelGridCaseFind = new JPanel();
 		panelGridCaseFind.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelGridCaseFind.setLayout(new GridLayout(2, 1));
@@ -168,15 +160,13 @@ public class CaserunResultPanel extends JPanel{
         panelGridCaseFind.add(panelGrid1);
         panelGridCaseFind.add(panelGrid2);
 		
-		/**
-		 * 
-		 */
 		JPanel panelGridLog = new JPanel();
 		panelGridLog.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelGridLog.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
 
 		JLabel labelRunLogTitle = new JLabel(PropertyUtil.getProperty("bricks.ui.caserun.logprint"));
 		JLabel labellogprintNull = new JLabel();
+		JLabel labellogprintNull2 = new JLabel();
 		logprint = new JTextArea(12, 68);
 		logprint.setBorder(null);
 		logprint.setBorder(new EmptyBorder(0,0,0,0));
@@ -184,12 +174,17 @@ public class CaserunResultPanel extends JPanel{
         logprint.setWrapStyleWord(true);
         logprint.setForeground(ConstantsUI.MAIN_BACK_COLOR);
         logprint.setBackground(ConstantsUI.TABLE_BACK_COLOR);
+		buttonLogSave = new MyIconButton(ConstantsUI.ICON_LOGSAVE, ConstantsUI.ICON_LOGSAVE_ENABLE,
+				ConstantsUI.ICON_LOGSAVE_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.logsave"));
 		labelRunLogTitle.setFont(ConstantsUI.FONT_NORMAL);
 		labelRunLogTitle.setPreferredSize(ConstantsUI.LABLE_SIZE_ITEM);
 		labellogprintNull.setPreferredSize(ConstantsUI.LABLE_SIZE_CASE_NULL_ITEM);
+		labellogprintNull2.setPreferredSize(new Dimension(480,40));
 		panelGridLog.add(labelRunLogTitle);
 		panelGridLog.add(labellogprintNull);
 		panelGridLog.add(new JScrollPane(logprint));
+		panelGridLog.add(labellogprintNull2);
+		panelGridLog.add(buttonLogSave);
 
 
 		panelCenter.add(panelGridCaseFind);
@@ -279,6 +274,60 @@ public class CaserunResultPanel extends JPanel{
 				}).start();
 			}
 		});
+		
+		buttonLogSave.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                try {
+                	JFrame log_save_frame = new JFrame("SAVE");
+                	JLabel log_save_label = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.logsave"));
+                	JTextField log_save_text = new JTextField();
+                	JButton log_save_btn = new JButton("SAVE");
+                	JPanel log_type_pane = new JPanel();
+                	JPanel log_btn_pane = new JPanel();
+                	log_save_frame.setSize(250,120);
+                	log_save_frame.setVisible(true);
+                	log_save_frame.setLayout(new BorderLayout());
+                	log_save_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
+                	log_save_frame.setLocationRelativeTo(MainEntry.frame);
+                	log_save_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            		log_save_label.setFont(ConstantsUI.FONT_NORMAL);
+            		log_save_text.setPreferredSize(new Dimension(100,30));
+            		
+            		log_type_pane.add(log_save_label);
+            		log_type_pane.add(log_save_text);
+            		log_btn_pane.add(log_save_btn);
+            		log_save_frame.add(log_type_pane, BorderLayout.NORTH);
+            		log_save_frame.add(log_btn_pane, BorderLayout.SOUTH);
+            		
+            		log_save_btn.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                        	try {
+                            	String log_name = log_save_text.getText();
+                            	File logstream = new File("report/" + log_name + ".txt");
+                            	if (!logstream.getParentFile().exists())
+                            		logstream.getParentFile().mkdirs();
+                            	
+                            	String str = logprint.getText();
+                            	PrintWriter pw = new PrintWriter(new FileWriter(logstream));
+                                pw.print(str);
+                                pw.flush();
+                                pw.close();
+                                log_save_frame.dispose();
+                        	}catch (Exception e1) {
+                        		e1.printStackTrace();
+                        	}
+                    	}
+                    });
+
+                } catch (Exception e1) {
+                	e1.printStackTrace();
+                }
+
+            }
+        });
 	}
 
 }

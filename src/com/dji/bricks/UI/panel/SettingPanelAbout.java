@@ -12,34 +12,25 @@ import javax.swing.JPanel;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
 import com.dji.bricks.tools.PropertyUtil;
+
 /**
  * 
- *
  * @author DraLastat
  */
 public class SettingPanelAbout extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * 
-	 */
 	public SettingPanelAbout() {
 		initialize();
 		addComponent();
 	}
 
-	/**
-	 * 
-	 */
 	private void initialize() {
 		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		this.setLayout(new BorderLayout());
 	}
 
-	/**
-	 *
-	 */
 	private void addComponent() {
 
 		this.add(getCenterPanel(), BorderLayout.CENTER);
@@ -47,11 +38,6 @@ public class SettingPanelAbout extends JPanel {
 
 	}
 
-	/**
-	 * 
-	 * 
-	 * @return
-	 */
 	private JPanel getCenterPanel() {
 		JPanel panelCenter = new JPanel();
 		panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
@@ -98,11 +84,6 @@ public class SettingPanelAbout extends JPanel {
 		return panelCenter;
 	}
 
-	/**
-	 * 
-	 * 
-	 * @return
-	 */
 	private JPanel getDownPanel() {
 		JPanel panelDown = new JPanel();
 		panelDown.setBackground(ConstantsUI.MAIN_BACK_COLOR);

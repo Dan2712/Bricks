@@ -28,38 +28,24 @@ public class CaserunPanel extends JPanel implements GlobalObserver {
 	private static JPanel caserunPanelResult;
 	private static JPanel caserunPanelData;
 	
-	/**
-	 * 
-	 */
 	public CaserunPanel() {
 		initialize();
 		addComponent();
 		addListener();
 	}
 
-	/**
-	 * 
-	 */
 	private void initialize() {
 		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		this.setLayout(new BorderLayout());
 		caserunPanelData = new CaserunDataPanel();
 	}
 
-	/**
-	 * 
-	 */
 	private void addComponent() {
 
 		this.add(getUpPanel(), BorderLayout.NORTH);
 		this.add(getCenterPanel(), BorderLayout.CENTER);
 	}
 	
-	/**
-	 * 
-	 * 
-	 * @return
-	 */
 	private JPanel getUpPanel() {
 		JPanel panelUp = new JPanel();
 		panelUp.setBackground(ConstantsUI.MAIN_BACK_COLOR);
@@ -73,18 +59,12 @@ public class CaserunPanel extends JPanel implements GlobalObserver {
 		return panelUp;
 	}
 	
-	/**
-	 * 
-	 * 
-	 * @return
-	 */
 	private JPanel getCenterPanel() {
 		//
 		JPanel panelCenter = new JPanel();
 		panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelCenter.setLayout(new BorderLayout());
 
-		//
 		JPanel panelList = new JPanel();
 		Dimension preferredSize = new Dimension(245, ConstantsUI.MAIN_WINDOW_HEIGHT);
 		panelList.setPreferredSize(preferredSize);
@@ -114,7 +94,6 @@ public class CaserunPanel extends JPanel implements GlobalObserver {
 		panelList.add(panelResult);
 		panelList.add(panelData);
 
-		//
 		caserunPanelMain = new JPanel();
 		caserunPanelMain.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		caserunPanelMain.setLayout(new BorderLayout());
@@ -124,9 +103,7 @@ public class CaserunPanel extends JPanel implements GlobalObserver {
 
 		return panelCenter;
 	}
-	/**
-	 *
-	 */
+
 	private void addListener() {
 		panelResult.addMouseListener(new MouseListener() {
 

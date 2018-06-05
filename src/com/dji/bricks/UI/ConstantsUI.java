@@ -279,6 +279,12 @@ public class ConstantsUI {
             CURRENT_DIR + File.separator + "icon" + File.separator + "playEnable.png");
     public final static ImageIcon ICON_PLAY_DISABLE = new ImageIcon(
             CURRENT_DIR + File.separator + "icon" + File.separator + "playEnable.png");
+    public final static ImageIcon ICON_LOGSAVE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "logsave.png");
+    public final static ImageIcon ICON_LOGSAVE_ENABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "logsaveEnable.png");
+    public final static ImageIcon ICON_LOGSAVE_DISABLE = new ImageIcon(
+            CURRENT_DIR + File.separator + "icon" + File.separator + "logsaveEnable.png");
 
     /**
      * 

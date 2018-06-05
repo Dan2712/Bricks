@@ -20,7 +20,6 @@ import com.dji.bricks.tools.PropertyUtil;
 /**
  * 
  * @author DraLastat
- *
  */
 public class ToolBarPanel extends JPanel implements GlobalObserver {
 
@@ -32,18 +31,12 @@ public class ToolBarPanel extends JPanel implements GlobalObserver {
 	private static MyIconButton buttonCaserun;
 	private static MyIconButton buttonSetting;
 
-	/**
-	 * 
-	 */
 	public ToolBarPanel() {
 		initialize();
 		addButton();
 		addListener();
 	}
 
-	/**
-	 * 
-	 */
 	private void initialize() {
 		Dimension preferredSize = new Dimension(48, ConstantsUI.MAIN_WINDOW_HEIGHT);
 		this.setPreferredSize(preferredSize);
@@ -53,9 +46,6 @@ public class ToolBarPanel extends JPanel implements GlobalObserver {
 		this.setLayout(new GridLayout(2, 1));
 	}
 
-	/**
-	 * 
-	 */
 	private void addButton() {
 
 		JPanel panelUp = new JPanel();
@@ -87,9 +77,6 @@ public class ToolBarPanel extends JPanel implements GlobalObserver {
 
 	}
 
-	/**
-	 * 
-	 */
 	private void addListener() {
 		buttonStatus.addActionListener(new ActionListener() {
 

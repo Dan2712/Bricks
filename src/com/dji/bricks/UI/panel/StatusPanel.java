@@ -3,17 +3,13 @@ package com.dji.bricks.UI.panel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
 import org.apache.log4j.Logger;
-
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.tools.PropertyUtil;
 
 /**
- * ��ҳ��״̬��Ϣ
  *
  * @author DraLastat
  */
@@ -29,28 +25,17 @@ public class StatusPanel extends JPanel{
         addComponent();
     }
 
-    /**
-     * ��ʼ��
-     */
     private void initialize() {
         this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
         this.setLayout(new BorderLayout());
     }
 
-    /**
-     * ������
-     */
     private void addComponent() {
         this.add(getUpPanel(), BorderLayout.NORTH);
-        //this.add(getCenterPanel(), BorderLayout.CENTER);
         this.add(getDownPanel(), BorderLayout.SOUTH);
 
     }
-	/**
-	 * �������
-	 * 
-	 * @return
-	 */
+    
     private JPanel getUpPanel() {
         JPanel panelUp = new JPanel();
         panelUp.setBackground(ConstantsUI.MAIN_BACK_COLOR);
@@ -64,12 +49,6 @@ public class StatusPanel extends JPanel{
         return panelUp;
     }
 
-    
-	/**
-	 * �ײ����
-	 * 
-	 * @return
-	 */
 	private JPanel getDownPanel() {
 		JPanel panelDown = new JPanel();
 		panelDown.setBackground(ConstantsUI.MAIN_BACK_COLOR);

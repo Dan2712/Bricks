@@ -5,12 +5,10 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-//import logic.ConstantsLogic;
 import org.apache.log4j.Logger;
 
 import com.dji.bricks.UI.ConstantsUI;
@@ -18,8 +16,7 @@ import com.dji.bricks.UI.MyIconButton;
 import com.dji.bricks.tools.PropertyUtil;
 
 /**
- * �߼�ѡ�����
- *
+ * 
  * @author DraLastat
  */
 public class SettingPanelOption extends JPanel {
@@ -28,43 +25,20 @@ public class SettingPanelOption extends JPanel {
 
     private static MyIconButton buttonSave;
 
-    private static MyIconButton buttionTableFiled;
-
-    private static MyIconButton buttionClearLogs;
-
-    private static MyIconButton buttionClearBaks;
-
-    private static JCheckBox checkBoxAutoBak;
-
-    private static JCheckBox checkBoxDebug;
-
-    private static JCheckBox checkBoxStrict;
-
     private static JTextField textField;
 
     private static Logger logger = Logger.getLogger(SettingPanelOption.class);
 
-    /**
-     * ����
-     */
     public SettingPanelOption() {
         initialize();
         addComponent();
-        //setCurrentOption();
-        //addListener();
     }
 
-    /**
-     * ��ʼ��
-     */
     private void initialize() {
         this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
         this.setLayout(new BorderLayout());
     }
 
-    /**
-     * ������
-     */
     private void addComponent() {
 
         this.add(getCenterPanel(), BorderLayout.CENTER);
@@ -72,23 +46,15 @@ public class SettingPanelOption extends JPanel {
 
     }
 
-    /**
-     * �в����
-     *
-     * @return
-     */
     private JPanel getCenterPanel() {
-        // �м����
         JPanel panelCenter = new JPanel();
         panelCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
         panelCenter.setLayout(new GridLayout(1, 1));
 
-        // ����Grid
         JPanel panelGridOption = new JPanel();
         panelGridOption.setBackground(ConstantsUI.MAIN_BACK_COLOR);
         panelGridOption.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
 
-        // ��ʼ�����
         JPanel panelItem1 = new JPanel(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
         JPanel panelItem2 = new JPanel(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
         JPanel panelItem3 = new JPanel(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
@@ -113,23 +79,6 @@ public class SettingPanelOption extends JPanel {
         panelItem6.setPreferredSize(ConstantsUI.PANEL_ITEM_SIZE);
         panelItem7.setPreferredSize(ConstantsUI.PANEL_ITEM_SIZE);
 
-/*        buttionTableFiled = new MyIconButton(ConstantsUI.ICON_TABLE_FIELD, ConstantsUI.ICON_TABLE_FIELD_ENABLE,
-                ConstantsUI.ICON_TABLE_FIELD_DISABLE, "");
-        panelItem1.add(buttionTableFiled);
-
-        buttionClearLogs = new MyIconButton(ConstantsUI.ICON_CLEAR_LOG, ConstantsUI.ICON_CLEAR_LOG_ENABLE,
-                ConstantsUI.ICON_CLEAR_LOG_DISABLE, "");
-        panelItem2.add(buttionClearLogs);
-
-        buttionClearBaks = new MyIconButton(ConstantsUI.ICON_CLEAR_ALL_BAKS, ConstantsUI.ICON_CLEAR_ALL_BAKS_ENABLE,
-                ConstantsUI.ICON_CLEAR_ALL_BAKS_DISABLE, "");
-        panelItem3.add(buttionClearBaks);
-
-        checkBoxAutoBak = new JCheckBox(PropertyUtil.getProperty("ds.ui.setting.autoBackUp"));
-        checkBoxAutoBak.setBackground(ConstantsUI.MAIN_BACK_COLOR);
-        checkBoxAutoBak.setFont(ConstantsUI.FONT_RADIO);
-        panelItem4.add(checkBoxAutoBak);*/
-
         JLabel label = new JLabel(PropertyUtil.getProperty("bricks.ui.setting.JSONPath"));
         textField = new JTextField();
         label.setBackground(ConstantsUI.MAIN_BACK_COLOR);
@@ -139,16 +88,6 @@ public class SettingPanelOption extends JPanel {
         textField.setPreferredSize(dm);
         panelItem5.add(label);
         panelItem5.add(textField);
-
-/*        checkBoxStrict = new JCheckBox(PropertyUtil.getProperty("ds.ui.setting.strict"));
-        checkBoxStrict.setBackground(ConstantsUI.MAIN_BACK_COLOR);
-        checkBoxStrict.setFont(ConstantsUI.FONT_RADIO);
-        panelItem6.add(checkBoxStrict);
-
-        checkBoxDebug = new JCheckBox(PropertyUtil.getProperty("ds.ui.setting.debugMode"));
-        checkBoxDebug.setBackground(ConstantsUI.MAIN_BACK_COLOR);
-        checkBoxDebug.setFont(ConstantsUI.FONT_RADIO);
-        panelItem7.add(checkBoxDebug);*/
 
         panelGridOption.add(panelItem1);
         panelGridOption.add(panelItem2);
@@ -162,11 +101,6 @@ public class SettingPanelOption extends JPanel {
         return panelCenter;
     }
 
-    /**
-     * �ײ����
-     *
-     * @return
-     */
     private JPanel getDownPanel() {
         JPanel panelDown = new JPanel();
         panelDown.setBackground(ConstantsUI.MAIN_BACK_COLOR);
@@ -179,96 +113,4 @@ public class SettingPanelOption extends JPanel {
         return panelDown;
     }
 
-/*    *//**
-     * ���õ�ǰcomboxѡ��״̬
-     *//*
-    public static void setCurrentOption() {
-        checkBoxAutoBak.setSelected(Boolean.parseBoolean(ConstantsTools.CONFIGER.getAutoBak()));
-        checkBoxDebug.setSelected(Boolean.parseBoolean(ConstantsTools.CONFIGER.getDebugMode()));
-        checkBoxStrict.setSelected(Boolean.parseBoolean(ConstantsTools.CONFIGER.getStrictMode()));
-        textField.setText(ConstantsTools.CONFIGER.getMysqlPath());
-    }*/
-
-    /**
-     * Ϊ����������¼�����
-     */
-/*    private void addListener() {
-        buttonSave.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                try {
-                    ConstantsTools.CONFIGER.setAutoBak(String.valueOf(checkBoxAutoBak.isSelected()));
-                    ConstantsTools.CONFIGER.setDebugMode(String.valueOf(checkBoxDebug.isSelected()));
-                    ConstantsTools.CONFIGER.setStrictMode(String.valueOf(checkBoxStrict.isSelected()));
-                    ConstantsTools.CONFIGER.setMysqlPath(textField.getText());
-                    JOptionPane.showMessageDialog(AppMainWindow.settingPanel, PropertyUtil.getProperty("ds.ui.save.success"),
-                            PropertyUtil.getProperty("ds.ui.tips"), JOptionPane.PLAIN_MESSAGE);
-                } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(AppMainWindow.settingPanel, PropertyUtil.getProperty("ds.ui.save.fail") + e1.getMessage(),
-                            PropertyUtil.getProperty("ds.ui.tips"),
-                            JOptionPane.ERROR_MESSAGE);
-                    logger.error("Write to xml file error" + e1.toString());
-                }
-
-            }
-        });
-
-        buttionTableFiled.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    Desktop.getDesktop().open(new File(ConstantsLogic.TABLE_FIELD_DIR));
-                } catch (IOException e1) {
-                    logger.error("open table_field file fail:" + e1.toString());
-                    e1.printStackTrace();
-                }
-
-            }
-        });
-
-        buttionClearLogs.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                int answer = JOptionPane.showConfirmDialog(AppMainWindow.settingPanel,
-                        PropertyUtil.getProperty("ds.ui.setting.clean.makeSure"),
-                        PropertyUtil.getProperty("ds.ui.tips"), 2);
-
-                if (answer == 0) {
-                    FileOutputStream testfile = null;
-                    try {
-                        testfile = new FileOutputStream(ConstantsTools.PATH_LOG);
-                        testfile.write(new String("").getBytes());
-                        testfile.flush();
-                        JOptionPane.showMessageDialog(AppMainWindow.settingPanel,
-                                PropertyUtil.getProperty("ds.ui.setting.clean.success"),
-                                PropertyUtil.getProperty("ds.ui.tips"),
-                                JOptionPane.PLAIN_MESSAGE);
-                    } catch (IOException e1) {
-                        JOptionPane.showMessageDialog(AppMainWindow.settingPanel,
-                                PropertyUtil.getProperty("ds.ui.setting.clean.fail") + e1.getMessage(),
-                                PropertyUtil.getProperty("ds.ui.tips"),
-                                JOptionPane.ERROR_MESSAGE);
-                        e1.printStackTrace();
-                    } finally {
-                        if (testfile != null) {
-                            try {
-                                testfile.close();
-                            } catch (IOException e1) {
-                                JOptionPane.showMessageDialog(AppMainWindow.settingPanel,
-                                        PropertyUtil.getProperty("ds.ui.setting.clean.fail") + e1.getMessage(),
-                                        PropertyUtil.getProperty("ds.ui.tips"), JOptionPane.ERROR_MESSAGE);
-                                e1.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-*/
 }

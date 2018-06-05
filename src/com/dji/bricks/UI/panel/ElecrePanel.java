@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 
 import com.android.ddmlib.IDevice;
 import com.dji.bricks.GlobalObserver;
-import com.dji.bricks.UI.CheckButton;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
 import com.dji.bricks.node_selection.RealTimeScreenUI;
@@ -55,18 +54,13 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	public final static String CURRENT_DIR = System.getProperty("user.dir");
 	
 	private SQLUtils sql;
-	/**
-	 * 
-	 */
+	
 	public ElecrePanel(VariableChangeObserve obs, SQLUtils sql) {
 		this.obs = obs;
 		this.sql = sql;
 		initialize();
 	}
 
-	/**
-	 * 
-	 */
 	private void initialize() {
 		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		this.setLayout(new BorderLayout());
@@ -74,9 +68,6 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		addListener();
 	}
 
-	/**
-	 * 
-	 */
 	private JPanel LiveviewPanel;
 	private void addComponent() {
 		LiveviewPanel = getCenterPanel();
@@ -85,10 +76,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		this.add(getRightPanel(), BorderLayout.EAST);
 	}
 	public Map<String, String> getNode_info;
-	/**
-	 *
-	 * @return
-	 */
+
 	private JPanel getUpPanel() {
 		JPanel panelUp = new JPanel();
 		panelUp.setBackground(ConstantsUI.MAIN_BACK_COLOR);
@@ -101,10 +89,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		
 		return panelUp;
 	}
-	/**
-	 * 
-	 * @return
-	 */
+
 	private JPanel getCenterPanel() {
 		panelEreCenter = new JPanel();
 		panelEreCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
@@ -137,10 +122,6 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		return panelEreCenter;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	private JTextField textFieldEleItem_1;
 	private JTextField textFieldEleItem_4;
 	private JTextField textFieldEleItem_5;
@@ -156,8 +137,6 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		panelRight.setLayout(new GridLayout(3, 1));
 		
 		JPanel panelinfo = new JPanel();
-/*		Dimension preferredSizeUP = new Dimension(10, 5);
-		panelup.setPreferredSize(preferredSizeUP);*/
 		panelinfo.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelinfo.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
 		

@@ -25,8 +25,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -83,6 +83,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private static MyIconButton buttonJsonLoad;
 	private static MyIconButton buttonPlayList;
 	private static MyIconButton buttonRTChart;
+	private static MyIconButton buttonLogSave;
 	private static JPanel popuppanel;
 //	private static PopupWindow popupwindow;
 	private JTextArea logArea;
@@ -302,28 +303,23 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		JLabel VerPick = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.verpick"));
 		VerPick.setFont(ConstantsUI.FONT_NORMAL);
 		comboxVerName = new JComboBox<String>();
-		comboxVerName.addItem("Text Validation");
-		comboxVerName.addItem("Image Validation");
-		comboxVerName.addItem("Element Exist Validation");
+		comboxVerName.addItem(PropertyUtil.getProperty("bricks.ui.casecre.textver"));
+		comboxVerName.addItem(PropertyUtil.getProperty("bricks.ui.casecre.imgver"));
+		comboxVerName.addItem(PropertyUtil.getProperty("bricks.ui.casecre.extver"));
 		comboxVerName.setEditable(false);
 		comboxVerName.setSelectedItem(null);
 		comboxVerName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
 		
-		comboxVerName.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-					switch ((String) e.getItem()) {
-					case "Text Validation":
-						ver_type = 1;
-						break;
-					case "Image Validation":
-//						ver_type = 2;
-						break;
-					case "Element Exist Validation":
-						ver_type = 2;
-						break;
-					}
+		comboxVerName.addItemListener(e -> {
+			if (e.getStateChange() == ItemEvent.SELECTED) {
+				String item = (String) e.getItem();
+				if (PropertyUtil.getProperty("bricks.ui.casecre.textver").equals(item)) {
+					ver_type = 1;
+				} else if (PropertyUtil.getProperty("bricks.ui.casecre.imgver").equals(item)) {
+				} else if (PropertyUtil.getProperty("bricks.ui.casecre.extver").equals(item)) {
+					ver_type = 2;
+				} else if (item == null){
+					ver_type = 0;
 				}
 			}
 		});
@@ -350,14 +346,17 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 				ConstantsUI.ICON_PLAY_LIST_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.playlist"));
 		buttonRTChart = new MyIconButton(ConstantsUI.ICON_RTCHART, ConstantsUI.ICON_RTCHART_ENABLE,
 				ConstantsUI.ICON_RTCHART_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.rtchart"));
+		buttonLogSave = new MyIconButton(ConstantsUI.ICON_LOGSAVE, ConstantsUI.ICON_LOGSAVE_ENABLE,
+				ConstantsUI.ICON_LOGSAVE_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.logsave"));
 		JLabel TableNull = new JLabel();
-		TableNull.setPreferredSize(new Dimension(75, 40));
+		TableNull.setPreferredSize(new Dimension(27, 40));
 		RunPanel.add(buttonTimer);
 		RunPanel.add(buttonRowDelete);
 		RunPanel.add(TableNull);
 		RunPanel.add(buttonPlayList);
 		RunPanel.add(buttonRTChart);
 		RunPanel.add(buttonSave);
+		RunPanel.add(buttonLogSave);
 		
 		JPanel panelLog = new JPanel();
 		panelLog.setBackground(ConstantsUI.TOOL_BAR_BACK_COLOR);
@@ -427,7 +426,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                     	BrickBean brick = JSON.parseObject(str, BrickBean.class);
                    
                 		if (brick.getProperty().equals("ele")) {
-                			table_row[1] = "ELE";
+                			table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.ele");
                         	table_row[2] = filepath.substring(filepath.lastIndexOf("\\")+1, filepath.lastIndexOf("_"));
                         	table_row[3] = brick.getEle_page();
                         	table_row[4] = brick.getCustom_name();
@@ -451,7 +450,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                         		act_name = "DB";
                         		break;
                         	}
-                        	table_row[1] = "ACT";
+                        	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.act");
                         	table_row[2] = act_name;
                         	table_row[3] = "N/A";
                         	table_row[4] = "N/A";
@@ -459,13 +458,13 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 		} else if (brick.getProperty().equals("val")) {
                 			switch (brick.getValidation_name()) {
                 				case 1:
-                					table_row[1] = "Ver_text";
+                					table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.textver");
                 					table_row[2] = brick.getParams().get("expect_text");
                 					table_row[3] = "N/A";
                 					table_row[4] = "N/A";
                  					break;
                 				case 2:
-                					table_row[1] = "Ver_ele";
+                					table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.extver");
                 					table_row[2] = "N/A";
                 					table_row[3] = "N/A";
                 					table_row[4] = "N/A";
@@ -473,7 +472,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 			}
                 			model.addRow(table_row);
                 		} else if (brick.getProperty().equals("time")) {
-                			table_row[1] = "Timer";
+                			table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.timer");
         					table_row[2] = brick.getParams().get("time");
         					table_row[3] = "N/A";
         					table_row[4] = "N/A";
@@ -493,7 +492,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 			@Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                	table_row[1] = "ELE";
+                	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.ele");
                 	table_row[2] = comboxAppName.getSelectedItem();
                 	table_row[3] = comboxViewName.getSelectedItem();
                 	table_row[4] = comboxEleName.getSelectedItem();
@@ -541,7 +540,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 	} else if(action == 10){
                 		act_name = "DB";
                 	}
-                	table_row[1] = "ACT";
+                	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.act");
                 	table_row[2] = act_name;
                 	table_row[3] = "N/A";
                 	table_row[4] = "N/A";
@@ -811,6 +810,60 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 				});
 			}
 		});
+	  	
+	  	buttonLogSave.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                try {
+                	JFrame log_save_frame = new JFrame("SAVE");
+                	JLabel log_save_label = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.logsave"));
+                	JTextField log_save_text = new JTextField();
+                	JButton log_save_btn = new JButton("SAVE");
+                	JPanel log_type_pane = new JPanel();
+                	JPanel log_btn_pane = new JPanel();
+                	log_save_frame.setSize(250,120);
+                	log_save_frame.setVisible(true);
+                	log_save_frame.setLayout(new BorderLayout());
+                	log_save_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
+                	log_save_frame.setLocationRelativeTo(MainEntry.frame);
+                	log_save_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            		log_save_label.setFont(ConstantsUI.FONT_NORMAL);
+            		log_save_text.setPreferredSize(new Dimension(100,30));
+            		
+            		log_type_pane.add(log_save_label);
+            		log_type_pane.add(log_save_text);
+            		log_btn_pane.add(log_save_btn);
+            		log_save_frame.add(log_type_pane, BorderLayout.NORTH);
+            		log_save_frame.add(log_btn_pane, BorderLayout.SOUTH);
+            		
+            		log_save_btn.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                        	try {
+                            	String log_name = log_save_text.getText();
+                            	File logstream = new File("report/" + appStartName + "_" + log_name + ".txt");
+                            	if (!logstream.getParentFile().exists())
+                            		logstream.getParentFile().mkdirs();
+                            	
+                            	String str = logArea.getText();
+                            	PrintWriter pw = new PrintWriter(new FileWriter(logstream));
+                                pw.print(str);
+                                pw.flush();
+                                pw.close();
+                                log_save_frame.dispose();
+                        	}catch (Exception e1) {
+                        		e1.printStackTrace();
+                        	}
+                    	}
+                    });
+
+                } catch (Exception e1) {
+                	e1.printStackTrace();
+                }
+
+            }
+        });
 	}
 	
     // JTextArea output method
@@ -983,13 +1036,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		posibtn_pane.add(pointx);
 		posibtn_pane.add(pointy);
 		posibtn_pane.add(buttonDragAdd);
-//		if(scrshotbtn_type = true){
-//			buttonDragAdd.isFalse();
-//			System.out.println("1");
-//		}else{
-//			buttonDragAdd.isTrue();
-//			System.out.println("2");
-//		}
 		scrshot_frame.add(picLabel,BorderLayout.NORTH);
 		scrshot_frame.add(posibtn_pane,BorderLayout.SOUTH);
 		scrshot_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -1017,7 +1063,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 			                try {
 						    	Map point = new HashMap();
 				        		point.put("DesPoint", point_chosen);
-				        		table_row[1] = "ACT";
+				        		table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.act");
 			                	table_row[2] = "PD";
 			                	table_row[3] = "X:"+ scrshot_X;
 			                	table_row[4] = "Y:"+ scrshot_Y;
@@ -1117,31 +1163,26 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    public VerifiWindow(int type) {
 	    	if(ver_type == 1){
 	    		// Text verification method
-	    		ver_setting_frame.setSize(400, 300);
+	    		ver_setting_frame.setSize(400, 280);
 	    		ver_setting_frame.setTitle("Text Verification");
 	    		ver_setting_frame.setVisible(true);
-	    		ver_setting_frame.setLayout(new GridLayout(5, 1));
-	    		JPanel app_name_pick = new JPanel();
-	    		JPanel app_view_pick = new JPanel();
-	    		JPanel ele_name_pick = new JPanel();
+	    		JPanel up_panel = new JPanel();
+	    		JPanel up_left_panel = new JPanel();
+	    		JPanel up_right_panel = new JPanel();
+	    		JPanel down_panel = new JPanel();
+	    		up_panel.setLayout(new BorderLayout());
+	    		up_left_panel.setLayout(new GridLayout(6,1));
 	    		JLabel app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appname"));
 	    		app_name.setFont(ConstantsUI.FONT_NORMAL);
 	    		JLabel app_view = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appview"));
 	    		app_view.setFont(ConstantsUI.FONT_NORMAL);
 	    		JLabel ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.elename"));
 	    		ele_name.setFont(ConstantsUI.FONT_NORMAL);
-	    		
 	    		addEleCombox();
-	    		app_name_pick.add(app_name);
-	    		app_name_pick.add(comboxAppName);
-	    		app_view_pick.add(app_view);
-	    		app_view_pick.add(comboxViewName);
-	    		ele_name_pick.add(ele_name);
-	    		ele_name_pick.add(comboxEleName);
 	    		
 	    		JPanel text_pane = new JPanel();
 	    		JPanel text_btn_pane = new JPanel();
-	    		JTextArea ver_text_input = new JTextArea(1,25);
+	    		JTextArea ver_text_input = new JTextArea(8,30);
 	    		ver_text_input.setLineWrap(true);
 	    		buttonVersetTX_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
 	                    ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
@@ -1151,11 +1192,19 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    		text_btn_pane.add(buttonVersetTX_add);
 	    		text_btn_pane.add(buttonVersetTX_re);
 	    		
-	    		ver_setting_frame.add(app_name_pick);
-	    		ver_setting_frame.add(app_view_pick);
-	    		ver_setting_frame.add(ele_name_pick);
-	    		ver_setting_frame.add(text_pane, BorderLayout.NORTH);
-	    		ver_setting_frame.add(text_btn_pane, BorderLayout.SOUTH);
+	    		up_left_panel.add(app_name);
+	    		up_left_panel.add(comboxAppName);
+	    		up_left_panel.add(app_view);
+	    		up_left_panel.add(comboxViewName);
+	    		up_left_panel.add(ele_name);
+	    		up_left_panel.add(comboxEleName);
+	    		up_right_panel.add(text_pane);
+	    		up_panel.add(up_left_panel, BorderLayout.WEST);
+	    		up_panel.add(up_right_panel, BorderLayout.EAST);
+	    		down_panel.add(text_btn_pane);
+	    		ver_setting_frame.add(up_panel, BorderLayout.NORTH);
+	    		ver_setting_frame.add(down_panel, BorderLayout.SOUTH);
+	    		
 	    		// kill the thread, same to the others ver_type case
 	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    		ver_setting_frame.setVisible(true);
@@ -1169,7 +1218,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		            public void actionPerformed(ActionEvent e) {
 
 		                try {
-		                	table_row[1] = "Ver_text";
+		                	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.textver");
 		                	table_row[2] = ver_text_input.getText();
 		                	table_row[3] = "N/A";
 		                	table_row[4] = "N/A";
@@ -1202,7 +1251,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		            @Override
 		            public void actionPerformed(ActionEvent e) {
 		            	try{
-		                // i = the index of the selected row
 		                int i = casetable.getSelectedRow();
 		                
 		                if(i >= 0) 
@@ -1234,7 +1282,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    		app_view.setFont(ConstantsUI.FONT_NORMAL);
 	    		JLabel ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.elename"));
 	    		ele_name.setFont(ConstantsUI.FONT_NORMAL);
-	    		
 	    		addEleCombox();
 	    		
 	    		buttonVersetEE_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
@@ -1248,7 +1295,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		            public void actionPerformed(ActionEvent e) {
 
 		                try {
-		                	table_row[1] = "Ver_ele";
+		                	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.extver");
 		                	table_row[2] = comboxAppName.getSelectedItem();
 		                	table_row[3] = comboxViewName.getSelectedItem();
 		                	table_row[4] = comboxEleName.getSelectedItem();
@@ -1334,7 +1381,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		            public void actionPerformed(ActionEvent e) {
 
 		                try {
-		                	table_row[1] = "Timer";
+		                	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.timer");
 		                	table_row[2] = timer_num.getText() +"  "+ "S";
 		                	table_row[3] = "N/A";
 		                	table_row[4] = "N/A";
@@ -1389,6 +1436,23 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    		ver_setting_frame.setLocationRelativeTo(MainEntry.frame);
 	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    		ver_setting_frame.setVisible(true);
+	    		ver_type = 0;
+	    	}else if(ver_type == 0){
+	    		// Warning message
+	    		ver_setting_frame.setSize(250, 100);
+	    		ver_setting_frame.setTitle("WARNING");
+	    		ver_setting_frame.setLayout(new BorderLayout());
+	    		ver_setting_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
+	    		ver_setting_frame.setLocationRelativeTo(MainEntry.frame);
+	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	    		ver_setting_frame.setVisible(true);
+	    		JLabel repick_warn = new JLabel();
+	    		ImageIcon warn_icon = new ImageIcon(CURRENT_DIR + File.separator + "icon" + File.separator + "warning.png");
+	    		JLabel icon_label = new JLabel(warn_icon);
+	    		repick_warn.setText(PropertyUtil.getProperty("bricks.ui.casecre.pickwarn"));
+	    		repick_warn.setFont(new Font(PropertyUtil.getProperty("ds.ui.font.family"), 0, 12));
+	    		ver_setting_frame.add(icon_label, BorderLayout.WEST);
+	    		ver_setting_frame.add(repick_warn, BorderLayout.CENTER);
 	    	}
 
 	    }
