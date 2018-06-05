@@ -22,7 +22,7 @@ public class ConstantsUI {
      * 
      */
     public final static String APP_NAME = "BRICKS";
-    public final static String APP_VERSION = "v_1.10_180428";
+    public final static String APP_VERSION = "v1.10_180606";
 
     /**
      * 
