@@ -7,8 +7,10 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.alibaba.fastjson.JSONObject;
 import com.android.ddmlib.IDevice;
+import com.dji.bricks.backgrounder.AlertListener;
 
 import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.events.EventFiringWebDriverFactory;
 
 public class AppiumInit {
 	
@@ -31,6 +33,7 @@ public class AppiumInit {
         capabilities.setCapability("ignoreUnimportantViews", true);
 
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
+//        driver = EventFiringWebDriverFactory.getEventFiringWebDriver(driver, new AlertListener());
         driver.manage().timeouts().implicitlyWait(5,TimeUnit.SECONDS);
 	}
 	

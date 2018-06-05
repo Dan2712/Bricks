@@ -131,7 +131,6 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 				@Override
 				public void run() {
 					try {
-						System.out.println("here-------");
 						mModel = null;
 						result = UiAutomatorHelper.takeSnapshot(device, null, false, mScreenshot);
 
