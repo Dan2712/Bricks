@@ -1,5 +1,6 @@
 package com.dji.bricks.UI.panel;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -9,6 +10,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.UnsupportedEncodingException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +18,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -27,6 +30,7 @@ import com.android.ddmlib.IDevice;
 import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
+import com.dji.bricks.UI.panel.CasecrePanel.ViewListener;
 import com.dji.bricks.node_selection.RealTimeScreenUI;
 import com.dji.bricks.node_selection.VariableChangeObserve;
 import com.dji.bricks.tools.PropertyUtil;
@@ -47,6 +51,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	private static MyIconButton buttonSave;
 	private JPanel panelView;
 	private JPanel panelEreCenter;
+	
 	
 	private RealTimeScreenUI realTimeScreen;
 	private IDevice device;
@@ -127,18 +132,23 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	private JTextField textFieldEleItem_5;
 	private JTextField textFieldEleItem_6;
 	private JPanel panelRight;
+	/*
+	 * TODO // @dan Viewbox 
+	 */
+	private JComboBox<String> Viewbox;
 	
 	private JPanel getRightPanel() {
 		
 		panelRight = new JPanel();
-		Dimension preferredSize = new Dimension(280, 20);
+		Dimension preferredSize = new Dimension(280, 10);
 		panelRight.setPreferredSize(preferredSize);
 		panelRight.setBackground(ConstantsUI.MAIN_BACK_COLOR);
-		panelRight.setLayout(new GridLayout(3, 1));
+		panelRight.setLayout(new BorderLayout());
 		
 		JPanel panelinfo = new JPanel();
 		panelinfo.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelinfo.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
+		panelinfo.setPreferredSize(new Dimension(50, 150));
 		
 		JLabel ele_xpath = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item1"));
 		JLabel checkable = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item2"));
@@ -156,6 +166,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		CheckStatus = new JLabel();
 		Focustatus = new JLabel();
 		LongClickStatus = new JLabel();
+		
 		
 		ClickStatus.setIcon(ConstantsUI.ICON_ELE_CHK);
 		ScrollStatus.setIcon(ConstantsUI.ICON_ELE_CHK);
@@ -197,6 +208,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		JPanel panelGridSetting = new JPanel();
 		panelGridSetting.setBackground(ConstantsUI.MAIN_BACK_COLOR);
 		panelGridSetting.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
+		panelGridSetting.setPreferredSize(new Dimension(50, 160));
 
 		JLabel app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item4"));
 		JLabel view_name = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item5"));
@@ -204,6 +216,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		textFieldEleItem_4 = new JTextField();
 		textFieldEleItem_5 = new JTextField();
 		textFieldEleItem_6 = new JTextField();
+		Viewbox = new JComboBox<String>();
 
 		app_name.setFont(ConstantsUI.SEC_TITLE);
 		view_name.setFont(ConstantsUI.SEC_TITLE);
@@ -218,31 +231,29 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		textFieldEleItem_4.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
 		textFieldEleItem_5.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
 		textFieldEleItem_6.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
+		Viewbox.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
 		
 		panelGridSetting.add(app_name);
 		panelGridSetting.add(textFieldEleItem_4);
 		panelGridSetting.add(view_name);
 		panelGridSetting.add(textFieldEleItem_5);
+		panelGridSetting.add(Viewbox);
 		panelGridSetting.add(ele_name);
 		panelGridSetting.add(textFieldEleItem_6);
 
-		JPanel panelGridSave = new JPanel();
-		panelGridSave.setBackground(ConstantsUI.MAIN_BACK_COLOR);
-		panelGridSave.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 0));
 		JLabel labelEleItemNull_1 = new JLabel();
 		labelEleItemNull_1.setPreferredSize(ConstantsUI.LABLE_SIZE_NULL_ITEM);
         buttonSave = new MyIconButton(ConstantsUI.ICON_SAVE, ConstantsUI.ICON_SAVE_ENABLE,
                 ConstantsUI.ICON_SAVE_DISABLE, "");
-//        buttonSave.setEnabled(false);
         
-        panelGridSave.add(labelEleItemNull_1);
-        panelGridSave.add(buttonSave);
+        panelGridSetting.add(labelEleItemNull_1);
+        panelGridSetting.add(buttonSave);
 
-		panelRight.add(panelinfo);
-		panelRight.add(panelGridSetting);
-		panelRight.add(panelGridSave);
+		panelRight.add(panelinfo, BorderLayout.NORTH);
+		panelRight.add(panelGridSetting, BorderLayout.CENTER);
 		return panelRight;
 	}
+
 
 	public void observe(Observable o) {
 	    o.addObserver(this);
