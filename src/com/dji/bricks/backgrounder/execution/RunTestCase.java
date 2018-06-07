@@ -111,7 +111,7 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 			break;
 		case 10:
 			action.dragBar(ele_sub);
-			logText.setText(this.ele_customName + " is dragged" + "\n");
+			logText.append(this.ele_customName + " is dragged" + "\n");
 			break;
 		case 11:
 			break;
