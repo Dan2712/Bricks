@@ -63,14 +63,13 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 						this.validationSwitch(obj);
 					} else if (obj.getString("property").equals("time")) {
 						int time = ((Integer)obj.getJSONObject("params").get("time")) * 1000;
-						System.out.println(time);
 						Thread.sleep(time);
 					}
 				} catch (Exception e) {
 					if (e instanceof NoSuchElementException)
 						logText.append("No such element: " + this.ele_customName);
 					else {
-						logText.append("Cannot get system info now");
+						logText.append("Case Failed");
 						e.printStackTrace();
 					}
 					break;
@@ -100,6 +99,10 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 			logText.append(this.ele_customName + " is draged to the position" + "\n");
 			break;
 		case 5:
+			JSONObject params_swipe = action_info.getJSONObject("params");
+			action.swipe(new Point(params_swipe.getJSONObject("StartPoint").getIntValue("x"), params_swipe.getJSONObject("StartPoint").getIntValue("y")), 
+					new Point(params_swipe.getJSONObject("DesPoint").getIntValue("x"), params_swipe.getJSONObject("DesPoint").getIntValue("y")));
+			logText.append("Page is swiped");
 			break;
 		case 6:
 			break;
@@ -111,7 +114,7 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 			break;
 		case 10:
 			action.dragBar(ele_sub);
-			logText.setText(this.ele_customName + " is dragged" + "\n");
+			logText.append(this.ele_customName + " is dragged" + "\n");
 			break;
 		case 11:
 			break;

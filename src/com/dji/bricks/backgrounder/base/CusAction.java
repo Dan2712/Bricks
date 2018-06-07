@@ -19,7 +19,9 @@ public class CusAction {
 	
 	//1.click
 	public void click(WebElement ele) {
-		ele.click();
+		for (int i=0; i<Math.random()*6; i++) {
+			ele.click();
+		}
 	}
 	
 	//2.long press
@@ -30,19 +32,26 @@ public class CusAction {
 	//3.input text
 	public void setText(WebElement ele, String text) {
 		ele.clear();
-		ele.sendKeys("120");
+		ele.sendKeys(text);
 	}
 	
 	//4.point drag
 	public void pointDrag(WebElement ele, Point desPoint) {
-		int xAxisStartPoint = ele.getLocation().x;
 		int xAxisEndPoint = desPoint.x;
-		int yAxisStartPoint = ele.getLocation().y;
 		int yAxisEndPoint = desPoint.y;
 		
 		touchAction.longPress(ele)
 					.waitAction(3000)
 					.moveTo(xAxisEndPoint, yAxisEndPoint)
+					.release();
+		touchAction.perform();
+	}
+	
+	//5.swipe
+	public void swipe(Point startPoint, Point desPoint) {
+		touchAction.longPress(startPoint.getLocation().x, startPoint.getLocation().y)
+					.waitAction()
+					.moveTo(desPoint.getLocation().x, desPoint.getLocation().y)
 					.release();
 		touchAction.perform();
 	}

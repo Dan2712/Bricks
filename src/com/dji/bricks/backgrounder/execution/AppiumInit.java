@@ -30,7 +30,7 @@ public class AppiumInit {
         capabilities.setCapability("noReset", true);
         capabilities.setCapability("full-reset", false);
         capabilities.setCapability("sessionOverride", true);    //override session everytime， otherwise cannot start a new session second time
-        capabilities.setCapability("ignoreUnimportantViews", true);
+        capabilities.setCapability("ignoreUnimportantViews", false);
 
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
 //        driver = EventFiringWebDriverFactory.getEventFiringWebDriver(driver, new AlertListener());
