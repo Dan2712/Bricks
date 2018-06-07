@@ -161,9 +161,9 @@ public class MiniCapUtil implements SubjectForListener{
 	private String executeShellCommand(String command) {
 		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
 		
-		DdmPreferences.setTimeOut(20000);
+//		DdmPreferences.setTimeOut(20000);
 		try {
-			device.executeShellCommand(command, receiver);
+			device.executeShellCommand(command, receiver, 0);
 		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
 			e.printStackTrace();
 			if (e.getMessage().contains("not found"))
