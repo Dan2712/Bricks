@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.CollectingOutputReceiver;
+import com.android.ddmlib.DdmPreferences;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.IDevice.DeviceUnixSocketNamespace;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
@@ -160,8 +161,9 @@ public class MiniCapUtil implements SubjectForListener{
 	private String executeShellCommand(String command) {
 		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
 		
+		DdmPreferences.setTimeOut(20000);
 		try {
-			device.executeShellCommand(command, receiver, 0);
+			device.executeShellCommand(command, receiver);
 		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
 			e.printStackTrace();
 			if (e.getMessage().contains("not found"))

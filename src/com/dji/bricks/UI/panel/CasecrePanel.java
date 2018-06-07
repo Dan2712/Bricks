@@ -938,27 +938,27 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 					cus_name = xpathSet.getString("CUSTOM_NAME");
 					scrshot_pathname = xpathSet.getString("SCREEN_PATH");
 					String state = xpathSet.getString(5);
-					for (int i = 0; i < state.length(); i++) {
-						if (state.charAt(i) == '1') {
-					        switch (i) {
-					        case 0:
+//					for (int i = 0; i < state.length(); i++) {
+//						if (state.charAt(i) == '1') {
+//					        switch (i) {
+//					        case 0:
 					        	comboxActName.addItem("Single Click");
-					        	break;
-					        case 1:
+//					        	break;
+//					        case 1:
 					        	comboxActName.addItem("Long-Press");
-					        	break;
-					        case 2:
-					        	comboxActName.addItem("Set Text");
-					        	break;
-					        case 3:
 					        	comboxActName.addItem("Point Drag");
-					        	break;
-					        case 4:
+//					        	break;
+//					        case 2:
+					        	comboxActName.addItem("Set Text");
+//					        	break;
+//					        case 3:
 					        	comboxActName.addItem("SeekBar Drag");
-					        	break;
-					        }
-						}
-				    }
+//					        	break;
+//					        case 4:
+//					        	break;
+//					        }
+//						}
+//				    }
 				}
 			} catch (SQLException e1) {
 				e1.printStackTrace();
