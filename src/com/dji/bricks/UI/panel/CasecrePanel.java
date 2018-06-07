@@ -942,7 +942,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 //						if (state.charAt(i) == '1') {
 //					        switch (i) {
 //					        case 0:
-					        	comboxActName.addItem("Single Click");
+					        	comboxActName.addItem("Single-Click");
 //					        	break;
 //					        case 1:
 					        	comboxActName.addItem("Long-Press");
