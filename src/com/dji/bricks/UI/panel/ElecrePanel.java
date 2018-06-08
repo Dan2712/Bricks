@@ -8,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.UnsupportedEncodingException;
 import java.sql.ResultSet;
@@ -135,7 +137,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	/*
 	 * TODO // @dan Viewbox 
 	 */
-	private JComboBox<String> Viewbox;
+	private JComboBox<String> viewBox;
 	
 	private JPanel getRightPanel() {
 		
@@ -216,7 +218,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		textFieldEleItem_4 = new JTextField();
 		textFieldEleItem_5 = new JTextField();
 		textFieldEleItem_6 = new JTextField();
-		Viewbox = new JComboBox<String>();
+		viewBox = new JComboBox<String>();
 
 		app_name.setFont(ConstantsUI.SEC_TITLE);
 		view_name.setFont(ConstantsUI.SEC_TITLE);
@@ -231,13 +233,13 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		textFieldEleItem_4.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
 		textFieldEleItem_5.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
 		textFieldEleItem_6.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
-		Viewbox.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
+		viewBox.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
 		
 		panelGridSetting.add(app_name);
 		panelGridSetting.add(textFieldEleItem_4);
 		panelGridSetting.add(view_name);
 		panelGridSetting.add(textFieldEleItem_5);
-		panelGridSetting.add(Viewbox);
+		panelGridSetting.add(viewBox);
 		panelGridSetting.add(ele_name);
 		panelGridSetting.add(textFieldEleItem_6);
 
@@ -379,6 +381,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 //            	MainEntry.cachedThreadPool.shutdownNow();
             }
         });
+		
 		textFieldEleItem_5.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) { 
 	            if(textFieldEleItem_5.getText().length() == 0 || textFieldEleItem_6.getText().length() == 0)
@@ -389,6 +392,52 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	            }
 	        }
 		});
+		
+		viewBox.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				viewBox.removeAllItems();
+				ResultSet rs = sql.queryElement("ACTIVITY", textFieldEleItem_4.getText());
+				try {
+					while (rs.next()) {
+						viewBox.addItem(new String(rs.getBytes("ACTIVITY_NAME"), "UTF-8"));
+					}
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				} catch (UnsupportedEncodingException e2) {
+					e2.printStackTrace();
+				}
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+		});
+		
+		viewBox.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					viewBox.setSelectedItem(e);
+					textFieldEleItem_5.setText(e.getItem().toString());
+				}
+			}
+		});
+		
 	}
 
 	@Override
