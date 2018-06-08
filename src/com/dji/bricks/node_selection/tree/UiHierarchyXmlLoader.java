@@ -156,10 +156,9 @@ public class UiHierarchyXmlLoader {
                         	String uiaStr = null;
                         	BasicTreeNode  parent = null;
                         	UiNode myNode = null;
-                        		myNode = (UiNode)mWorkingNode;
-                        		parent = mWorkingNode.getParent();
+                    		myNode = (UiNode)mWorkingNode;
+                    		parent = mWorkingNode.getParent();
                         	if(!RootWindowNode.class.isInstance(parent)){
-                        		xpath = myNode.getXpath();
                         		xpath = "/" + myNode.getXpath();
                         		PfullIndexXpath = ((UiNode)parent).getAttribute("fullIndexXpath");
                         		fullIndexXpath = PfullIndexXpath +myNode.getIndexXpath();

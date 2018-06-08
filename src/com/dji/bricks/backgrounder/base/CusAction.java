@@ -19,9 +19,9 @@ public class CusAction {
 	
 	//1.click
 	public void click(WebElement ele) {
-		for (int i=0; i<Math.random()*6; i++) {
+//		for (int i=0; i<Math.random()*6; i++) {
 			ele.click();
-		}
+//		}
 	}
 	
 	//2.long press

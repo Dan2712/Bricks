@@ -120,6 +120,7 @@ public class UiNode extends BasicTreeNode {
 		String className = getNodeClassAttribute();
 		String xpath = "/" + className + "[@index=\'" + getAttribute("index") + "\']";
 		boolean flag = false;
+//		boolean isUniqueFlag = false;
 
 		String resourceid = getAttribute("resource-id");
 		if(resourceid != null && !resourceid.equals("")){
@@ -141,9 +142,11 @@ public class UiNode extends BasicTreeNode {
 			if(flag){
 				if (!(xpath.substring(xpath.length()-7, xpath.length()-1)).equals("editor"))
 					xpath += " and @text=\'" + text + "\'";
+//				isUniqueFlag = true;
 			}else{
 				xpath += "[@text=\'" + text + "\'";
 				flag = true;
+//				isUniqueFlag = true;
 			}
 		}
 		String content_desc = getAttribute("content-desc");
@@ -151,15 +154,20 @@ public class UiNode extends BasicTreeNode {
 			content_desc = content_desc.replaceAll("'", "\\\\'");
 			if(flag){
 					xpath += " and @content-desc=\'" + content_desc + "\'";
+//					isUniqueFlag = true;
 			}else{
 				xpath += "[@content-desc=\'" + content_desc + "\'";
 				flag = true;
+//				isUniqueFlag = true;
 			}
 		}
 		
-		if(flag){
+		if (flag) {
 			xpath = xpath + "]";
 		}
+		
+//		if (!isUniqueFlag)
+//			xpath = this.mAttributes.get("fullIndexXpath");
 		return xpath;
 	}
 	
