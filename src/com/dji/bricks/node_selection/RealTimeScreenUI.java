@@ -138,11 +138,17 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 
 						if (result != null)
 							mModel = result.model;
+						for (int i=0; i<mModel.getmNodelist().size(); i++) {
+							System.out.println(mModel.getmNodelist().get(i).getAttribute("xpath"));
+							System.out.println(mModel.getmNodelist().get(i).getAttribute("clickable"));
+						}
 						waitframe.setVisible(false);
 						waitframe.dispose();
 					} catch (UiAutomatorException e) {
 						waitframe.setVisible(false);
 						waitframe.dispose();
+						waitframe.add(new JLabel("Device is busy, please restart program"));
+						waitframe.setVisible(true);
 						LOG.error(e);
 						LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
 					}
@@ -394,7 +400,6 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 	            	mModel.setSelectedNode(node);
 	            	UiNode node_sel = (UiNode) node;
 	            	node_info.clear();
-//	            	String xpath = node_sel.getAttribute("fullIndexXpath").substring(getCharacterPosition(node_sel.getAttribute("fullIndexXpath"))) + "/" + node_sel.getXpath();
 	            	node_info.put("xpath", node_sel.getAttribute("xpath"));
 	            	node_info.put("clickable", node_sel.getAttribute("clickable").equals("true") ? "1" : "0");
 	            	node_info.put("scrollable", node_sel.getAttribute("scrollable").equals("true") ? "1" : "0");

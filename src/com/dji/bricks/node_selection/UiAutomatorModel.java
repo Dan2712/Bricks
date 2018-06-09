@@ -46,9 +46,6 @@ public class UiAutomatorModel {
     private Rectangle mCurrentDrawingRect;
     private List<Rectangle> mNafNodes;
 
-    // determines whether we lookup the leaf UI node on mouse move of screenshot image
-//    private boolean mExploreMode = true;
-
     private boolean mShowNafNodes = false;
     private List<UiNode> mNodelist;
     private Set<String> mSearchKeySet = new HashSet<String>();

@@ -115,10 +115,8 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
             public void itemStateChanged(ItemEvent e) {
                 if (switch_btn.isSelected()) {
                 	realTimeScreen.startStaticMode();
-                    System.out.println("open");
                 } else {
                 	realTimeScreen.stopStaticMode();
-                	System.out.println("close");
                 }
             }
         });
