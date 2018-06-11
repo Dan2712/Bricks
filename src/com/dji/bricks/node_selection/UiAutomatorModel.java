@@ -39,6 +39,7 @@ import com.dji.bricks.tools.ConstantsUtils;
  * @author Dan
  * @Description parse xpath, search node. business layer
  */
+
 public class UiAutomatorModel {
     private BasicTreeNode mRootNode;
     private UiNode uRootNode;

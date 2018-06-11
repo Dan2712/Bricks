@@ -1,9 +1,8 @@
 package com.dji.bricks.UI.panel;
+
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -32,7 +31,7 @@ import com.android.ddmlib.IDevice;
 import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
-import com.dji.bricks.UI.panel.CasecrePanel.ViewListener;
+import com.dji.bricks.auto_execution.AutoCaptureAllClickableNode;
 import com.dji.bricks.node_selection.RealTimeScreenUI;
 import com.dji.bricks.node_selection.VariableChangeObserve;
 import com.dji.bricks.tools.PropertyUtil;
@@ -54,7 +53,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	private JPanel panelView;
 	private JPanel panelEreCenter;
 	
-	
+	private AutoCaptureAllClickableNode autoExec;
 	private RealTimeScreenUI realTimeScreen;
 	private IDevice device;
 	private VariableChangeObserve obs;
@@ -337,46 +336,55 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		buttonSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	if(textFieldEleItem_5.getText().equals(null) && textFieldEleItem_6.getText().equals(null)){
-            		JOptionPane.showMessageDialog(buttonSave,"Failed");
-            	}else{
-            		buttonSave.setEnabled(true);
-                    try {
-                    	app_name_text = textFieldEleItem_4.getText();
-                    	activity_name_text = new String(textFieldEleItem_5.getText().getBytes(), "UTF-8");
-                    	custom_name_text = new String(textFieldEleItem_6.getText().getBytes(), "UTF-8");
-                    	state_text = node_info.get("clickable") + node_info.get("scrollable") + node_info.get("checkable") + node_info.get("focusable") + node_info.get("long-clickable");
-                    	xpath_text = node_info.get("xpath");
-                    	screen_text = node_info.get("screenPath");
-                    	app_name.put("APP_NAME", app_name_text);
-                    	custom_name.put("CUSTOM_NAME", custom_name_text);
-                    	activity_name.put("ACTIVITY_NAME", activity_name_text);
-                    	xpath.put("XPATH", xpath_text);
-                    	state.put("STATE", state_text);
-                    	screen.put("SCREEN_PATH", screen_text);
-                    	sqllist.add(app_name);
-                    	sqllist.add(custom_name);
-                    	sqllist.add(activity_name);
-                    	sqllist.add(xpath);
-                    	sqllist.add(state);
-                    	sqllist.add(screen);
-                    	sql.insertEle("ELEMENT", sqllist);
-                    	JOptionPane.showMessageDialog(buttonSave,"Save Complete");
-                    	
-                    	textFieldEleItem_5.setText("");
-                    	textFieldEleItem_6.setText("");
+//            	if(textFieldEleItem_5.getText().equals(null) && textFieldEleItem_6.getText().equals(null)){
+//            		JOptionPane.showMessageDialog(buttonSave,"Failed");
+//            	}else{
+//            		buttonSave.setEnabled(true);
+//                    try {
+//                    	app_name_text = textFieldEleItem_4.getText();
+//                    	activity_name_text = new String(textFieldEleItem_5.getText().getBytes(), "UTF-8");
+//                    	custom_name_text = new String(textFieldEleItem_6.getText().getBytes(), "UTF-8");
+//                    	state_text = node_info.get("clickable") + node_info.get("scrollable") + node_info.get("checkable") + node_info.get("focusable") + node_info.get("long-clickable");
+//                    	xpath_text = node_info.get("xpath");
+//                    	screen_text = node_info.get("screenPath");
+//                    	app_name.put("APP_NAME", app_name_text);
+//                    	custom_name.put("CUSTOM_NAME", custom_name_text);
+//                    	activity_name.put("ACTIVITY_NAME", activity_name_text);
+//                    	xpath.put("XPATH", xpath_text);
+//                    	state.put("STATE", state_text);
+//                    	screen.put("SCREEN_PATH", screen_text);
+//                    	sqllist.add(app_name);
+//                    	sqllist.add(custom_name);
+//                    	sqllist.add(activity_name);
+//                    	sqllist.add(xpath);
+//                    	sqllist.add(state);
+//                    	sqllist.add(screen);
+//                    	sql.insertEle("ELEMENT", sqllist);
+//                    	JOptionPane.showMessageDialog(buttonSave,"Save Complete");
+//                    	
+//                    	textFieldEleItem_5.setText("");
+//                    	textFieldEleItem_6.setText("");
+//
+//                    	
+//                    } catch (SQLException e1) {
+//                    	if (e1.getMessage().equals("[SQLITE_CONSTRAINT_UNIQUE]  A UNIQUE constraint failed (UNIQUE constraint failed: ELEMENT.CUSTOM_NAME)"))
+//                    		JOptionPane.showMessageDialog(buttonSave, "Failed! The element already exists");
+//                    } catch (UnsupportedEncodingException e1) {
+//						e1.printStackTrace();
+//					}
+//            		
+//            	}
 
-                    	
-                    } catch (SQLException e1) {
-                    	if (e1.getMessage().equals("[SQLITE_CONSTRAINT_UNIQUE]  A UNIQUE constraint failed (UNIQUE constraint failed: ELEMENT.CUSTOM_NAME)"))
-                    		JOptionPane.showMessageDialog(buttonSave, "Failed! The element already exists");
-                    } catch (UnsupportedEncodingException e1) {
-						e1.printStackTrace();
-					}
-            		
+            	if (autoExec != null) {
+            		realTimeScreen.stopGetXml();
+            		realTimeScreen.removeMouseListener(realTimeScreen);
+        			realTimeScreen.removeMouseMotionListener(realTimeScreen);
+        			panelView.remove(realTimeScreen);
+        			panelView.updateUI();
+        			realTimeScreen = null;
+        			
+        			autoExec.runAuto();
             	}
-
-//            	MainEntry.cachedThreadPool.shutdownNow();
             }
         });
 		
@@ -447,6 +455,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	public void ADBChange(IDevice[] devices) {
 		if (devices[0] != null) {
 			device = devices[0];
+			autoExec = new AutoCaptureAllClickableNode(device);
 			realTimeScreen = new RealTimeScreenUI(device, obs, this);
 			realTimeScreen.addMouseListener(realTimeScreen);
 			realTimeScreen.addMouseMotionListener(realTimeScreen);

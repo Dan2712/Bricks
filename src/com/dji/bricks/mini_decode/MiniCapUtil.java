@@ -51,8 +51,6 @@ public class MiniCapUtil implements SubjectForListener{
 	private String MINICAP_CHMOD_COMMAND = "chmod 777 %s/%s";
 	private String MINICAP_WM_SIZE_COMMAND = "wm size";
 	private String MINICAP_START_COMMAND = "LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P %s@%s/%s";
-	private String MINICAP_TAKESCREENSHOT_COMMAND = "LD_LIBRARY_PATH=/data/local/tmp /data/local/tmp/minicap -P %s@%s/90 -s >%s";
-	private String ADB_PULL_COMMAND = "adb -s %s pull %s %s";
 	private String ADB_GET_ORIENTATION = "dumpsys display | grep 'mDefaultViewport'";
 	private String GET_PID = "ps | grep /data/local/tmp/minicap";
 	private String GET_DPI = "getprop ro.sf.lcd_density";
@@ -161,7 +159,6 @@ public class MiniCapUtil implements SubjectForListener{
 	private String executeShellCommand(String command) {
 		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
 		
-//		DdmPreferences.setTimeOut(20000);
 		try {
 			device.executeShellCommand(command, receiver, 0);
 		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
@@ -213,33 +210,6 @@ public class MiniCapUtil implements SubjectForListener{
 		executeShellCommand("kill " + PID);
 	}
 
-	/**
-	 * deprecated. conflict on windows
-	 */
-	public void takeScreenShotOnce() {
-		String savePath = "/data/local/tmp/screenshot.jpg";
-		String takeScreenShotCommand = String.format(
-				MINICAP_TAKESCREENSHOT_COMMAND, size,
-				size, savePath);
-		String localPath = System.getProperty("user.dir") + "/screenshot.jpg";
-		String pullCommand = String.format(ADB_PULL_COMMAND,
-				device.getSerialNumber(), savePath, localPath);
-		try {
-			executeShellCommand(takeScreenShotCommand);
-			device.pullFile(savePath, localPath);
-			Runtime.getRuntime().exec(pullCommand);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (SyncException e) {
-			e.printStackTrace();
-		} catch (AdbCommandRejectedException e) {
-			e.printStackTrace();
-		} catch (TimeoutException e) {
-			e.printStackTrace();
-		}
-
-	}
-	
 	/**
 	 * get the orientation of current screen
 	 * 

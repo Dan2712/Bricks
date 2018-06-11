@@ -85,7 +85,6 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
     	this.parentPanel = parentPanel;
     	minicap = new MiniCapUtil(device);
 		minicap.registerObserver(this);
-//		minicap.takeScreenShotOnce();
 		minicap.startScreenListener();
 		
 		waitframe = new JFrame();
@@ -416,18 +415,6 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 		}
 	}
 
-	private static int getCharacterPosition(String string){
-		Matcher slashMatcher = Pattern.compile("//").matcher(string);
-		int mIdx = 0;
-		while(slashMatcher.find()) {
-			mIdx++;
-			if(mIdx == 3){
-				break;
-			}
-		}
-		return slashMatcher.start();
-	}
-	
 	@Override
 	public void ADBChange(IDevice[] devices) {
 		

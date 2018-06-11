@@ -34,6 +34,7 @@ import com.android.ddmlib.SyncService;
  * @author Dan
  * @Description generate result, including model, xpath file
  */
+
 public class UiAutomatorHelper {
     public static final int UIAUTOMATOR_MIN_API_LEVEL = 16;
 
