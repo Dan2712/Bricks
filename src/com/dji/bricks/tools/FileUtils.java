@@ -1,5 +1,6 @@
 package com.dji.bricks.tools;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -14,6 +15,8 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -272,7 +275,6 @@ public class FileUtils {
 	}
 	
 	public static JSONArray loadJson(String path) {
-		
 		BufferedReader reader;
 //		LinkedHashMap<String, String> jsonMap = null;
 		JSONArray jArray = null;
@@ -295,5 +297,18 @@ public class FileUtils {
 		}
 		
 		return jArray;
+	}
+	
+	public static BufferedImage getLocalImage(String path) {
+		BufferedImage tmpImg = null;
+		File imageFile = new File(path);
+		if (imageFile.exists() && imageFile.canRead())
+			try {
+				tmpImg = ImageIO.read(imageFile);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		
+		return tmpImg;
 	}
 }

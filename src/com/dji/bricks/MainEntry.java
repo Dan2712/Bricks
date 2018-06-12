@@ -120,7 +120,7 @@ public class MainEntry implements GlobalObserver {
 			@Override
 			public void run() {
 				try {
-					Runtime.getRuntime().exec("cmd /c start appium");
+					Runtime.getRuntime().exec("cmd /c start appium --relaxed-security");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

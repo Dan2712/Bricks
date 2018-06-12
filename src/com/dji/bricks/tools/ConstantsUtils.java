@@ -3,6 +3,7 @@ package com.dji.bricks.tools;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.dom4j.Document;
 
@@ -44,6 +45,11 @@ public class ConstantsUtils {
 	 */
 	public static Document document;
 	public static List<BasicTreeNode>  checkList = new ArrayList<BasicTreeNode>();;
+
+	/**
+	 * random num
+	 */
+	public static Random random = new Random(1000);
 
 	/**
 	 * 

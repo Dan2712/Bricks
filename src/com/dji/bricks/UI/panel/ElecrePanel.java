@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -29,11 +30,14 @@ import org.apache.log4j.Logger;
 
 import com.android.ddmlib.IDevice;
 import com.dji.bricks.GlobalObserver;
+import com.dji.bricks.MainEntry;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
 import com.dji.bricks.auto_execution.AutoCaptureAllClickableNode;
+import com.dji.bricks.auto_execution.DFSRunModel;
 import com.dji.bricks.node_selection.RealTimeScreenUI;
 import com.dji.bricks.node_selection.VariableChangeObserve;
+import com.dji.bricks.node_selection.tree.UiNode;
 import com.dji.bricks.tools.PropertyUtil;
 import com.dji.bricks.tools.SQLUtils;
 import com.dji.bricks.tools.SwitchButton;
@@ -53,7 +57,9 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	private JPanel panelView;
 	private JPanel panelEreCenter;
 	
-	private AutoCaptureAllClickableNode autoExec;
+	private AutoCaptureAllClickableNode autoCapture;
+	private DFSRunModel autoRun;
+	
 	private RealTimeScreenUI realTimeScreen;
 	private IDevice device;
 	private VariableChangeObserve obs;
@@ -375,16 +381,22 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 //            		
 //            	}
 
-            	if (autoExec != null) {
-            		realTimeScreen.stopGetXml();
-            		realTimeScreen.removeMouseListener(realTimeScreen);
-        			realTimeScreen.removeMouseMotionListener(realTimeScreen);
-        			panelView.remove(realTimeScreen);
-        			panelView.updateUI();
-        			realTimeScreen = null;
-        			
-        			autoExec.runAuto();
-            	}
+        		realTimeScreen.stopGetXml();
+        		realTimeScreen.removeMouseListener(realTimeScreen);
+    			realTimeScreen.removeMouseMotionListener(realTimeScreen);
+    			panelView.remove(realTimeScreen);
+    			panelView.updateUI();
+    			realTimeScreen = null;
+    			
+    			MainEntry.cachedThreadPool.submit(new Runnable() {
+					
+					@Override
+					public void run() {
+						if (autoRun != null) {
+							autoRun.dfsRun();
+						}
+					}
+				});
             }
         });
 		
@@ -455,7 +467,8 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	public void ADBChange(IDevice[] devices) {
 		if (devices[0] != null) {
 			device = devices[0];
-			autoExec = new AutoCaptureAllClickableNode(device);
+			autoRun = new DFSRunModel(device);
+			
 			realTimeScreen = new RealTimeScreenUI(device, obs, this);
 			realTimeScreen.addMouseListener(realTimeScreen);
 			realTimeScreen.addMouseMotionListener(realTimeScreen);

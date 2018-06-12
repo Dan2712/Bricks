@@ -688,7 +688,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             	try {
             		MainEntry.cachedThreadPool.submit(new Runnable() {
 						public void run() {
-							ExecutionMain.getInstance().RunTestCase(jsonFile, logArea, device, pkg);
+							new ExecutionMain().runTestCase(jsonFile, logArea, device, pkg);
 		            		RealTimeScreenUI.isRuncase = true;
 						}
 					});

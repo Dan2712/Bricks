@@ -266,7 +266,7 @@ public class CaserunResultPanel extends JPanel{
 						for (int i=0; i<Integer.parseInt(run_num.getText()); i++) {
 							for (int j=0; j<case_list.size(); j++) {
 								jsonFile = FileUtils.loadJson(case_list.get(j));
-								ExecutionMain.getInstance().RunTestCase(jsonFile, logprint, device, pkg);
+								new ExecutionMain().runTestCase(jsonFile, logprint, device, pkg);
 								RealTimeScreenUI.isRuncase = true;
 							}
 						}

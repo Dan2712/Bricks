@@ -21,7 +21,7 @@ import com.dji.bricks.backgrounder.base.CusValidation;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.events.api.general.AppiumWebDriverEventListener;
 
-public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
+public class RunTestCase implements AppiumWebDriverEventListener{
 
 	private WebElement ele_sub;
 	private String ele_customName;
@@ -35,6 +35,7 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 	private JSONArray jsonFile;
 	private List<WebElement> dragedElement;
 	private Boolean isDraged = false;
+	private String eleXpath;
 	
 	public RunTestCase(JSONArray jsonFile, int runMode, AndroidDriver driver, JTextArea logText, IDevice device) {
 //		this.path = path;
@@ -46,8 +47,15 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 		action = new CusAction(driver);
 		validation = new CusValidation(driver);
 	}
+	
+	public RunTestCase(int runMode, AndroidDriver driver, IDevice device, String eleXpath) {
+		this.runMode = runMode;
+		this.driver = driver;
+		this.device = device;
+		this.eleXpath = eleXpath;
+		action = new CusAction(driver);
+	}
 
-	@Override
 	public void run() {
 		
 		if (this.runMode == 0) {
@@ -75,6 +83,9 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 					break;
 				}
 			}
+		} else if (this.runMode == 1) {
+			WebElement tmpEle = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(eleXpath);
+			action.click(tmpEle);
 		}
 	}
 	

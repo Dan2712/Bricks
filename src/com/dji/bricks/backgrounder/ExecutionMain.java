@@ -14,18 +14,30 @@ public class ExecutionMain {
 	private String pkg = "";
 	private String launchActivity = null;
 	private String startAct = "";
+	private int runMode;
+	private IDevice device;
 	
 	private static final ExecutionMain instance = new ExecutionMain();
     
-    private ExecutionMain(){
+    public ExecutionMain(){
     	
     }
     
-    public static ExecutionMain getInstance(){
-        return instance;
+    public ExecutionMain(int runMode, IDevice device) {
+    	this.runMode = runMode;
+    	this.device = device;
+    	try {
+			AppiumInit.setUp(device, "com.dpad.launcher", "com.dpad.launcher.Launcher");
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
     }
     
-	public void RunTestCase(JSONArray jsonFile, JTextArea logText, IDevice device, String pkg) {
+//    public static ExecutionMain getInstance(){
+//        return instance;
+//    }
+    
+	public void runTestCase(JSONArray jsonFile, JTextArea logText, IDevice device, String pkg) {
 
 		this.pkg = pkg;
 		
@@ -63,6 +75,11 @@ public class ExecutionMain {
 			}
 		}
 	}
+	
+	public void runTestCase(String eleXpath) {
+		RunTestCase testCase = new RunTestCase(runMode, AppiumInit.driver, device, eleXpath);
+		testCase.run();
+}
 	
 	public String getPkg() {
 		return pkg;

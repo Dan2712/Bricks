@@ -19,6 +19,8 @@ package com.dji.bricks.node_selection;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +31,9 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.SyncService;
+import com.google.common.collect.Lists;
+
+import io.appium.java_client.android.AndroidDriver;
 
 /**
  * @author Dan
@@ -58,7 +63,8 @@ public class UiAutomatorHelper {
 
     @SuppressWarnings("deprecation")
 	private static void getUiHierarchyFile(IDevice device, File dst,
-            IProgressMonitor monitor, boolean compressed) {
+            IProgressMonitor monitor, boolean compressed, AndroidDriver driver) {
+    	
         if (monitor == null) {
             monitor = new NullProgressMonitor();
         }
@@ -86,27 +92,44 @@ public class UiAutomatorHelper {
                     UIDUMP_DEVICE_PATH);
         }
         CountDownLatch commandCompleteLatch = new CountDownLatch(1);
-
-        try {
-            device.executeShellCommand(
-                    command,
-                    new CollectingOutputReceiver(commandCompleteLatch),
-                    XML_CAPTURE_TIMEOUT_SEC * 1000);
-            commandCompleteLatch.await(XML_CAPTURE_TIMEOUT_SEC, TimeUnit.SECONDS);
-
-            monitor.subTask("Pull UI XML snapshot from device...");
-            device.getSyncService().pullFile(UIDUMP_DEVICE_PATH,
-                    dst.getAbsolutePath(), SyncService.getNullProgressMonitor());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+	
+        if (driver == null) {
+	        try {
+	            device.executeShellCommand(
+	                    command,
+	                    new CollectingOutputReceiver(commandCompleteLatch),
+	                    XML_CAPTURE_TIMEOUT_SEC * 1000);
+	            commandCompleteLatch.await(XML_CAPTURE_TIMEOUT_SEC, TimeUnit.SECONDS);
+	
+	            monitor.subTask("Pull UI XML snapshot from device...");
+	            device.getSyncService().pullFile(UIDUMP_DEVICE_PATH,
+	                    dst.getAbsolutePath(), SyncService.getNullProgressMonitor());
+	        } catch (Exception e) {
+	            throw new RuntimeException(e);
+	        }
+    	} else {
+    		try {
+    			Map<String, Object> args = new HashMap<>();
+    			args.put("command", "uiautomator");
+    			args.put("args", Lists.newArrayList("dump", UIDUMP_DEVICE_PATH));
+    			System.out.println(driver.executeScript("mobile: shell", args).toString());
+	            commandCompleteLatch.await(XML_CAPTURE_TIMEOUT_SEC, TimeUnit.SECONDS);
+	
+	            monitor.subTask("Pull UI XML snapshot from device...");
+//	            device.getSyncService().pullFile(UIDUMP_DEVICE_PATH,
+//	                    dst.getAbsolutePath(), SyncService.getNullProgressMonitor());
+	            driver.pullFile(UIDUMP_DEVICE_PATH);
+	        } catch (Exception e) {
+	            throw new RuntimeException(e);
+	        }
+    	}
     }
 
     //to maintain a backward compatible api, use non-compressed as default snapshot type
 
     public static UiAutomatorResult takeSnapshot(IDevice device, IProgressMonitor monitor,
 
-           boolean compressed, Image screenshot) throws UiAutomatorException {
+           boolean compressed, Image screenshot, AndroidDriver driver) throws UiAutomatorException {
         if (monitor == null) {
             monitor = new NullProgressMonitor();
         }
@@ -156,7 +179,7 @@ public class UiAutomatorHelper {
 
         monitor.subTask("Obtaining UI hierarchy");
         try {
-            UiAutomatorHelper.getUiHierarchyFile(device, xmlDumpFile, monitor, compressed);
+            UiAutomatorHelper.getUiHierarchyFile(device, xmlDumpFile, monitor, compressed, driver);
         } catch (Exception e) {
             String msg = "Error while obtaining UI hierarchy XML file: " + e.getMessage()+e.getStackTrace().toString();
             throw new UiAutomatorException(msg, e);
