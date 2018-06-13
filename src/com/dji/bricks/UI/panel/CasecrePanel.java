@@ -683,6 +683,12 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             		case "RM500 Settings":
             			pkg = "com.android.settings.Settings";
             			break;
+            		case "MG 1A/P":
+            			pkg = "dji.prof.mg";
+            			break;
+            		case "MG 1S":
+            			pkg = "dji.prof.args.tiny";
+            			break;
             	}
             	
             	try {
@@ -1092,6 +1098,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		comboxAppName.addItem("DJI Pilot");
 		comboxAppName.addItem("RM500 Launcher");
 		comboxAppName.addItem("RM500 Settings");
+		comboxAppName.addItem("MG 1A/P");
+		comboxAppName.addItem("MG 1S");
 		comboxAppName.setEditable(false);
 		comboxAppName.setSelectedItem(null);
 		comboxAppName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);

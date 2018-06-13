@@ -280,6 +280,10 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 			textFieldEleItem_4.setText("RM500 Launcher");
 		else if (node_info.get("package").equals("com.android.settings"))
 			textFieldEleItem_4.setText("RM500 Settings");
+		else if (node_info.get("package").equals("dji.prof.mg"))
+			textFieldEleItem_4.setText("MG 1A/P");
+		else if (node_info.get("package").equals("dji.prof.args.tiny"))
+			textFieldEleItem_4.setText("MG 1S");
 		
 		if(node_info != null && node_info.containsKey("clickable")){
 			if(node_info.get("clickable").equals("1")){

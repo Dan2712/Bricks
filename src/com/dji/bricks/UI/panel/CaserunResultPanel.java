@@ -260,6 +260,12 @@ public class CaserunResultPanel extends JPanel{
 		            		case "RM500 Settings":
 		            			pkg = "com.android.settings.Settings";
 		            			break;
+		            		case "MG 1A/P":
+		            			pkg = "dji.prof.mg";
+		            			break;
+		            		case "MG 1S":
+		            			pkg = "dji.prof.args.tiny";
+		            			break;
 						}
 						
 						logprint.setText("");

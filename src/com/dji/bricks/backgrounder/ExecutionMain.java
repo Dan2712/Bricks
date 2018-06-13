@@ -42,6 +42,9 @@ public class ExecutionMain {
 			case "com.dpad.launcher":
 				launchActivity = "com.dpad.launcher.Launcher";
 				break;
+			case "dji.prof.mg": case "dji.prof.args.tiny":
+				launchActivity = "dji.prof.mg.main.SplashActivity";
+				break;
 		}
 		
 		try {
