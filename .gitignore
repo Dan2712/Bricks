@@ -14,3 +14,4 @@ log/
 *.db
 screenShot
 /bin/
+log.txt
