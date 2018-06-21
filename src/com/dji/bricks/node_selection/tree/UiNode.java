@@ -157,9 +157,10 @@ public class UiNode extends BasicTreeNode {
 			}
 		}
 		
-		if(flag){
+		if (flag) {
 			xpath = xpath + "]";
 		}
+		
 		return xpath;
 	}
 	

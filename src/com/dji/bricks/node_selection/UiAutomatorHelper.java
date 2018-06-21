@@ -41,7 +41,7 @@ public class UiAutomatorHelper {
     private static final String UIAUTOMATOR_DUMP_COMMAND = "dump";          //$NON-NLS-1$
     private static final String UIDUMP_DEVICE_PATH = "/data/local/tmp/uidump.xml";  //$NON-NLS-1$
     private static final int XML_CAPTURE_TIMEOUT_SEC = 40;
-    private static File uiDumpFile = null;
+//    private static File uiDumpFile = null;
 
     private static boolean supportsUiAutomator(IDevice device) {
         String apiLevelString = device.getProperty(IDevice.PROP_BUILD_API_LEVEL);
@@ -135,23 +135,23 @@ public class UiAutomatorHelper {
         tmpDir.deleteOnExit();
         xmlDumpFile.deleteOnExit();
         
-        try {
-        	if (uiDumpFile == null) 
-        		uiDumpFile = xmlDumpFile;
-        	else {
-        		Boolean isEqual = FileUtils.contentEquals(uiDumpFile, xmlDumpFile);
-        		
-        		if (!isEqual)
-        			uiDumpFile = xmlDumpFile;
-        		else
-        			return null;
-        	}
-
-		} catch (IOException e) {
-			String msg = "Error while comparing dumping: "
-                    + e.getMessage();
-            throw new UiAutomatorException(msg, e);
-		}
+//        try {
+//        	if (uiDumpFile == null) 
+//        		uiDumpFile = xmlDumpFile;
+//        	else {
+//        		Boolean isEqual = FileUtils.contentEquals(uiDumpFile, xmlDumpFile);
+//        		
+//        		if (!isEqual)
+//        			uiDumpFile = xmlDumpFile;
+//        		else
+//        			return null;
+//        	}
+//
+//		} catch (IOException e) {
+//			String msg = "Error while comparing dumping: "
+//                    + e.getMessage();
+//            throw new UiAutomatorException(msg, e);
+//		}
 
         monitor.subTask("Obtaining UI hierarchy");
         try {

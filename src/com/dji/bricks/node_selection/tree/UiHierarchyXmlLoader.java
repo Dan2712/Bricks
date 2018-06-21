@@ -92,9 +92,7 @@ public class UiHierarchyXmlLoader {
             e.printStackTrace();
             return null;
         }
-        // handler class for SAX parser to receiver standard parsing events:
-        // e.g. on reading "<foo>", startElement is called, on reading "</foo>",
-        // endElement is called
+
         DefaultHandler handler = new DefaultHandler(){
         	
             BasicTreeNode mParentNode;
@@ -156,10 +154,9 @@ public class UiHierarchyXmlLoader {
                         	String uiaStr = null;
                         	BasicTreeNode  parent = null;
                         	UiNode myNode = null;
-                        		myNode = (UiNode)mWorkingNode;
-                        		parent = mWorkingNode.getParent();
+                    		myNode = (UiNode)mWorkingNode;
+                    		parent = mWorkingNode.getParent();
                         	if(!RootWindowNode.class.isInstance(parent)){
-                        		xpath = myNode.getXpath();
                         		xpath = "/" + myNode.getXpath();
                         		PfullIndexXpath = ((UiNode)parent).getAttribute("fullIndexXpath");
                         		fullIndexXpath = PfullIndexXpath +myNode.getIndexXpath();
@@ -232,6 +229,7 @@ public class UiHierarchyXmlLoader {
                 }
             }
         };
+        
         try {
             parser.parse(new File(xmlPath), handler);
         } catch (SAXException e) {

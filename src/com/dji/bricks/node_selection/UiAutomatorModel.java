@@ -46,9 +46,6 @@ public class UiAutomatorModel {
     private Rectangle mCurrentDrawingRect;
     private List<Rectangle> mNafNodes;
 
-    // determines whether we lookup the leaf UI node on mouse move of screenshot image
-//    private boolean mExploreMode = true;
-
     private boolean mShowNafNodes = false;
     private List<UiNode> mNodelist;
     private Set<String> mSearchKeySet = new HashSet<String>();
@@ -222,74 +219,69 @@ public class UiAutomatorModel {
             }
 
             if (xMap.size() == 4){
-                if (parents.size()==0){
-                    return null;
-                }
-                else {
-                    return parents;
-                }
-            }
-            else{
-                while(index <= length){
-                    String classNameStr = xMap.get("class"+index);
-                    childList.clear();
-                    for (BasicTreeNode node : parents){
-                        List<BasicTreeNode> childs = node.getChildrenList();
-                        if (classNameStr.indexOf("[")>=0){
-                            String className = classNameStr.substring(0,classNameStr.indexOf("["));
-                            int indexStr = Integer.parseInt(classNameStr.substring(classNameStr.indexOf("[")+1,classNameStr.indexOf("]")));
+            	if (parents.size()==0){
+            		return null;
+            	} else {
+            		return parents;
+            	}
+            } else {
+            	while(index <= length){
+            		String classNameStr = xMap.get("class"+index);
+            		childList.clear();
+            		for (BasicTreeNode node : parents){
+            			List<BasicTreeNode> childs = node.getChildrenList();
+            			if (classNameStr.indexOf("[")>=0){
+            				String className = classNameStr.substring(0,classNameStr.indexOf("["));
+            				int indexStr = Integer.parseInt(classNameStr.substring(classNameStr.indexOf("[")+1,classNameStr.indexOf("]")));
 
-                            int number = 0;
-                            for (int i =0;i<childs.size();i++){
-                                UiNode uNode = (UiNode)childs.get(i);
+            				int number = 0;
+            				for (int i =0;i<childs.size();i++){
+            					UiNode uNode = (UiNode)childs.get(i);
 
-                                if (uNode.getAttributes().get("class").equals(className)){
-                                    number++;
-                                    if (number == indexStr){
-                                        childList.add(childs.get(i));
-                                    }
-                                }
-                            }
-                        }
-                        else {
-                            for (BasicTreeNode child : childs){
-                                childList.add(child);
-                            }
-                        }
-                    }
-                    if (classNameStr.indexOf("[")>=0){
-                        String className = classNameStr.substring(0,classNameStr.indexOf("["));
+            					if (uNode.getAttributes().get("class").equals(className)){
+            						number++;
+            						if (number == indexStr){
+            							childList.add(childs.get(i));
+            						}
+            					}
+            				}
+            			} else {
+            				for (BasicTreeNode child : childs){
+            					childList.add(child);
+            				}
+            			}
+            		}
+                    
+            		if (classNameStr.indexOf("[")>=0){
+            			String className = classNameStr.substring(0,classNameStr.indexOf("["));
 
-                        parents.clear();
+            			parents.clear();
 
-                        for (BasicTreeNode node : childList){
-                            UiNode child = (UiNode)node;
-                            if (child.getAttributes().get("class").equals(className)){
-                                parents.add(node);
-                            }
-                        }
-                    }
-                    else{
-                        parents.clear();
+            			for (BasicTreeNode node : childList){
+            				UiNode child = (UiNode)node;
+            				if (child.getAttributes().get("class").equals(className)){
+            					parents.add(node);
+            				}
+            			}
+                    } else {
+                    	parents.clear();
 
-                        for (BasicTreeNode node : childList){
-                            UiNode child = (UiNode)node;
-                            if (child.getAttributes().get("class").equals(classNameStr)){
-                                parents.add(node);
-                            }
-                        }
+                    	for (BasicTreeNode node : childList){
+                    		UiNode child = (UiNode)node;
+                    		if (child.getAttributes().get("class").equals(classNameStr)){
+                    			parents.add(node);
+                    		}
+                    	}
                     }
                     index ++;
                 }
-                if (parents.size()==0){
+            	if (parents.size()==0){
                     return null;
-                }
-                else {
+                } else {
                     return parents;
                 }
             }
-        }
-        else {
+        } else {
             List<BasicTreeNode> parents = new ArrayList<BasicTreeNode>();
             List<BasicTreeNode> childList = new ArrayList<BasicTreeNode>();
             int index = 1;
@@ -303,12 +295,10 @@ public class UiAutomatorModel {
             if (xMap.size() == 4){
                 if (parents.size()==0){
                     return null;
-                }
-                else {
+                } else {
                     return parents;
                 }
-            }
-            else{
+            } else {
                 while(index <= length){
                     String classNameStr = xMap.get("class"+index);
                     childList.clear();
@@ -329,8 +319,7 @@ public class UiAutomatorModel {
                                     }
                                 }
                             }
-                        }
-                        else {
+                        } else {
                             for (BasicTreeNode child : childs){
                                 childList.add(child);
                             }
@@ -347,8 +336,7 @@ public class UiAutomatorModel {
                                 parents.add(node);
                             }
                         }
-                    }
-                    else{
+                    } else {
                         parents.clear();
 
                         for (BasicTreeNode node : childList){
@@ -362,8 +350,7 @@ public class UiAutomatorModel {
                 }
                 if (parents.size()==0){
                     return null;
-                }
-                else {
+                } else {
                     return parents;
                 }
             }
@@ -389,8 +376,7 @@ public class UiAutomatorModel {
             if (end<xpath.length()){
                 other = xpath.substring(end+1,xpath.length()).split("/");
             }
-        }
-        else {
+        } else {
             xlist = xpath.split("/");
         }
         if (first != ""){
@@ -407,20 +393,17 @@ public class UiAutomatorModel {
                         String resourceId  = attributeList[i].substring(attributeList[i].indexOf("=")+2,attributeList[i].lastIndexOf("'"));
                         map.remove("resource-id");
                         map.put("resource-id",resourceId);
-                    }
-                    else if (attributeList[i].indexOf("text")>=0){
+                    } else if (attributeList[i].indexOf("text")>=0){
                         String text  = attributeList[i].substring(attributeList[i].indexOf("=")+2,attributeList[i].lastIndexOf("'"));
                         map.remove("text");
                         map.put("text",text);
-                    }
-                    else if (attributeList[i].indexOf("content-desc")>=0){
+                    } else if (attributeList[i].indexOf("content-desc")>=0){
                         String contentDesc  = attributeList[i].substring(attributeList[i].indexOf("=")+2,attributeList[i].lastIndexOf("'"));
                         map.remove("content-desc");
                         map.put("content-desc",contentDesc);
                     }
                 }
-            }
-            else{
+            } else {
                 map.remove("resource-id");
                 map.put("resource-id",firstNode.substring(firstNode.indexOf("=")+2,firstNode.length()));
             }
@@ -430,8 +413,7 @@ public class UiAutomatorModel {
                     map.put("class"+(i+1),other[i]);
                 }
             }
-        }
-        else{
+        } else {
             if (xlist[0].indexOf("@")>=0){
                 String xclass = xlist[0].substring(0,xlist[0].indexOf("[@"));
                 map.remove("class0");
@@ -446,21 +428,18 @@ public class UiAutomatorModel {
                             String text = attributeList[i].substring(attributeList[i].indexOf("=")+2,attributeList[i].indexOf("'"));
                             map.remove("text");
                             map.put("text",text);
-                        }
-                        else if (attributeList[i].indexOf("content-desc")>=0){
+                        } else if (attributeList[i].indexOf("content-desc")>=0){
                             String contentDesc = attributeList[i].substring(attributeList[i].indexOf("=")+2,attributeList[i].indexOf("'"));
                             map.remove("content-desc");
                             map.put("content-desc",contentDesc);
                         }
                     }
-                }
-                else{
+                } else {
                     if (firstNode.indexOf("text")>=0){
                         String text = firstNode.substring(firstNode.indexOf("=")+2,firstNode.indexOf("']"));
                         map.remove("text");
                         map.put("text",text);
-                    }
-                    else{
+                    } else {
                         int begin = firstNode.indexOf("=")+2;
                         int end = firstNode.indexOf("']");
                         String contentDesc = firstNode.substring(begin,end);
@@ -472,8 +451,7 @@ public class UiAutomatorModel {
                 for(int i =1;i< xlist.length; i++){
                     map.put("class"+(i),xlist[i]);
                 }
-            }
-            else {
+            } else {
                 map.remove("class0");
                 map.put("class0",xlist[0]);
                 for(int i =1;i< xlist.length; i++){
