@@ -266,6 +266,9 @@ public class CaserunResultPanel extends JPanel{
 		            		case "MG 1S":
 		            			pkg = "dji.prof.args.tiny";
 		            			break;
+		            		case "DJI GO4 Pad":
+		            			pkg = "dji.pilot.pad";
+		            			break;
 						}
 						
 						logprint.setText("");

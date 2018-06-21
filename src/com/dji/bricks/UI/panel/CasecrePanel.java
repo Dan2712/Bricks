@@ -689,6 +689,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             		case "MG 1S":
             			pkg = "dji.prof.args.tiny";
             			break;
+            		case "DJI GO4 Pad":
+            			pkg = "dji.pilot.pad";
+            			break;
             	}
             	
             	try {
@@ -1100,6 +1103,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		comboxAppName.addItem("RM500 Settings");
 		comboxAppName.addItem("MG 1A/P");
 		comboxAppName.addItem("MG 1S");
+		comboxAppName.addItem("DJI GO4 Pad");
 		comboxAppName.setEditable(false);
 		comboxAppName.setSelectedItem(null);
 		comboxAppName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
