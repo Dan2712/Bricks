@@ -395,7 +395,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 try {
                     JFileChooser jfc = new JFileChooser(new File(CURRENT_DIR + "/json"));  
                     jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES );  
-                    jfc.showDialog(new JLabel(), "选择");  
+                    jfc.showDialog(new JLabel(), "Choose");  
                     File selectedFile = jfc.getSelectedFile();
                     if (selectedFile == null) {
                         appStartName = "";
@@ -479,13 +479,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 	table_row[3] = comboxViewName.getSelectedItem();
                 	table_row[4] = comboxEleName.getSelectedItem();
                 	
-                	int i = casetable.getSelectedRow();
-                    if(i >= 0){
-                    	model.insertRow(i+1, table_row);
-                    }else{
-                    	model.addRow(table_row);
-                    }
-                    
                 	BrickBean brick = new BrickBean();
                 	brick.setEle_xpath(xpath);
                 	brick.setCustom_name(cus_name);
@@ -494,7 +487,14 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 	if (caseList.size() == 0)
                 		appStartName = appName;
                 	
-                	caseList.add(brick);
+                	int i = casetable.getSelectedRow();
+                    if(i >= 0){
+                    	model.insertRow(i+1, table_row);
+                    	caseList.add(i+1, brick);
+                    }else{
+                    	model.addRow(table_row);
+                    	caseList.add(brick);
+                    }
                 } catch (Exception e1) {
                 	e1.printStackTrace();
                 }
@@ -519,13 +519,13 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 	int i = casetable.getSelectedRow();
                     if(i >= 0){
                     	model.insertRow(i+1, table_row);
+                    	caseList.add(i+1, brick);
                     }else{
                     	if(action != 4){
                     		model.addRow(table_row);
                     	}
+                    	caseList.add(brick);
                     }
-                    
-                	caseList.add(brick);
                 } catch (Exception e1) {
                 	e1.printStackTrace();
                 }
@@ -1405,19 +1405,20 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		                	table_row[3] = "N/A";
 		                	table_row[4] = "N/A";
 		                	
-		                	int i = casetable.getSelectedRow();
-		                    if(i >= 0){
-		                    	model.insertRow(i+1, table_row);
-		                    }else{
-		            	    model.addRow(table_row);
-		                    }
-		                    
-		                    Map<String, Object> params_time = new HashMap<>();
+		                	Map<String, Object> params_time = new HashMap<>();
 		                    params_time.put("time", Integer.parseInt(timer_num.getText()));
 		                    BrickBean timeBrick = new BrickBean();
 		                    timeBrick.setProperty("time");
 		                    timeBrick.setParams(params_time);
-		                    caseList.add(timeBrick);
+		                    
+		                	int i = casetable.getSelectedRow();
+		                    if(i >= 0){
+		                    	model.insertRow(i+1, table_row);
+		                    	caseList.add(i+1, timeBrick);
+		                    }else{
+		                    	model.addRow(table_row);
+		                    	caseList.add(timeBrick);
+		                    }
 		                } catch (Exception e1) {
 		                	e1.printStackTrace();
 		                }

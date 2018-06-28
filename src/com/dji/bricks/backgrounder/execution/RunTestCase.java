@@ -61,6 +61,7 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 						this.actionSwitch(obj);
 					} else if (obj.getString("property").equals("val")) {
 						this.validationSwitch(obj);
+						Thread.sleep(1000);
 					} else if (obj.getString("property").equals("time")) {
 						int time = ((Integer)obj.getJSONObject("params").get("time")) * 1000;
 						Thread.sleep(time);
