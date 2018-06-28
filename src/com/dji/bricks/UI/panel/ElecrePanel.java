@@ -284,6 +284,8 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 			textFieldEleItem_4.setText("MG 1A/P");
 		else if (node_info.get("package").equals("dji.prof.args.tiny"))
 			textFieldEleItem_4.setText("MG 1S");
+		else if (node_info.get("package").equals("dji.pilot.pad"))
+			textFieldEleItem_4.setText("DJI GO4 Pad");
 		
 		if(node_info != null && node_info.containsKey("clickable")){
 			if(node_info.get("clickable").equals("1")){

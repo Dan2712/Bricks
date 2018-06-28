@@ -431,24 +431,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                         	table_row[4] = brick.getCustom_name();
                         	model.addRow(table_row);
                 		} else if (brick.getProperty().equals("act")) {
-                			switch (action) {
-                				case 0:
-                        		act_name = "Click";
-                        		break;
-                				case 1:
-                        		act_name = "Long Press";
-                        		break;
-                				case 2:
-                        		act_name = "Set Text";
-                        		break;
-                				case 4:
-                        		act_name = "Point Drag";
-                        		screenPointGet(brick);
-                        		break;
-                				case 10:
-                        		act_name = "DB";
-                        		break;
-                        	}
+                			actionLoad(brick.getAction_name(), brick);
                         	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.act");
                         	table_row[2] = act_name;
                         	table_row[3] = "N/A";
@@ -526,19 +509,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             	brick.setProperty("act");
             	
                 try {
-                	if(action == 0) {
-                		act_name = "Click";
-                	} else if(action == 1) {
-                		act_name = "Long Press";
-                	} else if(action == 2) {
-                		act_name = "Set Text";
-                	} else if(action == 4) {
-                		scrshotbtn_type = true;
-                		act_name = "Point Drag";
-                		screenPointGet(brick);
-                	} else if(action == 10){
-                		act_name = "DB";
-                	}
+                	actionLoad(action, brick);
+                	
                 	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.act");
                 	table_row[2] = act_name;
                 	table_row[3] = "N/A";
@@ -689,6 +661,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             		case "MG 1S":
             			pkg = "dji.prof.args.tiny";
             			break;
+            		case "DJI GO4 Pad":
+            			pkg = "dji.pilot.pad";
+            			break;
             	}
             	
             	try {
@@ -792,20 +767,22 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 						String pid = "";
 						while (device != null && !pkg.equals("")) {
 							try {
-								if (pid.equals("")) {
-									device.executeShellCommand("ps | grep " + pkg, receiver);
-									receiver.flush();
-									pid = receiver.getOutput().split("\\s+")[1];
-								}
-								device.executeShellCommand("dumpsys meminfo " + pid, mReceiver);
-								System.out.println(tmp);
-								MemValue = Integer.parseInt(tmp.split("\\s+")[1]);
-//								chart.addCPUValue(CPUValue);
-								chart.addMemValue(MemValue/10240);
-								chart.repaint();
-								Thread.sleep(1000);
-							} catch (ShellCommandUnresponsiveException ignore) {
-								continue;
+//								device.executeShellCommand(String.format("push %s %s", System.getProperty("user.dir") + "/rm500_0042.bin", "/sdcard"), receiver, 0);
+//								device.pushFile(System.getProperty("user.dir") + File.separator + "rm500_0042.bin", "/sdcard");
+//								if (pid.equals("")) {
+//									device.executeShellCommand("ps | grep " + pkg, receiver);
+//									receiver.flush();
+//									pid = receiver.getOutput().split("\\s+")[1];
+//								}
+//								device.executeShellCommand("dumpsys meminfo " + pid, mReceiver);
+//								System.out.println(tmp);
+//								MemValue = Integer.parseInt(tmp.split("\\s+")[1]);
+////								chart.addCPUValue(CPUValue);
+//								chart.addMemValue(MemValue/10240);
+//								chart.repaint();
+//								Thread.sleep(1000);
+//							} catch (ShellCommandUnresponsiveException ignore) {
+//								continue;
 							} catch (Exception e) {
 								e.printStackTrace();
 								break;
@@ -958,6 +935,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 //					        	break;
 //					        case 3:
 					        	comboxActName.addItem("SeekBar Drag");
+					        	comboxActName.addItem("Push To Device");
+					        	comboxActName.addItem("Reboot Device");
 //					        	break;
 //					        case 4:
 //					        	break;
@@ -981,23 +960,29 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 			if (e.getStateChange() == ItemEvent.SELECTED) {
 				String action_name = (String) e.getItem();
 				switch (action_name) {
-				case "Single-Click":
-					action = 0;
-					break;
-				case "Long-Press":
-					action = 1;
-					break;
-				case "Set Text":
-					action = 2;
-					break;
-				case "Point Drag":
-					action = 4;
-					break;
-				case "SeekBar Drag":
-					action = 10;
-					break;
+					case "Single-Click":
+						action = 0;
+						break;
+					case "Long-Press":
+						action = 1;
+						break;
+					case "Set Text":
+						action = 2;
+						break;
+					case "Point Drag":
+						action = 4;
+						break;
+					case "Push To Device":
+						action = 5;
+						break;
+					case "Reboot Device":
+						action = 6;
+						break;
+					case "SeekBar Drag":
+						action = 10;
+						break;
+					}
 				}
-			}
 		}
 	}
 
@@ -1151,6 +1136,32 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		});
 	}
 	
+	private void actionLoad(int actionInput, BrickBean brick) {
+		switch (actionInput) {
+		case 0:
+    		act_name = "Click";
+    		break;
+		case 1:
+    		act_name = "Long Press";
+    		break;
+		case 2:
+    		act_name = "Set Text";
+    		break;
+		case 4:
+    		act_name = "Point Drag";
+    		screenPointGet(brick);
+    		break;
+		case 5:
+			act_name = "Push To Device";
+			break;
+		case 6:
+			act_name = "Reboot Device";
+			break;
+		case 10:
+    		act_name = "DB";
+    		break;
+		}
+	}
 	
 //	private void tableAdd(int addType) {
 //		switch (addType) {
