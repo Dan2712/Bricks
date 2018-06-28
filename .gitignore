@@ -7,11 +7,17 @@ gen/
 .settings/
 
 proguard/
+
 log/
-*.log
+
 *.json
 
 *.db
-screenShot
+
+screenShot/
+
 /bin/
+
 log.txt
+
+rm*

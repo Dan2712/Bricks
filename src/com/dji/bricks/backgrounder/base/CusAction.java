@@ -1,19 +1,35 @@
 package com.dji.bricks.backgrounder.base;
 
 import java.awt.Point;
+import java.io.File;
+import java.io.IOException;
 
 import org.openqa.selenium.WebElement;
+
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.CollectingOutputReceiver;
+import com.android.ddmlib.IDevice;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.SyncException;
+import com.android.ddmlib.TimeoutException;
+import com.dji.bricks.backgrounder.execution.AppiumInit;
 
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 
 public class CusAction {
+	
+//	private String pushCmd = "adb push %s %s";
+	private String localPath =  System.getProperty("user.dir") + File.separator + "rm500_0042.bin";
+	private String savePath = "/sdcard/rm500_0042.bin";
 	 
 	private AndroidDriver driver;
 	private TouchAction touchAction;
+	private IDevice device;
 	
-	public CusAction(AndroidDriver driver) {
+	public CusAction(AndroidDriver driver, IDevice device) {
 		this.driver = driver;
+		this.device = device;
 		touchAction = new TouchAction(driver);
 	}
 	
@@ -47,7 +63,25 @@ public class CusAction {
 		touchAction.perform();
 	}
 	
-	//5.swipe
+	//5.push file to device
+	public void pushFileToDevice() {
+		try {
+			device.pushFile(localPath, savePath);
+		} catch (TimeoutException | AdbCommandRejectedException | IOException | SyncException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//6.adb reboot
+	public void reboot() {
+		try {
+			device.reboot(null);;
+		} catch (TimeoutException | AdbCommandRejectedException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//7.swipe
 	public void swipe(Point startPoint, Point desPoint) {
 		touchAction.longPress(startPoint.getLocation().x, startPoint.getLocation().y)
 					.waitAction()

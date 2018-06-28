@@ -43,7 +43,7 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 		this.logText = logText;
 		this.device = device;
 		this.jsonFile = jsonFile;
-		action = new CusAction(driver);
+		action = new CusAction(driver, device);
 		validation = new CusValidation(driver);
 	}
 
@@ -69,7 +69,7 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 					if (e instanceof NoSuchElementException)
 						logText.append("No such element: " + this.ele_customName);
 					else {
-						logText.append("Case Failed");
+						logText.append("Case Failed" + "\n");
 						e.printStackTrace();
 					}
 					break;
@@ -99,14 +99,20 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 			logText.append(this.ele_customName + " is draged to the position" + "\n");
 			break;
 		case 5:
+			action.pushFileToDevice();
+			logText.append("Pushing files..." + "\n");
+			break;
+		case 6:
+			action.reboot();
+			logText.append("Rebooting..." + "\n");
+			AppiumInit.setUp(device, "com.dpad.launcher", "com.dpad.launcher.Launcher");
+			this.driver = AppiumInit.driver;
+			break;
+		case 7:
 			JSONObject params_swipe = action_info.getJSONObject("params");
 			action.swipe(new Point(params_swipe.getJSONObject("StartPoint").getIntValue("x"), params_swipe.getJSONObject("StartPoint").getIntValue("y")), 
 					new Point(params_swipe.getJSONObject("DesPoint").getIntValue("x"), params_swipe.getJSONObject("DesPoint").getIntValue("y")));
 			logText.append("Page is swiped");
-			break;
-		case 6:
-			break;
-		case 7:
 			break;
 		case 8:
 			break;
