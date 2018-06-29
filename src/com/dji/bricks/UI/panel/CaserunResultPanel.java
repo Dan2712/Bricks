@@ -205,7 +205,7 @@ public class CaserunResultPanel extends JPanel{
                     filepath = jfc.getSelectedFile().getPath();
                     
                     String filename = filepath.substring(filepath.lastIndexOf("\\")+1);
-                    appName = filename.substring(0, filename.lastIndexOf("_"));
+                    appName = filename.substring(0, filename.indexOf("_"));
                     
                     table_row[0] = filename;
                     table_row[1] = filepath;

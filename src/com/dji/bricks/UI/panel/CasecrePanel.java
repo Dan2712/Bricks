@@ -404,7 +404,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                     	filepath = jfc.getSelectedFile().getPath();
                         DataFrom.setText(filepath.substring(filepath.lastIndexOf("\\")+1));
                         tmpJson = FileUtils.loadJson(filepath);
-                        appStartName = filepath.substring(filepath.lastIndexOf("\\")+1, filepath.lastIndexOf("_"));
+                        String filename = filepath.substring(filepath.lastIndexOf("\\")+1);
+                        appStartName = filename.substring(0, filename.indexOf("_"));
                         
 //                        String str = JSONObject.toJSONString(tmp, SerializerFeature.WriteClassName);
 //                        caseList = JSONArray.parseArray(str, BrickBean.class);
