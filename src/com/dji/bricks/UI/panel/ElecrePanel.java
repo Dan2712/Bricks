@@ -32,7 +32,6 @@ import com.android.ddmlib.IDevice;
 import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
-import com.dji.bricks.UI.panel.CasecrePanel.ViewListener;
 import com.dji.bricks.node_selection.RealTimeScreenUI;
 import com.dji.bricks.node_selection.VariableChangeObserve;
 import com.dji.bricks.tools.PropertyUtil;

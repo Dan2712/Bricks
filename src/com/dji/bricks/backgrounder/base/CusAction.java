@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
 
 import com.android.ddmlib.AdbCommandRejectedException;
@@ -13,6 +15,7 @@ import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.SyncException;
 import com.android.ddmlib.TimeoutException;
 import com.dji.bricks.backgrounder.execution.AppiumInit;
+import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
@@ -81,13 +84,40 @@ public class CusAction {
 		}
 	}
 	
-	//7.swipe
-	public void swipe(Point startPoint, Point desPoint) {
-		touchAction.longPress(startPoint.getLocation().x, startPoint.getLocation().y)
-					.waitAction()
-					.moveTo(desPoint.getLocation().x, desPoint.getLocation().y)
-					.release();
-		touchAction.perform();
+	//7.scroll to exact element
+	public void swipeToExact(String elePath, String containerPath, int heading) {
+		boolean found = false;
+		while (!found) {
+			try {
+				driver.findElement(By.xpath(elePath));
+				found = true;
+			} catch(ElementNotFoundException e) {
+				WebElement eleContainer = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(containerPath);
+				
+				Dimension size = eleContainer.getSize();
+				int x = size.getWidth();
+				int y = size.getHeight();
+				
+				org.openqa.selenium.Point start = eleContainer.getLocation();
+				int startX = start.x;
+				int startY = start.y;
+				
+				int endX = x + startX;
+				int endY = y + startY;
+				
+				int centerX = (startX + endX) / 2;
+				int centerY = (startY + endY) / 2;
+				
+				switch (heading) {
+					case 0:
+						driver.swipe(centerX, centerY + 30, centerX, centerY - 30, 500);
+						break;
+					case 1:
+						driver.swipe(centerX, centerY - 30, centerX, centerY + 30, 500);
+						break;
+				}
+			}
+		}
 	}
 	
 	//10.seekbar drag

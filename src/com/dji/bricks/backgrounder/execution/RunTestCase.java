@@ -91,12 +91,13 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 			logText.append(this.ele_customName + " is long pressed" + "\n");
 			break;
 		case 2:
-			action.setText(ele_sub, action_info.getString("inputText"));
+			JSONObject params_text = action_info.getJSONObject("params");
+			action.setText(ele_sub, params_text.getString("inputText"));
 			logText.append(this.ele_customName + " set text successed" + "\n");
 			break;
 		case 4:
-			JSONObject params = action_info.getJSONObject("params");
-			action.pointDrag(ele_sub, new Point(params.getJSONObject("DesPoint").getIntValue("x"), params.getJSONObject("DesPoint").getIntValue("y")));
+			JSONObject params_drag = action_info.getJSONObject("params");
+			action.pointDrag(ele_sub, new Point(params_drag.getJSONObject("DesPoint").getIntValue("x"), params_drag.getJSONObject("DesPoint").getIntValue("y")));
 			logText.append(this.ele_customName + " is draged to the position" + "\n");
 			break;
 		case 5:
@@ -111,9 +112,8 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 			break;
 		case 7:
 			JSONObject params_swipe = action_info.getJSONObject("params");
-			action.swipe(new Point(params_swipe.getJSONObject("StartPoint").getIntValue("x"), params_swipe.getJSONObject("StartPoint").getIntValue("y")), 
-					new Point(params_swipe.getJSONObject("DesPoint").getIntValue("x"), params_swipe.getJSONObject("DesPoint").getIntValue("y")));
-			logText.append("Page is swiped");
+			action.swipeToExact(params_swipe.getString("elePath"), params_swipe.getString("containerPath"), params_swipe.getIntValue("heading"));
+			logText.append("Page is swiped" + "\n");
 			break;
 		case 8:
 			break;

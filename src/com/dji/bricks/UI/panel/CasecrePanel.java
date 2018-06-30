@@ -54,7 +54,9 @@ import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.MainEntry;
 import com.dji.bricks.UI.BrickBean;
 import com.dji.bricks.UI.ConstantsUI;
+import com.dji.bricks.UI.EleListener;
 import com.dji.bricks.UI.MyIconButton;
+import com.dji.bricks.UI.ViewListener;
 import com.dji.bricks.backgrounder.ExecutionMain;
 import com.dji.bricks.node_selection.RealTimeScreenUI;
 import com.dji.bricks.tools.FileUtils;
@@ -83,8 +85,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private static MyIconButton buttonPlayList;
 	private static MyIconButton buttonRTChart;
 	private static MyIconButton buttonLogSave;
-	private static JPanel popuppanel;
-//	private static PopupWindow popupwindow;
 	private JTextArea logArea;
 	private static MyIconButton buttonTimer;
 	private static MyIconButton buttonVersetTX_add;
@@ -96,10 +96,10 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private int ver_type;
 	private ArrayList<BrickBean> caseList = null;
 	private final static String CURRENT_DIR = System.getProperty("user.dir");
-	private String xpath = "";
-	private String cus_name = "";
+	private StringBuilder xpath;
+	private StringBuilder cus_name;
 	private String act_name = "";
-	private String scrshot_pathname = "";
+	private StringBuilder scrshot_pathname;
 	private int action;
 	private int scrshot_X;
 	private int scrshot_Y;
@@ -110,19 +110,52 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private int MemValue;
 	
 	/**
+	 * Element Adding Panel
+	 */
+	private JComboBox<String> comboxAppName;
+	private JComboBox<String> comboxViewName;
+	private JComboBox<String> comboxEleName;
+	private JComboBox<String> comboxActName;
+	private JComboBox<String> comboxVerName;
+	private JTable casetable;
+	private DefaultTableModel model;
+	private StringBuilder appName;
+	private String appStartName = "";
+	private String pkg = "";
+	private String filepath;
+	private SQLUtils sql = null;
+	private ResultSet xpathSet = null;
+	private PrintStream standardOut;
+	private Object[] table_row = new Object[5];
+	
+	private EleListener elisten;
+	private ViewListener vlisten;
+	
+	private PopUpWindow popWin;
+	
+	/**
 	 * Initialize
 	 */
 	public CasecrePanel(SQLUtils sql) {
 		this.sql = sql;
-		initialize();
+		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
+		this.setLayout(new BorderLayout());
 		addComponent();
 		addListener();
+		initialize();
 	}
 
 	private void initialize() {
-		this.setBackground(ConstantsUI.MAIN_BACK_COLOR);
-		this.setLayout(new BorderLayout());
 		caseList = new ArrayList<>();
+		xpath = new StringBuilder();
+		cus_name = new StringBuilder();
+		scrshot_pathname = new StringBuilder();
+		appName = new StringBuilder();
+		
+		elisten = new EleListener(sql, xpath, cus_name, scrshot_pathname);
+		vlisten = new ViewListener(sql, comboxEleName, elisten, appName);
+		
+		popWin = new PopUpWindow(table_row, model, casetable, sql, vlisten, caseList);
 	}
 
 	private JPanel CaseCre;
@@ -148,29 +181,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	}
 	
 	/**
-	 * Element Adding Panel
-	 */
-	private JComboBox<String> comboxAppName;
-	private JComboBox<String> comboxViewName;
-	private JComboBox<String> comboxEleName;
-	private JComboBox<String> comboxActName;
-	private JComboBox<String> comboxVerName;
-	private JTable casetable;
-	private DefaultTableModel model;
-	private String appName = "";
-	private String appStartName = "";
-	private String pkg = "";
-	private String filepath;
-	private SQLUtils sql = null;
-	private ResultSet xpathSet = null;
-	private PrintStream standardOut;
-	private Object[] table_row = new Object[5];
-	private Boolean scrshotbtn_type;
-	
-	private ViewListener vlisten = new ViewListener();
-	private EleListener elisten = new EleListener();
-	
-	/**
 	 * case list set to Jtable
 	 * @return
 	 */
@@ -183,6 +193,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
         Object[] columns = {"Id","Type","SPEC 1","SPEC 2","SPEC 3"};
         model = new DefaultTableModel();
         model.setColumnIdentifiers(columns);
+        casetable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         casetable.setModel(model);
         casetable.setBackground(Color.LIGHT_GRAY);
         casetable.setForeground(Color.black);
@@ -275,13 +286,17 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		ActPick.setFont(ConstantsUI.FONT_NORMAL);
 		comboxActName = new JComboBox<String>();
 		comboxActName.setEditable(false);
-//		comboxActName.addItem("Single-Click");
-//		comboxActName.addItem("Long-Press");
-//		comboxActName.addItem("Set Text");
-//		comboxActName.addItem("Point Drag");
-//		comboxActName.addItem("SeekBar Drag");
 		comboxActName.setSelectedItem(null);
 		comboxActName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
+		comboxActName.addItem("Single-Click");
+    	comboxActName.addItem("Long-Press");
+    	comboxActName.addItem("Point Drag");
+    	comboxActName.addItem("Set Text");
+    	comboxActName.addItem("SeekBar Drag");
+    	comboxActName.addItem("Push To Device");
+    	comboxActName.addItem("Reboot Device");
+    	comboxActName.addItem("Scroll To Exact Ele");
+    	comboxActName.setSelectedItem(null);
 		comboxActName.addItemListener(new ActListener());
 		JLabel ActNull = new JLabel();
 		ActNull.setPreferredSize(new Dimension(35, 40));
@@ -432,7 +447,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                         	table_row[4] = brick.getCustom_name();
                         	model.addRow(table_row);
                 		} else if (brick.getProperty().equals("act")) {
-                			actionLoad(brick.getAction_name(), brick);
+                			actionLoad(brick.getAction_name(), brick, true);
                         	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.act");
                         	table_row[2] = act_name;
                         	table_row[3] = "N/A";
@@ -481,12 +496,12 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                 	table_row[4] = comboxEleName.getSelectedItem();
                 	
                 	BrickBean brick = new BrickBean();
-                	brick.setEle_xpath(xpath);
-                	brick.setCustom_name(cus_name);
+                	brick.setEle_xpath(xpath.toString());
+                	brick.setCustom_name(cus_name.toString());
                 	brick.setProperty("ele");
                 	brick.setEle_page(comboxViewName.getSelectedItem().toString());
                 	if (caseList.size() == 0)
-                		appStartName = appName;
+                		appStartName = appName.toString();
                 	
                 	int i = casetable.getSelectedRow();
                     if(i >= 0){
@@ -510,23 +525,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             	brick.setProperty("act");
             	
                 try {
-                	actionLoad(action, brick);
-                	
-                	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.act");
-                	table_row[2] = act_name;
-                	table_row[3] = "N/A";
-                	table_row[4] = "N/A";
-                	
-                	int i = casetable.getSelectedRow();
-                    if(i >= 0){
-                    	model.insertRow(i+1, table_row);
-                    	caseList.add(i+1, brick);
-                    }else{
-                    	if(action != 4){
-                    		model.addRow(table_row);
-                    	}
-                    	caseList.add(brick);
-                    }
+                	actionLoad(action, brick, false);
                 } catch (Exception e1) {
                 	e1.printStackTrace();
                 }
@@ -538,7 +537,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             public void actionPerformed(ActionEvent e) {
 
                 try {
-                	new VerifiWindow(ver_type);
+                	popWin.popSelect(ver_type, null);
                 } catch (Exception e1) {
                 	e1.printStackTrace();
                 }
@@ -582,7 +581,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             public void actionPerformed(ActionEvent e) {
 
                 try {
-                	new VerifiWindow(ver_type = 4);
+                	popWin.popSelect(4, null);
                 } catch (Exception e1) {
                 	e1.printStackTrace();
                 }
@@ -866,93 +865,78 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
         }
     }  
     
-	class ViewListener implements ItemListener {
-
-		@Override
-		public void itemStateChanged(ItemEvent e) {
-			if (e.getStateChange() == ItemEvent.SELECTED) {
-				String viewName = (String) e.getItem();
-				ResultSet rs = sql.queryElement("ELEMENT", appName, viewName);
-				
-				comboxEleName.removeAllItems();
-				comboxEleName.removeItemListener(elisten);
-				try {
-					rs.next();
-					String eleFirst = new String(rs.getBytes(1), "UTF-8");
-					comboxEleName.addItem(eleFirst);
-					while ((rs.next())) {
-						String eleName = rs.getString(1);
-						comboxEleName.addItem(eleName);
-					}
-					comboxEleName.setSelectedItem(null);
-					comboxEleName.addItemListener(elisten);
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				} catch (UnsupportedEncodingException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} finally {
-					if (rs != null) {
-						try {
-							rs.close();
-							rs = null;
-						} catch (SQLException e1) {
-							e1.printStackTrace();
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	class EleListener implements ItemListener {
-
-		@Override
-		public void itemStateChanged(ItemEvent e) {
-			if (e.getStateChange() == ItemEvent.SELECTED) {
-				String ele_cus = (String) e.getItem();
-				xpathSet = sql.queryElement("ELEMENT", ele_cus);
-			}
-			
-			comboxActName.removeAllItems();
-			try {
-				while (xpathSet.next()) {
-					xpath = xpathSet.getString("XPATH");
-					cus_name = xpathSet.getString("CUSTOM_NAME");
-					scrshot_pathname = xpathSet.getString("SCREEN_PATH");
-					String state = xpathSet.getString(5);
-//					for (int i = 0; i < state.length(); i++) {
-//						if (state.charAt(i) == '1') {
-//					        switch (i) {
-//					        case 0:
-					        	comboxActName.addItem("Single-Click");
-//					        	break;
-//					        case 1:
-					        	comboxActName.addItem("Long-Press");
-					        	comboxActName.addItem("Point Drag");
-//					        	break;
-//					        case 2:
-					        	comboxActName.addItem("Set Text");
-//					        	break;
-//					        case 3:
-					        	comboxActName.addItem("SeekBar Drag");
-					        	comboxActName.addItem("Push To Device");
-					        	comboxActName.addItem("Reboot Device");
-//					        	break;
-//					        case 4:
-//					        	break;
-//					        }
+//	class ViewListener implements ItemListener {
+//		
+//		@Override
+//		public void itemStateChanged(ItemEvent e) {
+//			if (e.getStateChange() == ItemEvent.SELECTED) {
+//				String viewName = (String) e.getItem();
+//				ResultSet rs = sql.queryElement("ELEMENT", appName, viewName);
+//				
+//				comboxEleName.removeAllItems();
+//				comboxEleName.removeItemListener(elisten);
+//				try {
+//					rs.next();
+//					String eleFirst = new String(rs.getBytes(1), "UTF-8");
+//					comboxEleName.addItem(eleFirst);
+//					while ((rs.next())) {
+//						String eleName = rs.getString(1);
+//						comboxEleName.addItem(eleName);
+//					}
+//					comboxEleName.setSelectedItem(null);
+//					comboxEleName.addItemListener(elisten);
+//				} catch (SQLException e1) {
+//					e1.printStackTrace();
+//				} catch (UnsupportedEncodingException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				} finally {
+//					if (rs != null) {
+//						try {
+//							rs.close();
+//							rs = null;
+//						} catch (SQLException e1) {
+//							e1.printStackTrace();
 //						}
-//				    }
-				}
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			} finally {
-				
-			}
-		}
-		
-	}
+//					}
+//				}
+//			}
+//		}
+//	}
+	
+//	class EleListener implements ItemListener {
+//
+//		@Override
+//		public void itemStateChanged(ItemEvent e) {
+//			if (e.getStateChange() == ItemEvent.SELECTED) {
+//				String ele_cus = (String) e.getItem();
+//				xpathSet = sql.queryElement("ELEMENT", ele_cus);
+//			}
+//			
+//			comboxActName.removeAllItems();
+//			try {
+//				while (xpathSet.next()) {
+//					xpath = xpathSet.getString("XPATH");
+//					cus_name = xpathSet.getString("CUSTOM_NAME");
+//					scrshot_pathname = xpathSet.getString("SCREEN_PATH");
+//					String state = xpathSet.getString(5);
+//		        	comboxActName.addItem("Single-Click");
+//		        	comboxActName.addItem("Long-Press");
+//		        	comboxActName.addItem("Point Drag");
+//		        	comboxActName.addItem("Set Text");
+//		        	comboxActName.addItem("SeekBar Drag");
+//		        	comboxActName.addItem("Push To Device");
+//		        	comboxActName.addItem("Reboot Device");
+//		        	comboxActName.addItem("Scroll To Exact Ele");
+//				}
+//			} catch (SQLException e1) {
+//				e1.printStackTrace();
+//			} finally {
+//				
+//			}
+//		}
+//		
+//	}
 	
 	class ActListener implements ItemListener {
 
@@ -978,6 +962,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 						break;
 					case "Reboot Device":
 						action = 6;
+						break;
+					case "Scroll To Exact Ele":
+						action = 7;
 						break;
 					case "SeekBar Drag":
 						action = 10;
@@ -1052,20 +1039,23 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 			            public void actionPerformed(ActionEvent e) {
 
 			                try {
+			                	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.act");
+								table_row[2] = PropertyUtil.getProperty("bricks.ui.casecre.btntip.textset");
+								table_row[3] = "X:"+ scrshot_X;
+						    	table_row[4] = "Y:"+ scrshot_Y;
+						    	
 						    	Map point = new HashMap();
 				        		point.put("DesPoint", point_chosen);
-				        		table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.act");
-			                	table_row[2] = "PD";
-			                	table_row[3] = "X:"+ scrshot_X;
-			                	table_row[4] = "Y:"+ scrshot_Y;
-			                	int i = casetable.getSelectedRow();
-			                    if(i >= 0){
-			                    	model.insertRow(i+1, table_row);
-			                    }else{
-			                    	model.addRow(table_row);
-			                    }
 			                    brick.setParams(point);
-			                    caseList.set(caseList.size()-1, brick);
+			                    
+			                    int i = casetable.getSelectedRow();
+			        	        if(i >= 0){
+			        	        	model.insertRow(i+1, table_row);
+			        	        	caseList.add(i+1, brick);
+			        	        }else{
+			        	        	model.addRow(table_row);
+			        	        	caseList.add(brick);
+			        	        }
 			                } catch (Exception e1) {
 			                	e1.printStackTrace();
 			                }
@@ -1106,8 +1096,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					ResultSet rs = null;
 					try {
-						appName = new String(((String) e.getItem()).getBytes(), "UTF-8");
-    					rs = sql.queryElement("ACTIVITY", appName);
+						appName.delete(0, appName.length()).append(new String(((String) e.getItem()).getBytes(), "UTF-8"));
+    					rs = sql.queryElement("ACTIVITY", appName.toString());
     					
     					comboxViewName.removeAllItems();
     					comboxEleName.removeAllItems();
@@ -1138,7 +1128,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		});
 	}
 	
-	private void actionLoad(int actionInput, BrickBean brick) {
+	private void actionLoad(int actionInput, BrickBean brick, boolean caseLoad) {
 		switch (actionInput) {
 		case 0:
     		act_name = "Click";
@@ -1148,10 +1138,15 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
     		break;
 		case 2:
     		act_name = "Set Text";
+    		if (!caseLoad) {
+    			popWin.popSelect(5, brick);
+    		}
     		break;
 		case 4:
     		act_name = "Point Drag";
-    		screenPointGet(brick);
+    		if (!caseLoad) {
+    			screenPointGet(brick);
+    		}
     		break;
 		case 5:
 			act_name = "Push To Device";
@@ -1159,323 +1154,331 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		case 6:
 			act_name = "Reboot Device";
 			break;
+		case 7:
+			act_name = "Scroll To Exact Ele";
+			break;
 		case 10:
     		act_name = "DB";
     		break;
 		}
+		
+		if (actionInput != 2 && actionInput != 4) {
+			table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.act");
+			table_row[2] = act_name;
+	    	table_row[3] = "N/A";
+	    	table_row[4] = "N/A";
+			
+	    	int i = casetable.getSelectedRow();
+	        if(i >= 0){
+	        	model.insertRow(i+1, table_row);
+	        	caseList.add(i+1, brick);
+	        }else{
+	        	model.addRow(table_row);
+	        	caseList.add(brick);
+	        }
+		}
 	}
 	
-//	private void tableAdd(int addType) {
-//		switch (addType) {
-//			case 0:				//type is ele
-//				break;
-//			case 1:				//type is action
-//				break;
-//			case 2:				//type is ver
-//				break;
-//		}
+//	class VerifiWindow extends JFrame{
+//		// init popup window
+//		JFrame ver_setting_frame = new JFrame();
+//
+//	    public VerifiWindow(int type) {
+//	    	if(ver_type == 1){
+//	    		// Text verification method
+//	    		ver_setting_frame.setSize(400, 280);
+//	    		ver_setting_frame.setTitle("Text Verification");
+//	    		ver_setting_frame.setVisible(true);
+//	    		JPanel up_panel = new JPanel();
+//	    		JPanel up_left_panel = new JPanel();
+//	    		JPanel up_right_panel = new JPanel();
+//	    		JPanel down_panel = new JPanel();
+//	    		up_panel.setLayout(new BorderLayout());
+//	    		up_left_panel.setLayout(new GridLayout(6,1));
+//	    		JLabel app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appname"));
+//	    		app_name.setFont(ConstantsUI.FONT_NORMAL);
+//	    		JLabel app_view = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appview"));
+//	    		app_view.setFont(ConstantsUI.FONT_NORMAL);
+//	    		JLabel ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.elename"));
+//	    		ele_name.setFont(ConstantsUI.FONT_NORMAL);
+//	    		addEleCombox();
+//	    		
+//	    		JPanel text_pane = new JPanel();
+//	    		JPanel text_btn_pane = new JPanel();
+//	    		JTextArea ver_text_input = new JTextArea(8,30);
+//	    		ver_text_input.setLineWrap(true);
+//	    		buttonVersetTX_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
+//	                    ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
+//	    		buttonVersetTX_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
+//	                    ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.rever"));
+//	    		text_pane.add(new JScrollPane(ver_text_input));
+//	    		text_btn_pane.add(buttonVersetTX_add);
+//	    		text_btn_pane.add(buttonVersetTX_re);
+//	    		
+//	    		up_left_panel.add(app_name);
+//	    		up_left_panel.add(comboxAppName);
+//	    		up_left_panel.add(app_view);
+//	    		up_left_panel.add(comboxViewName);
+//	    		up_left_panel.add(ele_name);
+//	    		up_left_panel.add(comboxEleName);
+//	    		up_right_panel.add(text_pane);
+//	    		up_panel.add(up_left_panel, BorderLayout.WEST);
+//	    		up_panel.add(up_right_panel, BorderLayout.EAST);
+//	    		down_panel.add(text_btn_pane);
+//	    		ver_setting_frame.add(up_panel, BorderLayout.NORTH);
+//	    		ver_setting_frame.add(down_panel, BorderLayout.SOUTH);
+//	    		
+//	    		// kill the thread, same to the others ver_type case
+//	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//	    		ver_setting_frame.setVisible(true);
+//	    		// set the popup window's position releat to Main frame
+//	    		ver_setting_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
+//	    		ver_setting_frame.setLocationRelativeTo(MainEntry.frame);
+//
+//	    		// inside-button method
+//	    		buttonVersetTX_add.addActionListener(new ActionListener() {
+//		            @Override
+//		            public void actionPerformed(ActionEvent e) {
+//
+//		                try {
+//		                	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.textver");
+//		                	table_row[2] = ver_text_input.getText();
+//		                	table_row[3] = "N/A";
+//		                	table_row[4] = "N/A";
+//		                	
+//		                	int i = casetable.getSelectedRow();
+//		                    if(i >= 0){
+//		                    	model.insertRow(i+1, table_row);
+//		                    }else{
+//		                    	model.addRow(table_row);
+//		                    }
+//		                	
+//		                	String ele_path_text = xpath.toString();
+//							String expect_text = ver_text_input.getText();
+//							
+//							BrickBean brick_valText = new BrickBean();
+//							brick_valText.setProperty("val");
+//							brick_valText.setValidation_name(1);
+//							Map<String, Object> params_text = new HashMap<>();
+//							params_text.put("ele_path", ele_path_text);
+//							params_text.put("expect_text", expect_text);
+//							brick_valText.setParams(params_text);
+//							caseList.add(brick_valText);
+//		                } catch (Exception e1) {
+//		                	e1.printStackTrace();
+//		                }
+//
+//		            }
+//		        });
+//	    		
+//	    		buttonVersetTX_re.addActionListener(new ActionListener() {
+//		            @Override
+//		            public void actionPerformed(ActionEvent e) {
+//		            	try{
+//		                int i = casetable.getSelectedRow();
+//		                
+//		                if(i >= 0) 
+//		                {
+//		                   model.setValueAt("ver_text_re", i, 1);
+//		                }
+//		                else{
+//		                    System.out.println("Update Act Error");
+//		                	}
+//		                } catch (Exception e1) {
+//		                	e1.printStackTrace();
+//		                }
+//	
+//		            }
+//	    		});
+//	    		
+//	    	} else if (ver_type == 2) {
+//	    		// Element exist verification method
+//	    		ver_setting_frame.setSize(300, 200);
+//	    		ver_setting_frame.setTitle("Element Picking");
+//	    		ver_setting_frame.setLayout(new GridLayout(4,1));
+//	    		JPanel app_name_pick = new JPanel();
+//	    		JPanel app_view_pick = new JPanel();
+//	    		JPanel ele_name_pick = new JPanel();
+//	    		JPanel button_pane = new JPanel();
+//	    		JLabel app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appname"));
+//	    		app_name.setFont(ConstantsUI.FONT_NORMAL);
+//	    		JLabel app_view = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appview"));
+//	    		app_view.setFont(ConstantsUI.FONT_NORMAL);
+//	    		JLabel ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.elename"));
+//	    		ele_name.setFont(ConstantsUI.FONT_NORMAL);
+//	    		addEleCombox();
+//	    		
+//	    		buttonVersetEE_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
+//	                    ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
+//	    		buttonVersetEE_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
+//	                    ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.rever"));
+//	    		
+//	    		// inside-button method
+//	    		buttonVersetEE_add.addActionListener(new ActionListener() {
+//		            @Override
+//		            public void actionPerformed(ActionEvent e) {
+//
+//		                try {
+//		                	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.extver");
+//		                	table_row[2] = comboxAppName.getSelectedItem();
+//		                	table_row[3] = comboxViewName.getSelectedItem();
+//		                	table_row[4] = comboxEleName.getSelectedItem();
+//		                	
+//		                	int i = casetable.getSelectedRow();
+//		                    if(i >= 0){
+//		                    	model.insertRow(i+1, table_row);
+//		                    }else{
+//		                    	model.addRow(table_row);
+//		                    }
+//		                	
+//		                	String ele_path_eleVal = xpath.toString();
+//							BrickBean brick_valEle = new BrickBean();
+//							brick_valEle.setProperty("val");
+//							brick_valEle.setValidation_name(2);
+//							Map<String, Object> params_eleVal = new HashMap<>();
+//							params_eleVal.put("ele_path", ele_path_eleVal);
+//							brick_valEle.setParams(params_eleVal);
+//							caseList.add(brick_valEle);
+//		                } catch (Exception e1) {
+//		                	e1.printStackTrace();
+//		                }
+//
+//		            }
+//		        });
+//	    		
+//	    		buttonVersetEE_re.addActionListener(new ActionListener() {
+//	    			@Override
+//	    			public void actionPerformed(ActionEvent e) {
+//	    				try{
+//	    					// i = the index of the selected row
+//	    					int i = casetable.getSelectedRow();
+//	                
+//	    					if(i >= 0) 
+//	    					{
+//	    						model.setValueAt("ver_re", i, 1);
+//	    					}
+//	    					else{
+//	    						System.out.println("Update Act Error");
+//	    					}
+//	    				} catch (Exception e1) {
+//	    					e1.printStackTrace();
+//	    				}
+//
+//	    			}
+//	    		});
+//	    		app_name_pick.add(app_name);
+//	    		app_name_pick.add(comboxAppName);
+//	    		app_view_pick.add(app_view);
+//	    		app_view_pick.add(comboxViewName);
+//	    		ele_name_pick.add(ele_name);
+//	    		ele_name_pick.add(comboxEleName);
+//	    		button_pane.add(buttonVersetEE_add);
+//	    		button_pane.add(buttonVersetEE_re);
+//	    		ver_setting_frame.add(app_name_pick);
+//	    		ver_setting_frame.add(app_view_pick);
+//	    		ver_setting_frame.add(ele_name_pick);
+//	    		ver_setting_frame.add(button_pane);
+//	    		ver_setting_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
+//	    		ver_setting_frame.setLocationRelativeTo(MainEntry.frame);
+//	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//	    		ver_setting_frame.setVisible(true);
+//	    		
+//	    	} else if (ver_type == 4) {
+//	    		// Timer adding method
+//	    		ver_setting_frame.setSize(270, 130);
+//	    		ver_setting_frame.setTitle("WaitTime Setting");
+//	    		ver_setting_frame.setLayout(new BorderLayout());
+//	    		JPanel timer_pane = new JPanel();
+//	    		timer_pane.setPreferredSize(new Dimension(270, 50));
+//	    		JLabel timer_label = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.timer"));
+//	    		timer_label.setFont(ConstantsUI.FONT_NORMAL);
+//	    		JTextField timer_num = new JTextField();
+//	    		timer_num.setPreferredSize(new Dimension(80,20));
+//	    		JPanel timer_btn_pane = new JPanel();
+//	    		buttonVersetTimer_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
+//	                    ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.timer"));
+//	    		buttonVersetTimer_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
+//	                    ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.retimer"));
+//	    		// inside-button method
+//	    		buttonVersetTimer_add.addActionListener(new ActionListener() {
+//		            @Override
+//		            public void actionPerformed(ActionEvent e) {
+//
+//		                try {
+//		                	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.timer");
+//		                	table_row[2] = timer_num.getText() +"  "+ "S";
+//		                	table_row[3] = "N/A";
+//		                	table_row[4] = "N/A";
+//		                	
+//		                	Map<String, Object> params_time = new HashMap<>();
+//		                    params_time.put("time", Integer.parseInt(timer_num.getText()));
+//		                    BrickBean timeBrick = new BrickBean();
+//		                    timeBrick.setProperty("time");
+//		                    timeBrick.setParams(params_time);
+//		                    
+//		                	int i = casetable.getSelectedRow();
+//		                    if(i >= 0){
+//		                    	model.insertRow(i+1, table_row);
+//		                    	caseList.add(i+1, timeBrick);
+//		                    }else{
+//		                    	model.addRow(table_row);
+//		                    	caseList.add(timeBrick);
+//		                    }
+//		                } catch (Exception e1) {
+//		                	e1.printStackTrace();
+//		                }
+//
+//		            }
+//		        });
+//	    		
+//	    		buttonVersetTimer_re.addActionListener(new ActionListener() {
+//	    			@Override
+//	    			public void actionPerformed(ActionEvent e) {
+//	    				try{
+//	    					// i = the index of the selected row
+//	    					int i = casetable.getSelectedRow();
+//	                
+//	    					if(i >= 0) 
+//	    					{
+//	    						model.setValueAt("timer_re", i, 1);
+//	    					}
+//	    					else{
+//	    						System.out.println("Update Act Error");
+//	    					}
+//	    				} catch (Exception e1) {
+//	    					e1.printStackTrace();
+//	    				}
+//
+//	    			}
+//	    		});
+//	    		timer_pane.add(timer_label);
+//	    		timer_pane.add(timer_num);
+//	    		timer_btn_pane.add(buttonVersetTimer_add);
+//	    		timer_btn_pane.add(buttonVersetTimer_re);
+//	    		ver_setting_frame.add(timer_pane, BorderLayout.NORTH);
+//	    		ver_setting_frame.add(timer_btn_pane, BorderLayout.SOUTH);
+//	    		ver_setting_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
+//	    		ver_setting_frame.setLocationRelativeTo(MainEntry.frame);
+//	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//	    		ver_setting_frame.setVisible(true);
+//	    		ver_type = 0;
+//	    	} else if(ver_type == 0) {
+//	    		// Warning message
+//	    		ver_setting_frame.setSize(250, 100);
+//	    		ver_setting_frame.setTitle("WARNING");
+//	    		ver_setting_frame.setLayout(new BorderLayout());
+//	    		ver_setting_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
+//	    		ver_setting_frame.setLocationRelativeTo(MainEntry.frame);
+//	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//	    		ver_setting_frame.setVisible(true);
+//	    		JLabel repick_warn = new JLabel();
+//	    		ImageIcon warn_icon = new ImageIcon(CURRENT_DIR + File.separator + "icon" + File.separator + "warning.png");
+//	    		JLabel icon_label = new JLabel(warn_icon);
+//	    		repick_warn.setText(PropertyUtil.getProperty("bricks.ui.casecre.pickwarn"));
+//	    		repick_warn.setFont(new Font(PropertyUtil.getProperty("ds.ui.font.family"), 0, 12));
+//	    		ver_setting_frame.add(icon_label, BorderLayout.WEST);
+//	    		ver_setting_frame.add(repick_warn, BorderLayout.CENTER);
+//	    	}
+//	    }
 //	}
-	
-	class VerifiWindow extends JFrame{
-		// init popup window
-		JFrame ver_setting_frame = new JFrame();
-
-	    public VerifiWindow(int type) {
-	    	if(ver_type == 1){
-	    		// Text verification method
-	    		ver_setting_frame.setSize(400, 280);
-	    		ver_setting_frame.setTitle("Text Verification");
-	    		ver_setting_frame.setVisible(true);
-	    		JPanel up_panel = new JPanel();
-	    		JPanel up_left_panel = new JPanel();
-	    		JPanel up_right_panel = new JPanel();
-	    		JPanel down_panel = new JPanel();
-	    		up_panel.setLayout(new BorderLayout());
-	    		up_left_panel.setLayout(new GridLayout(6,1));
-	    		JLabel app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appname"));
-	    		app_name.setFont(ConstantsUI.FONT_NORMAL);
-	    		JLabel app_view = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appview"));
-	    		app_view.setFont(ConstantsUI.FONT_NORMAL);
-	    		JLabel ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.elename"));
-	    		ele_name.setFont(ConstantsUI.FONT_NORMAL);
-	    		addEleCombox();
-	    		
-	    		JPanel text_pane = new JPanel();
-	    		JPanel text_btn_pane = new JPanel();
-	    		JTextArea ver_text_input = new JTextArea(8,30);
-	    		ver_text_input.setLineWrap(true);
-	    		buttonVersetTX_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
-	                    ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
-	    		buttonVersetTX_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
-	                    ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.rever"));
-	    		text_pane.add(new JScrollPane(ver_text_input));
-	    		text_btn_pane.add(buttonVersetTX_add);
-	    		text_btn_pane.add(buttonVersetTX_re);
-	    		
-	    		up_left_panel.add(app_name);
-	    		up_left_panel.add(comboxAppName);
-	    		up_left_panel.add(app_view);
-	    		up_left_panel.add(comboxViewName);
-	    		up_left_panel.add(ele_name);
-	    		up_left_panel.add(comboxEleName);
-	    		up_right_panel.add(text_pane);
-	    		up_panel.add(up_left_panel, BorderLayout.WEST);
-	    		up_panel.add(up_right_panel, BorderLayout.EAST);
-	    		down_panel.add(text_btn_pane);
-	    		ver_setting_frame.add(up_panel, BorderLayout.NORTH);
-	    		ver_setting_frame.add(down_panel, BorderLayout.SOUTH);
-	    		
-	    		// kill the thread, same to the others ver_type case
-	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	    		ver_setting_frame.setVisible(true);
-	    		// set the popup window's position releat to Main frame
-	    		ver_setting_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
-	    		ver_setting_frame.setLocationRelativeTo(MainEntry.frame);
-
-	    		// inside-button method
-	    		buttonVersetTX_add.addActionListener(new ActionListener() {
-		            @Override
-		            public void actionPerformed(ActionEvent e) {
-
-		                try {
-		                	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.textver");
-		                	table_row[2] = ver_text_input.getText();
-		                	table_row[3] = "N/A";
-		                	table_row[4] = "N/A";
-		                	
-		                	int i = casetable.getSelectedRow();
-		                    if(i >= 0){
-		                    	model.insertRow(i+1, table_row);
-		                    }else{
-		                    	model.addRow(table_row);
-		                    }
-		                	
-		                	String ele_path_text = xpath;
-							String expect_text = ver_text_input.getText();
-							
-							BrickBean brick_valText = new BrickBean();
-							brick_valText.setProperty("val");
-							brick_valText.setValidation_name(1);
-							Map<String, Object> params_text = new HashMap<>();
-							params_text.put("ele_path", ele_path_text);
-							params_text.put("expect_text", expect_text);
-							brick_valText.setParams(params_text);
-							caseList.add(brick_valText);
-		                } catch (Exception e1) {
-		                	e1.printStackTrace();
-		                }
-
-		            }
-		        });
-	    		buttonVersetTX_re.addActionListener(new ActionListener() {
-		            @Override
-		            public void actionPerformed(ActionEvent e) {
-		            	try{
-		                int i = casetable.getSelectedRow();
-		                
-		                if(i >= 0) 
-		                {
-		                   model.setValueAt("ver_text_re", i, 1);
-		                }
-		                else{
-		                    System.out.println("Update Act Error");
-		                	}
-		                } catch (Exception e1) {
-		                	e1.printStackTrace();
-		                }
-	
-		            }
-	    		});
-	    		
-	    	}else if (ver_type == 2){
-	    		// Element exist verification method
-	    		ver_setting_frame.setSize(300, 200);
-	    		ver_setting_frame.setTitle("Element Picking");
-	    		ver_setting_frame.setLayout(new GridLayout(4,1));
-	    		JPanel app_name_pick = new JPanel();
-	    		JPanel app_view_pick = new JPanel();
-	    		JPanel ele_name_pick = new JPanel();
-	    		JPanel button_pane = new JPanel();
-	    		JLabel app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appname"));
-	    		app_name.setFont(ConstantsUI.FONT_NORMAL);
-	    		JLabel app_view = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appview"));
-	    		app_view.setFont(ConstantsUI.FONT_NORMAL);
-	    		JLabel ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.elename"));
-	    		ele_name.setFont(ConstantsUI.FONT_NORMAL);
-	    		addEleCombox();
-	    		
-	    		buttonVersetEE_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
-	                    ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
-	    		buttonVersetEE_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
-	                    ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.rever"));
-	    		
-	    		// inside-button method
-	    		buttonVersetEE_add.addActionListener(new ActionListener() {
-		            @Override
-		            public void actionPerformed(ActionEvent e) {
-
-		                try {
-		                	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.extver");
-		                	table_row[2] = comboxAppName.getSelectedItem();
-		                	table_row[3] = comboxViewName.getSelectedItem();
-		                	table_row[4] = comboxEleName.getSelectedItem();
-		                	
-		                	int i = casetable.getSelectedRow();
-		                    if(i >= 0){
-		                    	model.insertRow(i+1, table_row);
-		                    }else{
-		                    	model.addRow(table_row);
-		                    }
-		                	
-		                	String ele_path_eleVal = xpath;
-							BrickBean brick_valEle = new BrickBean();
-							brick_valEle.setProperty("val");
-							brick_valEle.setValidation_name(2);
-							Map<String, Object> params_eleVal = new HashMap<>();
-							params_eleVal.put("ele_path", ele_path_eleVal);
-							brick_valEle.setParams(params_eleVal);
-							caseList.add(brick_valEle);
-		                } catch (Exception e1) {
-		                	e1.printStackTrace();
-		                }
-
-		            }
-		        });
-	    		
-	    		buttonVersetEE_re.addActionListener(new ActionListener() {
-	    			@Override
-	    			public void actionPerformed(ActionEvent e) {
-	    				try{
-	    					// i = the index of the selected row
-	    					int i = casetable.getSelectedRow();
-	                
-	    					if(i >= 0) 
-	    					{
-	    						model.setValueAt("ver_re", i, 1);
-	    					}
-	    					else{
-	    						System.out.println("Update Act Error");
-	    					}
-	    				} catch (Exception e1) {
-	    					e1.printStackTrace();
-	    				}
-
-	    			}
-	    		});
-	    		app_name_pick.add(app_name);
-	    		app_name_pick.add(comboxAppName);
-	    		app_view_pick.add(app_view);
-	    		app_view_pick.add(comboxViewName);
-	    		ele_name_pick.add(ele_name);
-	    		ele_name_pick.add(comboxEleName);
-	    		button_pane.add(buttonVersetEE_add);
-	    		button_pane.add(buttonVersetEE_re);
-	    		ver_setting_frame.add(app_name_pick);
-	    		ver_setting_frame.add(app_view_pick);
-	    		ver_setting_frame.add(ele_name_pick);
-	    		ver_setting_frame.add(button_pane);
-	    		ver_setting_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
-	    		ver_setting_frame.setLocationRelativeTo(MainEntry.frame);
-	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	    		ver_setting_frame.setVisible(true);
-	    		
-	    	}else if (ver_type == 4){
-	    		// Timer adding method
-	    		ver_setting_frame.setSize(270, 130);
-	    		ver_setting_frame.setTitle("WaitTime Setting");
-	    		ver_setting_frame.setLayout(new BorderLayout());
-	    		JPanel timer_pane = new JPanel();
-	    		timer_pane.setPreferredSize(new Dimension(270, 50));
-	    		JLabel timer_label = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.timer"));
-	    		timer_label.setFont(ConstantsUI.FONT_NORMAL);
-	    		JTextField timer_num = new JTextField();
-	    		timer_num.setPreferredSize(new Dimension(80,20));
-	    		JPanel timer_btn_pane = new JPanel();
-	    		buttonVersetTimer_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
-	                    ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.timer"));
-	    		buttonVersetTimer_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
-	                    ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.retimer"));
-	    		// inside-button method
-	    		buttonVersetTimer_add.addActionListener(new ActionListener() {
-		            @Override
-		            public void actionPerformed(ActionEvent e) {
-
-		                try {
-		                	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.timer");
-		                	table_row[2] = timer_num.getText() +"  "+ "S";
-		                	table_row[3] = "N/A";
-		                	table_row[4] = "N/A";
-		                	
-		                	Map<String, Object> params_time = new HashMap<>();
-		                    params_time.put("time", Integer.parseInt(timer_num.getText()));
-		                    BrickBean timeBrick = new BrickBean();
-		                    timeBrick.setProperty("time");
-		                    timeBrick.setParams(params_time);
-		                    
-		                	int i = casetable.getSelectedRow();
-		                    if(i >= 0){
-		                    	model.insertRow(i+1, table_row);
-		                    	caseList.add(i+1, timeBrick);
-		                    }else{
-		                    	model.addRow(table_row);
-		                    	caseList.add(timeBrick);
-		                    }
-		                } catch (Exception e1) {
-		                	e1.printStackTrace();
-		                }
-
-		            }
-		        });
-	    		
-	    		buttonVersetTimer_re.addActionListener(new ActionListener() {
-	    			@Override
-	    			public void actionPerformed(ActionEvent e) {
-	    				try{
-	    					// i = the index of the selected row
-	    					int i = casetable.getSelectedRow();
-	                
-	    					if(i >= 0) 
-	    					{
-	    						model.setValueAt("timer_re", i, 1);
-	    					}
-	    					else{
-	    						System.out.println("Update Act Error");
-	    					}
-	    				} catch (Exception e1) {
-	    					e1.printStackTrace();
-	    				}
-
-	    			}
-	    		});
-	    		timer_pane.add(timer_label);
-	    		timer_pane.add(timer_num);
-	    		timer_btn_pane.add(buttonVersetTimer_add);
-	    		timer_btn_pane.add(buttonVersetTimer_re);
-	    		ver_setting_frame.add(timer_pane, BorderLayout.NORTH);
-	    		ver_setting_frame.add(timer_btn_pane, BorderLayout.SOUTH);
-	    		ver_setting_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
-	    		ver_setting_frame.setLocationRelativeTo(MainEntry.frame);
-	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	    		ver_setting_frame.setVisible(true);
-	    		ver_type = 0;
-	    	}else if(ver_type == 0){
-	    		// Warning message
-	    		ver_setting_frame.setSize(250, 100);
-	    		ver_setting_frame.setTitle("WARNING");
-	    		ver_setting_frame.setLayout(new BorderLayout());
-	    		ver_setting_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
-	    		ver_setting_frame.setLocationRelativeTo(MainEntry.frame);
-	    		ver_setting_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	    		ver_setting_frame.setVisible(true);
-	    		JLabel repick_warn = new JLabel();
-	    		ImageIcon warn_icon = new ImageIcon(CURRENT_DIR + File.separator + "icon" + File.separator + "warning.png");
-	    		JLabel icon_label = new JLabel(warn_icon);
-	    		repick_warn.setText(PropertyUtil.getProperty("bricks.ui.casecre.pickwarn"));
-	    		repick_warn.setFont(new Font(PropertyUtil.getProperty("ds.ui.font.family"), 0, 12));
-	    		ver_setting_frame.add(icon_label, BorderLayout.WEST);
-	    		ver_setting_frame.add(repick_warn, BorderLayout.CENTER);
-	    	}
-
-	    }
-	}
 }
