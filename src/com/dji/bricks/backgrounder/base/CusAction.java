@@ -120,6 +120,16 @@ public class CusAction {
 		}
 	}
 	
+	//8.Key HOME
+	public void keyHOME() {
+		driver.pressKeyCode(3);
+	}
+	
+	//9.Key BACK
+	public void KeyBACK() {
+		driver.pressKeyCode(4);
+	}
+	
 	//10.seekbar drag
 	public void dragBar(WebElement ele) {
 		int xAxisStartPoint = ele.getLocation().x;

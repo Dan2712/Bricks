@@ -296,6 +296,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
     	comboxActName.addItem("Push To Device");
     	comboxActName.addItem("Reboot Device");
     	comboxActName.addItem("Scroll To Exact Ele");
+    	comboxActName.addItem("Key HOME");
+    	comboxActName.addItem("Key BACK");
     	comboxActName.setSelectedItem(null);
 		comboxActName.addItemListener(new ActListener());
 		JLabel ActNull = new JLabel();
@@ -966,6 +968,12 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 					case "Scroll To Exact Ele":
 						action = 7;
 						break;
+					case "Key HOME":
+						action = 8;
+						break;
+					case "Key BACK":
+						action = 9;
+						break;
 					case "SeekBar Drag":
 						action = 10;
 						break;
@@ -1156,6 +1164,12 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 			break;
 		case 7:
 			act_name = "Scroll To Exact Ele";
+			break;
+		case 8:
+			act_name = "Key HOME";
+			break;
+		case 9:
+			act_name = "Key BACK";
 			break;
 		case 10:
     		act_name = "DB";

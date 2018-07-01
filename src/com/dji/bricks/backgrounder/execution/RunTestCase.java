@@ -116,8 +116,12 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 			logText.append("Page is swiped" + "\n");
 			break;
 		case 8:
+			action.keyHOME();
+			logText.append("Press HOME" + "\n");
 			break;
 		case 9:
+			action.KeyBACK();
+			logText.append("Press BACK" + "\n");
 			break;
 		case 10:
 			action.dragBar(ele_sub);
