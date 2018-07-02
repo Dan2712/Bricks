@@ -18,6 +18,7 @@ import com.android.ddmlib.TimeoutException;
 import com.dji.bricks.backgrounder.execution.AppiumInit;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 
+import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 
@@ -85,8 +86,8 @@ public class CusAction {
 		}
 	}
 	
-	//7.scroll to exact element
-	public void swipeToExact(String elePath, String containerPath, int heading) {
+	//7.scroll
+	public void swipe(String elePath, String containerPath, int heading) {
 		boolean found = false;
 		while (!found) {
 			try {
@@ -111,13 +112,41 @@ public class CusAction {
 				
 				switch (heading) {
 					case 0:
-						driver.swipe(centerX, centerY + 50, centerX, centerY - 50, 500);
+						driver.swipe(centerX, centerY + 60, centerX, centerY - 60, 500);
 						break;
 					case 1:
-						driver.swipe(centerX, centerY - 50, centerX, centerY + 50, 500);
+						driver.swipe(centerX, centerY - 60, centerX, centerY + 60, 500);
 						break;
 				}
 			}
+		}
+	}
+	
+	public void swipe(double position, String containerPath, int heading) {
+//		WebElement eleContainer = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(containerPath);
+		MobileElement eleContainer = (MobileElement) driver.findElement(By.xpath(containerPath));
+		
+		Dimension size = eleContainer.getSize();
+		int x = size.getWidth();
+		int y = size.getHeight();
+		
+		org.openqa.selenium.Point start = eleContainer.getLocation();
+		int startX = start.x;
+		int startY = start.y;
+		
+		int endX = x + startX;
+		int endY = y + startY;
+		
+		double scrollX = (startX + endX) / 2;
+		double scrollY = y * position + startY;
+		
+		switch (heading) {
+			case 0:
+				driver.swipe((int)scrollX, (int)scrollY, (int)scrollX, startY + 5, 500);
+				break;
+			case 1:
+				driver.swipe((int)scrollX, (int)scrollY, (int)scrollX, endY - 5, 500);
+				break;
 		}
 	}
 	

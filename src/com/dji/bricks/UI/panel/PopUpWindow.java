@@ -47,6 +47,8 @@ public class PopUpWindow extends JFrame {
 	private JTable casetable;
 	private SQLUtils sql;
 	private ArrayList<BrickBean> caseList;
+	private int headingTag = 0;
+	private int scrollTag = 0;
 	
     public PopUpWindow(Object[] table_row, DefaultTableModel model, JTable casetable, SQLUtils sql, ArrayList<BrickBean> caseList) {
     	this.table_row = table_row;
@@ -501,6 +503,8 @@ public class PopUpWindow extends JFrame {
     }
     
     private void actionScroll(BrickBean brick) {
+    	StringBuilder scrollPos = new StringBuilder();
+    	
     	StringBuilder tarXpath = new StringBuilder();
     	StringBuilder tarCus_name = new StringBuilder();
     	StringBuilder tarScrshot_pathname = new StringBuilder();
@@ -512,27 +516,58 @@ public class PopUpWindow extends JFrame {
     	StringBuilder conAppName = new StringBuilder();
     	
     	popup_frame.setSize(300, 500);
-		popup_frame.setTitle("Scroll to exact element in container");
-		popup_frame.setLayout(new GridLayout(8,1));
+		popup_frame.setTitle("Scroll in container");
+		popup_frame.setLayout(new GridLayout(10,1));
+		
+		JPanel scroll_position_pane = new JPanel();
 		JPanel target_app_name = new JPanel();
 		JPanel target_app_view = new JPanel();
 		JPanel target_ele_name = new JPanel();
 		JPanel container_app_name = new JPanel();
 		JPanel container_app_view = new JPanel();
 		JPanel container_ele_name = new JPanel();
+		JPanel scroll_way_pane = new JPanel();
+		JPanel heading_pane = new JPanel();
 		JPanel button_pane = new JPanel();
-		JLabel tar_app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.tarappname"));
+		
+		JLabel scroll_position = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.scroll.position"));
+		scroll_position.setFont(ConstantsUI.FONT_NORMAL);
+		JLabel tar_app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.scroll.tarappname"));
 		tar_app_name.setFont(ConstantsUI.FONT_NORMAL);
-		JLabel tar_app_view = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.tarappview"));
+		JLabel tar_app_view = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.scroll.tarappview"));
 		tar_app_view.setFont(ConstantsUI.FONT_NORMAL);
-		JLabel tar_ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.tarelename"));
+		JLabel tar_ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.scroll.tarelename"));
 		tar_ele_name.setFont(ConstantsUI.FONT_NORMAL);
-		JLabel con_app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.conappname"));
+		JLabel con_app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.scroll.conappname"));
 		con_app_name.setFont(ConstantsUI.FONT_NORMAL);
-		JLabel con_app_view = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.conappview"));
+		JLabel con_app_view = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.scroll.conappview"));
 		con_app_view.setFont(ConstantsUI.FONT_NORMAL);
-		JLabel con_ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.conelename"));
+		JLabel con_ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.scroll.conelename"));
 		con_ele_name.setFont(ConstantsUI.FONT_NORMAL);
+		JLabel heading = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.scroll.heading"));
+		heading.setFont(ConstantsUI.FONT_NORMAL);
+		JLabel scroll_way = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.scroll.way"));
+		scroll_way.setFont(ConstantsUI.FONT_NORMAL);
+		
+		JComboBox<String> comboxScrollPos = new JComboBox<>();
+		comboxScrollPos.addItem("From quarter");
+		comboxScrollPos.addItem("From half");
+		comboxScrollPos.addItem("From Bottom");
+		comboxScrollPos.setEditable(false);
+		comboxScrollPos.setSelectedItem(null);
+		comboxScrollPos.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
+		comboxScrollPos.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				// TODO Auto-generated method stub
+				try {
+					scrollPos.delete(0, scrollPos.length()).append(new String(((String) e.getItem()).getBytes(), "UTF-8"));
+				} catch (UnsupportedEncodingException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 		
 		JComboBox<String> comboxTarAppName = new JComboBox<String>();
     	JComboBox<String> comboxTarViewName = new JComboBox<String>();
@@ -543,6 +578,54 @@ public class PopUpWindow extends JFrame {
     	JComboBox<String> comboxConViewName = new JComboBox<String>();
     	JComboBox<String> comboxConEleName = new JComboBox<String>();
     	addEleCombox(comboxConAppName, comboxConViewName, comboxConEleName, conXpath, conCus_name, conScrshot_pathname, conAppName);
+    	
+    	JComboBox<String> comboxHeading = new JComboBox<>();
+    	comboxHeading.addItem("UP");
+    	comboxHeading.addItem("DOWN");
+    	comboxHeading.setEditable(false);
+    	comboxHeading.setSelectedItem(null);
+    	comboxHeading.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
+    	comboxHeading.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				// TODO Auto-generated method stub
+				try {
+					if (e.getStateChange() == ItemEvent.SELECTED) {
+						if (new String(((String) e.getItem()).getBytes(), "UTF-8").equals("UP"))
+							headingTag = 1;
+						else if (new String(((String) e.getItem()).getBytes(), "UTF-8").equals("DOWN"))
+							headingTag = 0;
+					}
+				} catch(UnsupportedEncodingException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+    	
+    	JComboBox<String> comboxWay = new JComboBox<>();
+    	comboxWay.addItem("To exact element");
+    	comboxWay.addItem("From specific position");
+    	comboxWay.setEditable(false);
+    	comboxWay.setSelectedItem(null);
+    	comboxWay.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
+    	comboxWay.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				// TODO Auto-generated method stub
+				try {
+					if (e.getStateChange() == ItemEvent.SELECTED) {
+						if (new String(((String) e.getItem()).getBytes(), "UTF-8").equals("To exact element"))
+							scrollTag = 0;
+						else if (new String(((String) e.getItem()).getBytes(), "UTF-8").equals("From specific position"))
+							scrollTag = 1;
+					}
+				} catch(UnsupportedEncodingException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
     	
     	MyIconButton buttonScroll_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
                 ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
@@ -560,14 +643,26 @@ public class PopUpWindow extends JFrame {
                 	table_row[3] = "N/A";
                 	table_row[4] = "N/A";
                 	
-                    String ele_path_tar = tarXpath.toString();
-                    String ele_path_con = conXpath.toString();
-                    Map<String, Object> params_scroll_xpath = new HashMap<>();
-                    params_scroll_xpath.put("elePath", ele_path_tar);
-                    params_scroll_xpath.put("containerPath", ele_path_con);
-                    if (brick != null)
-                    	brick.setParams(params_scroll_xpath);
-                    
+                	if (scrollTag == 0) {
+	                    String ele_path_tar = tarXpath.toString();
+	                    String ele_path_con = conXpath.toString();
+	                    Map<String, Object> params_scroll_xpath = new HashMap<>();
+	                    params_scroll_xpath.put("elePath", ele_path_tar);
+	                    params_scroll_xpath.put("containerPath", ele_path_con);
+	                    params_scroll_xpath.put("heading", headingTag);
+	                    if (brick != null)
+	                    	brick.setParams(params_scroll_xpath);
+                	} else if (scrollTag == 1) {
+                		String scroll_position = scrollPos.toString();
+                		String ele_path_con = conXpath.toString();
+                		Map<String, Object> params_scroll_pos = new HashMap<>();
+                		params_scroll_pos.put("scrollPos", scroll_position);
+                		params_scroll_pos.put("containerPath", ele_path_con);
+                		params_scroll_pos.put("heading", headingTag);
+                		if (brick != null)
+                			brick.setParams(params_scroll_pos);
+                	}
+                	
                     int i = casetable.getSelectedRow();
         	        if(i >= 0){
         	        	model.insertRow(i+1, table_row);
@@ -592,6 +687,10 @@ public class PopUpWindow extends JFrame {
 			}
 		});
 		
+    	scroll_way_pane.add(scroll_way);
+    	scroll_way_pane.add(comboxWay);
+    	scroll_position_pane.add(scroll_position);
+    	scroll_position_pane.add(comboxScrollPos);
 		target_app_name.add(tar_app_name);
 		target_app_name.add(comboxTarAppName);
 		target_app_view.add(tar_app_view);
@@ -604,14 +703,19 @@ public class PopUpWindow extends JFrame {
 		container_app_view.add(comboxConViewName);
 		container_ele_name.add(con_ele_name);
 		container_ele_name.add(comboxConEleName);
+		heading_pane.add(heading);
+		heading_pane.add(comboxHeading);
 		button_pane.add(buttonScroll_add);
 		button_pane.add(buttonScroll_re);
+		popup_frame.add(scroll_way_pane);
+		popup_frame.add(scroll_position_pane);
 		popup_frame.add(target_app_name);
 		popup_frame.add(target_app_view);
 		popup_frame.add(target_ele_name);
 		popup_frame.add(container_app_name);
 		popup_frame.add(container_app_view);
 		popup_frame.add(container_ele_name);
+		popup_frame.add(heading_pane);
 		popup_frame.add(button_pane);
 		popup_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
 		popup_frame.setLocationRelativeTo(MainEntry.frame);
