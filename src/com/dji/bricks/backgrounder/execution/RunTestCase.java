@@ -112,7 +112,8 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 			break;
 		case 7:
 			JSONObject params_swipe = action_info.getJSONObject("params");
-			action.swipeToExact(params_swipe.getString("elePath"), params_swipe.getString("containerPath"), params_swipe.getIntValue("heading"));
+//			action.swipeToExact(params_swipe.getString("elePath"), params_swipe.getString("containerPath"), params_swipe.getIntValue("heading"));
+			action.swipeToExact(params_swipe.getString("elePath"), params_swipe.getString("containerPath"), 0);
 			logText.append("Page is swiped" + "\n");
 			break;
 		case 8:

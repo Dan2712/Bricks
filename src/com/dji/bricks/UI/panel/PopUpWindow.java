@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.sql.ResultSet;
@@ -39,13 +40,6 @@ import com.dji.bricks.tools.SQLUtils;
 
 public class PopUpWindow extends JFrame {
 	
-	private static MyIconButton buttonVersetTX_add;
-	private static MyIconButton buttonVersetTX_re;
-	private static MyIconButton buttonVersetEE_add;
-	private static MyIconButton buttonVersetEE_re;
-	private JComboBox<String> comboxAppName;
-	private JComboBox<String> comboxViewName;
-	private JComboBox<String> comboxEleName;
 	private JFrame popup_frame;
 	
 	private Object[] table_row;
@@ -53,15 +47,8 @@ public class PopUpWindow extends JFrame {
 	private JTable casetable;
 	private SQLUtils sql;
 	private ArrayList<BrickBean> caseList;
-	private StringBuilder xpath;
-	private StringBuilder cus_name;
-	private StringBuilder scrshot_pathname;
-	private StringBuilder appName;
 	
-	private EleListener elisten;
-	private ViewListener vlisten;
-
-    public PopUpWindow(Object[] table_row, DefaultTableModel model, JTable casetable, SQLUtils sql, ViewListener vlisten, ArrayList<BrickBean> caseList) {
+    public PopUpWindow(Object[] table_row, DefaultTableModel model, JTable casetable, SQLUtils sql, ArrayList<BrickBean> caseList) {
     	this.table_row = table_row;
     	this.model = model;
     	this.casetable = casetable;
@@ -73,16 +60,48 @@ public class PopUpWindow extends JFrame {
     
     private void init() {
     	popup_frame = new JFrame();
-    	comboxAppName = new JComboBox<String>();
-    	comboxViewName = new JComboBox<String>();
-    	comboxEleName = new JComboBox<String>();
-    	xpath = new StringBuilder();
-    	cus_name = new StringBuilder();
-    	scrshot_pathname = new StringBuilder();
-    	appName = new StringBuilder();
-    	
-    	elisten = new EleListener(sql, xpath, cus_name, scrshot_pathname);
-    	vlisten = new ViewListener(sql, comboxEleName, elisten, appName);
+    	popup_frame.addWindowListener(new WindowListener() {
+			
+			@Override
+			public void windowOpened(WindowEvent e) {
+				// TODO Auto-generated method stub
+			}
+			
+			@Override
+			public void windowIconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void windowClosing(WindowEvent e) {
+				// TODO Auto-generated method stub
+				popup_frame.getContentPane().removeAll();
+			}
+			
+			@Override
+			public void windowClosed(WindowEvent e) {
+				// TODO Auto-generated method stub
+			}
+			
+			@Override
+			public void windowActivated(WindowEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
     }
     
     public void popSelect(int type, BrickBean brick) {
@@ -104,6 +123,9 @@ public class PopUpWindow extends JFrame {
     		case 5:
     			actionSetText(brick);
     			break;
+    		case 6:
+    			actionScroll(brick);
+    			break;
     	}
     }
     
@@ -114,7 +136,6 @@ public class PopUpWindow extends JFrame {
 		popup_frame.setLayout(new BorderLayout());
 		popup_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
 		popup_frame.setLocationRelativeTo(MainEntry.frame);
-		popup_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		popup_frame.setVisible(true);
 		JLabel repick_warn = new JLabel();
 		ImageIcon warn_icon = new ImageIcon(System.getProperty("user.dir") + File.separator + "icon" + File.separator + "warning.png");
@@ -126,10 +147,15 @@ public class PopUpWindow extends JFrame {
     }
     
     private void textVer() {
+    	StringBuilder xpath = new StringBuilder();
+    	StringBuilder cus_name = new StringBuilder();
+    	StringBuilder scrshot_pathname = new StringBuilder();
+    	StringBuilder appName = new StringBuilder();
+    	
     	// Text verification method
 		popup_frame.setSize(400, 280);
 		popup_frame.setTitle("Text Verification");
-		popup_frame.setVisible(true);
+		popup_frame.setLayout(new BorderLayout());
 		JPanel up_panel = new JPanel();
 		JPanel up_left_panel = new JPanel();
 		JPanel up_right_panel = new JPanel();
@@ -142,15 +168,18 @@ public class PopUpWindow extends JFrame {
 		app_view.setFont(ConstantsUI.FONT_NORMAL);
 		JLabel ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.elename"));
 		ele_name.setFont(ConstantsUI.FONT_NORMAL);
-		addEleCombox();
+		JComboBox<String> comboxAppName = new JComboBox<String>();
+    	JComboBox<String> comboxViewName = new JComboBox<String>();
+    	JComboBox<String> comboxEleName = new JComboBox<String>();
+		addEleCombox(comboxAppName, comboxViewName, comboxEleName, xpath, cus_name, scrshot_pathname, appName);
 		
 		JPanel text_pane = new JPanel();
 		JPanel text_btn_pane = new JPanel();
 		JTextArea ver_text_input = new JTextArea(8,30);
 		ver_text_input.setLineWrap(true);
-		buttonVersetTX_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
+		MyIconButton buttonVersetTX_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
                 ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
-		buttonVersetTX_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
+		MyIconButton buttonVersetTX_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
                 ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.rever"));
 		text_pane.add(new JScrollPane(ver_text_input));
 		text_btn_pane.add(buttonVersetTX_add);
@@ -170,8 +199,6 @@ public class PopUpWindow extends JFrame {
 		popup_frame.add(down_panel, BorderLayout.SOUTH);
 		
 		// kill the thread, same to the others ver_type case
-		popup_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		popup_frame.setVisible(true);
 		// set the popup window's position releat to Main frame
 		popup_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
 		popup_frame.setLocationRelativeTo(MainEntry.frame);
@@ -184,8 +211,8 @@ public class PopUpWindow extends JFrame {
                 try {
                 	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.textver");
                 	table_row[2] = ver_text_input.getText();
-                	table_row[3] = "N/A";
-                	table_row[4] = "N/A";
+                	table_row[3] = (String)comboxViewName.getSelectedItem();
+                	table_row[4] = (String)comboxEleName.getSelectedItem();
                 	
                 	int i = casetable.getSelectedRow();
                     if(i >= 0){
@@ -229,9 +256,15 @@ public class PopUpWindow extends JFrame {
 
             }
 		});
+		popup_frame.setVisible(true);
     }
     
     private void eleVer() {
+    	StringBuilder xpath = new StringBuilder();
+    	StringBuilder cus_name = new StringBuilder();
+    	StringBuilder scrshot_pathname = new StringBuilder();
+    	StringBuilder appName = new StringBuilder();
+    	
     	// Element exist verification method
 		popup_frame.setSize(300, 200);
 		popup_frame.setTitle("Element Picking");
@@ -246,11 +279,14 @@ public class PopUpWindow extends JFrame {
 		app_view.setFont(ConstantsUI.FONT_NORMAL);
 		JLabel ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.elename"));
 		ele_name.setFont(ConstantsUI.FONT_NORMAL);
-		addEleCombox();
+		JComboBox<String> comboxAppName = new JComboBox<String>();
+    	JComboBox<String> comboxViewName = new JComboBox<String>();
+    	JComboBox<String> comboxEleName = new JComboBox<String>();
+		addEleCombox(comboxAppName, comboxViewName, comboxEleName, xpath, cus_name, scrshot_pathname, appName);
 		
-		buttonVersetEE_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
+		MyIconButton buttonVersetEE_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
                 ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
-		buttonVersetEE_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
+		MyIconButton buttonVersetEE_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
                 ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.rever"));
 		
 		// inside-button method
@@ -321,7 +357,6 @@ public class PopUpWindow extends JFrame {
 		popup_frame.add(button_pane);
 		popup_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
 		popup_frame.setLocationRelativeTo(MainEntry.frame);
-		popup_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		popup_frame.setVisible(true);
     }
     
@@ -402,7 +437,6 @@ public class PopUpWindow extends JFrame {
 		popup_frame.add(timer_btn_pane, BorderLayout.SOUTH);
 		popup_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
 		popup_frame.setLocationRelativeTo(MainEntry.frame);
-		popup_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		popup_frame.setVisible(true);
     }
     
@@ -433,10 +467,10 @@ public class PopUpWindow extends JFrame {
 					table_row[3] = text_content.getText();
 			    	table_row[4] = "N/A";
                 	
-                	Map<String, Object> params_text = new HashMap<>();
-                    params_text.put("inputText", text_content.getText());
+                	Map<String, Object> params_set_text = new HashMap<>();
+                    params_set_text.put("inputText", text_content.getText());
                     if (brick != null) {
-                    	brick.setParams(params_text);
+                    	brick.setParams(params_set_text);
                     }
                     
                     int i = casetable.getSelectedRow();
@@ -463,11 +497,20 @@ public class PopUpWindow extends JFrame {
 		popup_frame.add(text_btn_pane, BorderLayout.SOUTH);
 		popup_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
 		popup_frame.setLocationRelativeTo(MainEntry.frame);
-		popup_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		popup_frame.setVisible(true);
     }
     
-    private void actionScroll() {
+    private void actionScroll(BrickBean brick) {
+    	StringBuilder tarXpath = new StringBuilder();
+    	StringBuilder tarCus_name = new StringBuilder();
+    	StringBuilder tarScrshot_pathname = new StringBuilder();
+    	StringBuilder tarAppName = new StringBuilder();
+    	
+    	StringBuilder conXpath = new StringBuilder();
+    	StringBuilder conCus_name = new StringBuilder();
+    	StringBuilder conScrshot_pathname = new StringBuilder();
+    	StringBuilder conAppName = new StringBuilder();
+    	
     	popup_frame.setSize(300, 500);
 		popup_frame.setTitle("Scroll to exact element in container");
 		popup_frame.setLayout(new GridLayout(8,1));
@@ -478,15 +521,108 @@ public class PopUpWindow extends JFrame {
 		JPanel container_app_view = new JPanel();
 		JPanel container_ele_name = new JPanel();
 		JPanel button_pane = new JPanel();
-		JLabel app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appname"));
-		app_name.setFont(ConstantsUI.FONT_NORMAL);
-		JLabel app_view = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appview"));
-		app_view.setFont(ConstantsUI.FONT_NORMAL);
-		JLabel ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.elename"));
-		ele_name.setFont(ConstantsUI.FONT_NORMAL);
+		JLabel tar_app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.tarappname"));
+		tar_app_name.setFont(ConstantsUI.FONT_NORMAL);
+		JLabel tar_app_view = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.tarappview"));
+		tar_app_view.setFont(ConstantsUI.FONT_NORMAL);
+		JLabel tar_ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.tarelename"));
+		tar_ele_name.setFont(ConstantsUI.FONT_NORMAL);
+		JLabel con_app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.conappname"));
+		con_app_name.setFont(ConstantsUI.FONT_NORMAL);
+		JLabel con_app_view = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.conappview"));
+		con_app_view.setFont(ConstantsUI.FONT_NORMAL);
+		JLabel con_ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.conelename"));
+		con_ele_name.setFont(ConstantsUI.FONT_NORMAL);
+		
+		JComboBox<String> comboxTarAppName = new JComboBox<String>();
+    	JComboBox<String> comboxTarViewName = new JComboBox<String>();
+    	JComboBox<String> comboxTarEleName = new JComboBox<String>();
+    	addEleCombox(comboxTarAppName, comboxTarViewName, comboxTarEleName, tarXpath, tarCus_name, tarScrshot_pathname, tarAppName);
+    	
+    	JComboBox<String> comboxConAppName = new JComboBox<String>();
+    	JComboBox<String> comboxConViewName = new JComboBox<String>();
+    	JComboBox<String> comboxConEleName = new JComboBox<String>();
+    	addEleCombox(comboxConAppName, comboxConViewName, comboxConEleName, conXpath, conCus_name, conScrshot_pathname, conAppName);
+    	
+    	MyIconButton buttonScroll_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
+                ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
+    	MyIconButton buttonScroll_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
+                ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.rever"));
+		
+    	buttonScroll_add.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				try {
+					table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.btntip.act.scroll");
+					table_row[2] = "N/A";
+                	table_row[3] = "N/A";
+                	table_row[4] = "N/A";
+                	
+                    String ele_path_tar = tarXpath.toString();
+                    String ele_path_con = conXpath.toString();
+                    Map<String, Object> params_scroll_xpath = new HashMap<>();
+                    params_scroll_xpath.put("elePath", ele_path_tar);
+                    params_scroll_xpath.put("containerPath", ele_path_con);
+                    if (brick != null)
+                    	brick.setParams(params_scroll_xpath);
+                    
+                    int i = casetable.getSelectedRow();
+        	        if(i >= 0){
+        	        	model.insertRow(i+1, table_row);
+        	        	caseList.add(i+1, brick);
+        	        }else{
+        	        	model.addRow(table_row);
+        	        	caseList.add(brick);
+        	        }
+				} catch(Exception e1) {
+					e1.printStackTrace();
+				}
+				popup_frame.dispatchEvent(new WindowEvent(popup_frame, WindowEvent.WINDOW_CLOSING));
+			}
+		});
+		
+    	buttonScroll_re.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		target_app_name.add(tar_app_name);
+		target_app_name.add(comboxTarAppName);
+		target_app_view.add(tar_app_view);
+		target_app_view.add(comboxTarViewName);
+		target_ele_name.add(tar_ele_name);
+		target_ele_name.add(comboxTarEleName);
+		container_app_name.add(con_app_name);
+		container_app_name.add(comboxConAppName);
+		container_app_view.add(con_app_view);
+		container_app_view.add(comboxConViewName);
+		container_ele_name.add(con_ele_name);
+		container_ele_name.add(comboxConEleName);
+		button_pane.add(buttonScroll_add);
+		button_pane.add(buttonScroll_re);
+		popup_frame.add(target_app_name);
+		popup_frame.add(target_app_view);
+		popup_frame.add(target_ele_name);
+		popup_frame.add(container_app_name);
+		popup_frame.add(container_app_view);
+		popup_frame.add(container_ele_name);
+		popup_frame.add(button_pane);
+		popup_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
+		popup_frame.setLocationRelativeTo(MainEntry.frame);
+		popup_frame.setVisible(true);
     }
     
-    private void addEleCombox() {
+    private void addEleCombox(JComboBox<String> comboxAppName, JComboBox<String> comboxViewName, JComboBox<String> comboxEleName,
+    		StringBuilder xpath, StringBuilder cus_name, StringBuilder scrshot_pathname, StringBuilder appName) {
+    	EleListener elisten = new EleListener(sql, xpath, cus_name, scrshot_pathname);
+    	ViewListener vlisten = new ViewListener(sql, comboxEleName, elisten, appName);
+    	
 		comboxAppName.addItem("DJI GO3");
 		comboxAppName.addItem("DJI GO4");
 		comboxAppName.addItem("DJI Pilot");

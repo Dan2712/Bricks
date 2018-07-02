@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 
 import com.android.ddmlib.AdbCommandRejectedException;
@@ -91,7 +92,7 @@ public class CusAction {
 			try {
 				driver.findElement(By.xpath(elePath));
 				found = true;
-			} catch(ElementNotFoundException e) {
+			} catch(NoSuchElementException e) {
 				WebElement eleContainer = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(containerPath);
 				
 				Dimension size = eleContainer.getSize();
@@ -110,10 +111,10 @@ public class CusAction {
 				
 				switch (heading) {
 					case 0:
-						driver.swipe(centerX, centerY + 30, centerX, centerY - 30, 500);
+						driver.swipe(centerX, centerY + 50, centerX, centerY - 50, 500);
 						break;
 					case 1:
-						driver.swipe(centerX, centerY - 30, centerX, centerY + 30, 500);
+						driver.swipe(centerX, centerY - 50, centerX, centerY + 50, 500);
 						break;
 				}
 			}

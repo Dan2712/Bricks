@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
@@ -49,7 +50,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.MultiLineReceiver;
-import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.MainEntry;
 import com.dji.bricks.UI.BrickBean;
@@ -127,6 +127,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private ResultSet xpathSet = null;
 	private PrintStream standardOut;
 	private Object[] table_row = new Object[5];
+	private int[] speAddList = {2, 4, 7};
 	
 	private EleListener elisten;
 	private ViewListener vlisten;
@@ -155,7 +156,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		elisten = new EleListener(sql, xpath, cus_name, scrshot_pathname);
 		vlisten = new ViewListener(sql, comboxEleName, elisten, appName);
 		
-		popWin = new PopUpWindow(table_row, model, casetable, sql, vlisten, caseList);
+		popWin = new PopUpWindow(table_row, model, casetable, sql, caseList);
 	}
 
 	private JPanel CaseCre;
@@ -1137,6 +1138,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	}
 	
 	private void actionLoad(int actionInput, BrickBean brick, boolean caseLoad) {
+		boolean contains = false;
 		switch (actionInput) {
 		case 0:
     		act_name = "Click";
@@ -1164,6 +1166,9 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 			break;
 		case 7:
 			act_name = "Scroll To Exact Ele";
+			if (!caseLoad) {
+    			popWin.popSelect(6, brick);
+    		}
 			break;
 		case 8:
 			act_name = "Key HOME";
@@ -1176,7 +1181,12 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
     		break;
 		}
 		
-		if (actionInput != 2 && actionInput != 4) {
+		for (int i=0; i<speAddList.length; i++) {
+			if (speAddList[i] == actionInput)
+				contains = true;				
+		}
+		
+		if (!contains && !caseLoad) {
 			table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.act");
 			table_row[2] = act_name;
 	    	table_row[3] = "N/A";
