@@ -123,8 +123,7 @@ public class CusAction {
 	}
 	
 	public void swipe(double position, String containerPath, int heading) {
-//		WebElement eleContainer = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(containerPath);
-		MobileElement eleContainer = (MobileElement) driver.findElement(By.xpath(containerPath));
+		WebElement eleContainer = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(containerPath);
 		
 		Dimension size = eleContainer.getSize();
 		int x = size.getWidth();
@@ -138,14 +137,15 @@ public class CusAction {
 		int endY = y + startY;
 		
 		double scrollX = (startX + endX) / 2;
-		double scrollY = y * position + startY;
+		double scrollY_UP = y * position + startY;
+		double scrollY_DOWN = endY - y * position;
 		
 		switch (heading) {
 			case 0:
-				driver.swipe((int)scrollX, (int)scrollY, (int)scrollX, startY + 5, 500);
+				driver.swipe((int)scrollX, (int)scrollY_UP, (int)scrollX, startY + 5, 500);
 				break;
 			case 1:
-				driver.swipe((int)scrollX, (int)scrollY, (int)scrollX, endY - 5, 500);
+				driver.swipe((int)scrollX, (int)scrollY_DOWN, (int)scrollX, endY - 5, 500);
 				break;
 		}
 	}

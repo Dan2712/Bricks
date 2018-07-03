@@ -3,6 +3,7 @@ package com.dji.bricks.backgrounder.execution;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.alibaba.fastjson.JSONObject;
@@ -27,13 +28,16 @@ public class AppiumInit {
        //configuration
         capabilities.setCapability("appPackage", appPackage);  
         capabilities.setCapability("appActivity", launchActivity);
-        capabilities.setCapability("automationName", "UiAutomator2");
+//        capabilities.setCapability("automationName", "UiAutomator2");
         capabilities.setCapability("noReset", true);
         capabilities.setCapability("full-reset", false);
         capabilities.setCapability("--session-override", true);    //override session everytime， otherwise cannot start a new session second time
         capabilities.setCapability("ignoreUnimportantViews", false);
-        capabilities.setCapability("newCommandTimeout", 600);
+        capabilities.setCapability("newCommandTimeout", 60);
 
+        ChromeOptions options = new ChromeOptions();
+        options.setExperimentalOption("androidProcess", appPackage + ":web");
+        capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
 //        driver = EventFiringWebDriverFactory.getEventFiringWebDriver(driver, new AlertListener());
         driver.manage().timeouts().implicitlyWait(5,TimeUnit.SECONDS);
