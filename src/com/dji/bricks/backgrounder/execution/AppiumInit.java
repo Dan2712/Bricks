@@ -33,7 +33,7 @@ public class AppiumInit {
         capabilities.setCapability("full-reset", false);
         capabilities.setCapability("--session-override", true);    //override session everytime， otherwise cannot start a new session second time
         capabilities.setCapability("ignoreUnimportantViews", false);
-        capabilities.setCapability("newCommandTimeout", 60);
+        capabilities.setCapability("newCommandTimeout", 600);
 
         ChromeOptions options = new ChromeOptions();
         options.setExperimentalOption("androidProcess", appPackage + ":web");

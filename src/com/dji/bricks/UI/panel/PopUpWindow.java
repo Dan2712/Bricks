@@ -106,7 +106,7 @@ public class PopUpWindow extends JFrame {
 		});
     }
     
-    public void popSelect(int type, BrickBean brick) {
+    public void popSelect(int type, BrickBean brick, int winType) {
     	switch (type) {
     		case 0:
     			waring();
@@ -123,7 +123,7 @@ public class PopUpWindow extends JFrame {
     			addTime();
     			break;
     		case 5:
-    			actionSetText(brick);
+    			actionTextWin(brick, winType);
     			break;
     		case 6:
     			actionScroll(brick);
@@ -442,9 +442,9 @@ public class PopUpWindow extends JFrame {
 		popup_frame.setVisible(true);
     }
     
-    private void actionSetText(BrickBean brick) {
+    private void actionTextWin(BrickBean brick, int winType) {
     	popup_frame.setSize(270, 130);
-    	popup_frame.setTitle("Text Setting");
+    	popup_frame.setTitle("Text Window");
 		popup_frame.setLayout(new BorderLayout());
 		JPanel text_set_pane = new JPanel();
 		text_set_pane.setPreferredSize(new Dimension(270, 50));
@@ -464,17 +464,30 @@ public class PopUpWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				try {
-					table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.act");
-					table_row[2] = PropertyUtil.getProperty("bricks.ui.casecre.btntip.textset");
-					table_row[3] = text_content.getText();
-			    	table_row[4] = "N/A";
-                	
-                	Map<String, Object> params_set_text = new HashMap<>();
-                    params_set_text.put("inputText", text_content.getText());
-                    if (brick != null) {
-                    	brick.setParams(params_set_text);
-                    }
-                    
+					if (winType == 1) {
+						table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.act");
+						table_row[2] = PropertyUtil.getProperty("bricks.ui.casecre.btntip.textset");
+						table_row[3] = text_content.getText();
+				    	table_row[4] = "N/A";
+	                	
+	                	Map<String, Object> params_set_text = new HashMap<>();
+	                    params_set_text.put("inputText", text_content.getText());
+	                    if (brick != null) {
+	                    	brick.setParams(params_set_text);
+	                    }
+					} else if (winType == 2) {
+						table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.act");
+						table_row[2] = PropertyUtil.getProperty("bricks.ui.casecre.act.spinner");
+						table_row[3] = text_content.getText();
+						table_row[4] = "N/A";
+						
+						Map<String, Object> params_spinner = new HashMap<>();
+						params_spinner.put("choose", text_content.getText());
+						if (brick != null) {
+							brick.setParams(params_spinner);
+						}
+					}
+					
                     int i = casetable.getSelectedRow();
         	        if(i >= 0){
         	        	model.insertRow(i+1, table_row);

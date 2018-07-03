@@ -397,7 +397,6 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 	            	UiNode node_sel = (UiNode) node;
 	            	node_info.clear();
 	            	node_info.put("xpath", node_sel.getAttribute("xpath"));
-	            	System.out.println(((UiNode)node_sel.getParent()).getAttribute("xpath"));
 	            	node_info.put("clickable", node_sel.getAttribute("clickable").equals("true") ? "1" : "0");
 	            	node_info.put("scrollable", node_sel.getAttribute("scrollable").equals("true") ? "1" : "0");
 	            	node_info.put("checkable", node_sel.getAttribute("checkable").equals("true") ? "1" : "0");

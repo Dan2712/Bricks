@@ -3,6 +3,7 @@ package com.dji.bricks.backgrounder.base;
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -18,6 +19,7 @@ import com.android.ddmlib.TimeoutException;
 import com.dji.bricks.backgrounder.execution.AppiumInit;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 
+import io.appium.java_client.MobileBy;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
@@ -91,6 +93,7 @@ public class CusAction {
 		boolean found = false;
 		while (!found) {
 			try {
+				driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
 				driver.findElement(By.xpath(elePath));
 				found = true;
 			} catch(NoSuchElementException e) {
@@ -112,14 +115,15 @@ public class CusAction {
 				
 				switch (heading) {
 					case 0:
-						driver.swipe(centerX, centerY + 60, centerX, centerY - 60, 500);
+						driver.swipe(centerX, centerY + 80, centerX, centerY - 80, 500);
 						break;
 					case 1:
-						driver.swipe(centerX, centerY - 60, centerX, centerY + 60, 500);
+						driver.swipe(centerX, centerY - 80, centerX, centerY + 80, 500);
 						break;
 				}
 			}
 		}
+		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 	}
 	
 	public void swipe(double position, String containerPath, int heading) {
@@ -171,5 +175,12 @@ public class CusAction {
 					.moveTo(xAxisEndPoint + 10, yAxis)
 					.release();
 		touchAction.perform();
+	}
+	
+	// ("new UiScrollable(new UiSelector()).scrollIntoView("+ "new UiSelector().text(\"India\"));")
+	//11.spinner select
+	public void spinnerSelect(WebElement ele, String option) {
+		ele.click();
+		driver.findElement(MobileBy.AndroidUIAutomator("new UiScrollable(new UiSelector()).scrollIntoView(" + "new UiSelector().text(\"" + option + "\"));")).click();;
 	}
 }

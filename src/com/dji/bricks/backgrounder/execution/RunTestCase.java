@@ -145,6 +145,9 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 			logText.append(this.ele_customName + " is dragged" + "\n");
 			break;
 		case 11:
+			JSONObject params_spinner = action_info.getJSONObject("params");
+			action.spinnerSelect(ele_sub, params_spinner.getString("choose"));
+			logText.append("Spinner choose " + params_spinner.getString("choose") + "\n");
 			break;
 		}
 		
