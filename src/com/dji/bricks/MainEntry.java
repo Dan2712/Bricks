@@ -115,6 +115,7 @@ public class MainEntry implements GlobalObserver {
         	System.exit(0);
         }
         
+        
         //init appium
     	Thread appium = new Thread(new Runnable() {
 			@Override

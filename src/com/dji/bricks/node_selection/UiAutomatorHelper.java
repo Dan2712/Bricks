@@ -26,9 +26,13 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
+import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.SyncException;
 import com.android.ddmlib.SyncService;
+import com.android.ddmlib.TimeoutException;
 
 /**
  * @author Dan
@@ -97,7 +101,22 @@ public class UiAutomatorHelper {
             device.getSyncService().pullFile(UIDUMP_DEVICE_PATH,
                     dst.getAbsolutePath(), SyncService.getNullProgressMonitor());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+        	if (e.getMessage().equals("Remote object doesn't exist!")) {
+	        	try {
+	        		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
+					device.executeShellCommand("am instrument -w -r   -e debug false -e class dan.dji.com.dumpxml.DumpKit dan.dji.com.dumpxml.test/android.support.test.runner.AndroidJUnitRunner", 
+							receiver, XML_CAPTURE_TIMEOUT_SEC * 1000);
+					monitor.subTask("Pull UI XML snapshot from device...");
+					device.getSyncService().pullFile("/storage/emulated/0/Android/data/dan.dji.com.dumpxml/cache/uidump.xml",
+		                    dst.getAbsolutePath(), SyncService.getNullProgressMonitor());
+				} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException
+						| IOException e1) {
+					e1.printStackTrace();
+				} catch (SyncException e1) {
+					e1.printStackTrace();
+				}
+        	}
+//            throw new RuntimeException(e);
         }
     }
 

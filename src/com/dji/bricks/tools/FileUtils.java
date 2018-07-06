@@ -1,5 +1,6 @@
 package com.dji.bricks.tools;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -14,6 +15,8 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -295,5 +298,13 @@ public class FileUtils {
 		}
 		
 		return jArray;
+	}
+	
+	public static void saveImgToLocal(BufferedImage image, String filePath) throws IOException {
+		File file = new File(filePath);
+		if (!file.getParentFile().exists())
+			file.getParentFile().mkdirs();
+		
+		ImageIO.write(image, ".jpg", file);
 	}
 }

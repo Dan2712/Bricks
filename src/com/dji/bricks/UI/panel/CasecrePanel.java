@@ -71,28 +71,24 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	
 	private static final long serialVersionUID = 1L;
 	
-	private static MyIconButton buttonEleAdd;
-	private static MyIconButton buttonActAdd;
-	private static MyIconButton buttonVerAdd;
-	private static MyIconButton buttonRowDelete;
-	private static MyIconButton buttonEleRefresh;
-	private static MyIconButton buttonActRefresh;
-	private static MyIconButton buttonSave;
-	private static MyIconButton buttonDragAdd;
-	private static MyIconButton buttonScrshot;
-	private static MyIconButton buttonDocRead;
-	private static MyIconButton buttonJsonLoad;
-	private static MyIconButton buttonPlayList;
-	private static MyIconButton buttonRTChart;
-	private static MyIconButton buttonLogSave;
+	private MyIconButton buttonEleAdd;
+	private MyIconButton buttonActAdd;
+	private MyIconButton buttonVerAdd;
+	private MyIconButton buttonRowDelete;
+	private MyIconButton buttonEleRefresh;
+	private MyIconButton buttonActRefresh;
+	private MyIconButton buttonSave;
+	private MyIconButton buttonDragAdd;
+	private MyIconButton buttonScrshot;
+	private MyIconButton buttonDocRead;
+	private MyIconButton buttonJsonLoad;
+	private MyIconButton buttonPlayList;
+	private MyIconButton buttonRTChart;
+	private MyIconButton buttonLogSave;
+	private MyIconButton buttonTimer;
+	private MyIconButton buttonClear;
+	private MyIconButton buttonAddAll;
 	private JTextArea logArea;
-	private static MyIconButton buttonTimer;
-	private static MyIconButton buttonVersetTX_add;
-	private static MyIconButton buttonVersetTX_re;
-	private static MyIconButton buttonVersetEE_add;
-	private static MyIconButton buttonVersetEE_re;
-	private static MyIconButton buttonVersetTimer_add;
-	private static MyIconButton buttonVersetTimer_re;
 	private int ver_type;
 	private ArrayList<BrickBean> caseList = null;
 	private final static String CURRENT_DIR = System.getProperty("user.dir");
@@ -322,7 +318,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		VerPick.setFont(ConstantsUI.FONT_NORMAL);
 		comboxVerName = new JComboBox<String>();
 		comboxVerName.addItem(PropertyUtil.getProperty("bricks.ui.casecre.textver"));
-		comboxVerName.addItem(PropertyUtil.getProperty("bricks.ui.casecre.imgver"));
+//		comboxVerName.addItem(PropertyUtil.getProperty("bricks.ui.casecre.imgver"));
 		comboxVerName.addItem(PropertyUtil.getProperty("bricks.ui.casecre.extver"));
 		comboxVerName.setEditable(false);
 		comboxVerName.setSelectedItem(null);
@@ -334,6 +330,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 				if (PropertyUtil.getProperty("bricks.ui.casecre.textver").equals(item)) {
 					ver_type = 1;
 				} else if (PropertyUtil.getProperty("bricks.ui.casecre.imgver").equals(item)) {
+					
 				} else if (PropertyUtil.getProperty("bricks.ui.casecre.extver").equals(item)) {
 					ver_type = 2;
 				} else if (item == null){
@@ -353,7 +350,11 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		
 		JPanel RunPanel = new JPanel();
 		RunPanel.setPreferredSize(new Dimension(420, 40));
-		RunPanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConstantsUI.MAIN_H_GAP, 5));
+		RunPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 14, 5));
+		buttonAddAll = new MyIconButton(ConstantsUI.ICON_ADDALL, ConstantsUI.ICON_ADDALL_ENABLE,
+				ConstantsUI.ICON_ADDALL_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addall"));
+		buttonClear = new MyIconButton(ConstantsUI.ICON_CLEAR, ConstantsUI.ICON_CLEAR_ENABLE,
+				ConstantsUI.ICON_CLEAR_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.clear"));
 		buttonTimer = new MyIconButton(ConstantsUI.ICON_TIMER, ConstantsUI.ICON_TIMER_ENABLE,
 				ConstantsUI.ICON_TIMER_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.timer"));
 		buttonRowDelete = new MyIconButton(ConstantsUI.ICON_ROW_DELETE, ConstantsUI.ICON_ROW_DELETE_ENABLE,
@@ -366,11 +367,10 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 				ConstantsUI.ICON_RTCHART_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.rtchart"));
 		buttonLogSave = new MyIconButton(ConstantsUI.ICON_LOGSAVE, ConstantsUI.ICON_LOGSAVE_ENABLE,
 				ConstantsUI.ICON_LOGSAVE_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.logsave"));
-		JLabel TableNull = new JLabel();
-		TableNull.setPreferredSize(new Dimension(27, 40));
 		RunPanel.add(buttonTimer);
 		RunPanel.add(buttonRowDelete);
-		RunPanel.add(TableNull);
+		RunPanel.add(buttonAddAll);
+		RunPanel.add(buttonClear);
 		RunPanel.add(buttonPlayList);
 		RunPanel.add(buttonRTChart);
 		RunPanel.add(buttonSave);
@@ -593,27 +593,53 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             }
         });
 
+	  	buttonAddAll.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (comboxEleName.getSelectedItem() != null)
+					buttonEleAdd.doClick();
+				if (comboxActName.getSelectedItem() != null)
+					buttonActAdd.doClick();
+			}
+		});
+	  	
+	  	buttonClear.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				while(model.getRowCount() > 0) 
+					model.removeRow(0);
+				
+				caseList.clear();
+			}
+		});
+	  	
 	  	buttonEleRefresh.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	try{
-                // i = the index of the selected row
-                int i = casetable.getSelectedRow();
+            		int i = casetable.getSelectedRow();
                 
-                if(i >= 0) 
-                {
-                   model.setValueAt(cus_name, i, 1);
-                   model.setValueAt(cus_name, i, 2);
-                   model.setValueAt(cus_name, i, 3);
-                   model.setValueAt(cus_name, i, 4);
-                }
-                else{
-                    System.out.println("Update Ele Error");
+            		if(i >= 0) {
+            			model.setValueAt(PropertyUtil.getProperty("bricks.ui.casecre.ele"), i, 1);
+            			model.setValueAt(comboxAppName.getSelectedItem(), i, 2);
+            			model.setValueAt(comboxViewName.getSelectedItem(), i, 3);
+            			model.setValueAt(comboxEleName.getSelectedItem(), i, 4);
+            			
+            			BrickBean brick = new BrickBean();
+                    	brick.setEle_xpath(xpath.toString());
+                    	brick.setCustom_name(cus_name.toString());
+                    	brick.setProperty("ele");
+                    	brick.setEle_page(comboxViewName.getSelectedItem().toString());
+                    	
+            			caseList.set(i, brick);
+            		} else {
+            			System.out.println("Update Ele Error");
                 	}
                 } catch (Exception e1) {
                 	e1.printStackTrace();
                 }
-
             }
         });
 	  	
@@ -621,20 +647,16 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             @Override
             public void actionPerformed(ActionEvent e) {
             	try{
-                // i = the index of the selected row
-                int i = casetable.getSelectedRow();
+            		int i = casetable.getSelectedRow();
                 
-                if(i >= 0) 
-                {
-                   model.setValueAt(act_name, i, 1);
-                }
-                else{
-                    System.out.println("Update Act Error");
+            		if(i >= 0) {
+            			model.setValueAt(act_name, i, 1);
+            		} else {
+            			System.out.println("Update Act Error");
                 	}
                 } catch (Exception e1) {
                 	e1.printStackTrace();
                 }
-
             }
         });
 	  	

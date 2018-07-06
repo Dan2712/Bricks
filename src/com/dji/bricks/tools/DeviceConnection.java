@@ -1,12 +1,20 @@
 package com.dji.bricks.tools;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
+import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.InstallException;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.SyncException;
+import com.android.ddmlib.TimeoutException;
 import com.dji.bricks.GlobalObserver;
+import com.dji.bricks.MainEntry;
 import com.dji.bricks.SubjectForListener;
 
 /**
@@ -110,7 +118,7 @@ public class DeviceConnection implements IDeviceChangeListener, SubjectForListen
 	}
 
 	@Override
-	public void notifyObservers(Object obj) {
+	public synchronized void notifyObservers(Object obj) {
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -119,6 +127,45 @@ public class DeviceConnection implements IDeviceChangeListener, SubjectForListen
 		if (obj instanceof IDevice[]) {
 			IDevice[] devices = (IDevice[]) obj;
 			for (GlobalObserver observer : observers) {
+				MainEntry.cachedThreadPool.submit(new Runnable() {
+					
+					@Override
+					public void run() {
+						try {
+							IDevice device = devices[0];
+							String appPath = System.getProperty("user.dir") + "/lib/app-debug.apk";
+							String testPath = System.getProperty("user.dir") + "/lib/app-debug-androidTest.apk";
+							device.pushFile(appPath, "/data/local/tmp/dan.dji.com.dumpxml");
+							device.pushFile(testPath, "/data/local/tmp/dan.dji.com.dumpxml.test");
+							
+							boolean isAppInstall = false;
+							boolean isTestInstall = false;
+							CollectingOutputReceiver appReceiver = new CollectingOutputReceiver();
+							device.executeShellCommand("pm list packages dan.dji.com.dumpxml", appReceiver);
+							appReceiver.flush();
+							CollectingOutputReceiver testReceiver = new CollectingOutputReceiver();
+							device.executeShellCommand("pm list packages dan.dji.com.dumpxml.test", testReceiver);
+							testReceiver.flush();
+							
+							if (!appReceiver.getOutput().equals(""))
+								isAppInstall = true;
+							
+							if (!testReceiver.getOutput().equals(""))
+								isTestInstall = true;
+							
+							if (!isAppInstall)
+								device.executeShellCommand("pm install -t -r \"/data/local/tmp/dan.dji.com.dumpxml\"", new CollectingOutputReceiver(), 40000);
+								
+							if (!isTestInstall)
+								device.executeShellCommand("pm install -t -r \"/data/local/tmp/dan.dji.com.dumpxml.test\"", new CollectingOutputReceiver(), 40000);
+						} catch (SyncException | IOException | AdbCommandRejectedException | TimeoutException e) {
+							e.printStackTrace();
+						} catch (ShellCommandUnresponsiveException e) {
+							e.printStackTrace();
+						}
+					}
+				});
+					
 				observer.ADBChange(devices);
 			}
 		}

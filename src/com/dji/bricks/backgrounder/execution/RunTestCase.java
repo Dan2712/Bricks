@@ -1,8 +1,12 @@
 package com.dji.bricks.backgrounder.execution;
 
 import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JTextArea;
 
 import org.openqa.selenium.By;
@@ -12,16 +16,23 @@ import org.openqa.selenium.WebElement;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.RawImage;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.TimeoutException;
 import com.dji.bricks.backgrounder.ExecutionMain;
 import com.dji.bricks.backgrounder.base.CusAction;
 import com.dji.bricks.backgrounder.base.CusElement;
 import com.dji.bricks.backgrounder.base.CusValidation;
+import com.dji.bricks.tools.FileUtils;
+import com.dji.bricks.tools.TimeUtils;
 
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.events.api.general.AppiumWebDriverEventListener;
 
-public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
+public class RunTestCase implements AppiumWebDriverEventListener{
 
 	private WebElement ele_sub;
 	private String ele_customName;
@@ -47,8 +58,13 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 		validation = new CusValidation(driver);
 	}
 
-	@Override
 	public void run() {
+		int actionCount = 0;
+		String screenshotRunPath = System.getProperty("user.dir") + File.separator + "screenshotRunning" +
+	    		File.separator + TimeUtils.formatTimeForFile(System.currentTimeMillis());
+		File screenRun = new File(screenshotRunPath);
+		if (!screenRun.exists())
+			screenRun.mkdirs();
 		
 		if (this.runMode == 0) {
 			for (int i=0; i<jsonFile.size(); i++) {
@@ -58,6 +74,9 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 							ele_sub = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(obj.getString("ele_xpath"));
 							this.ele_customName = obj.getString("custom_name");
 					} else if (obj.getString("property").equals("act")) {
+						Thread.sleep(500);
+						actionCount ++;
+					    getScreenshot(screenshotRunPath, actionCount);
 						this.actionSwitch(obj);
 					} else if (obj.getString("property").equals("val")) {
 						this.validationSwitch(obj);
@@ -178,6 +197,45 @@ public class RunTestCase implements Runnable, AppiumWebDriverEventListener{
 		}
 	}
 
+	private void getScreenshot(String screenshotRunPath, int actionCount) throws TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException {
+		RawImage rawImg = device.getScreenshot();
+		Boolean landscape = false;
+		
+		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
+		device.executeShellCommand("dumpsys display | grep 'mDefaultViewport'", receiver, 0);
+		switch (Character.getNumericValue(receiver.getOutput().charAt(72))) {
+			case 0:
+				landscape = false;
+				break;
+			case 1:
+				landscape = true;
+				break;
+		}
+		
+		if (landscape) 
+			rawImg = rawImg.getRotated();
+
+		if (rawImg != null) {
+			BufferedImage image = new BufferedImage(rawImg.width, rawImg.height,  
+                    BufferedImage.TYPE_INT_RGB);
+			
+			int index = 0;
+		    int IndexInc = rawImg.bpp >> 3;
+		    for (int y = 0; y < rawImg.height; y++) {
+		        for (int x = 0; x < rawImg.width; x++) {
+		            int value = rawImg.getARGB(index);
+		            index += IndexInc;
+		            image.setRGB(x, y, value);
+		        }
+		    }
+	
+		    String filePath = screenshotRunPath + File.separator + actionCount + ".png";
+		    if (!ImageIO.write(image, "png", new File(filePath))) {
+		        throw new IOException("Failed to find png writer");
+		    }
+		}
+	}
+	
 	@Override
 	public void afterChangeValueOf(WebElement arg0, WebDriver arg1) {
 		// TODO Auto-generated method stub

@@ -35,6 +35,7 @@ import com.dji.bricks.node_selection.UiAutomatorHelper.UiAutomatorException;
 import com.dji.bricks.node_selection.UiAutomatorHelper.UiAutomatorResult;
 import com.dji.bricks.node_selection.tree.BasicTreeNode;
 import com.dji.bricks.node_selection.tree.UiNode;
+import com.dji.bricks.tools.FileUtils;
 
 /**
  * @author Dan
@@ -154,35 +155,6 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 	}
 	
 	public synchronized void paint(Graphics g) {
-//		Graphics2D g2 = (Graphics2D) g;
-//		try {
-//			if (mScreenshot == null)
-//				return;
-//			
-//			g2.drawImage(mScreenshot, mDx, mDy, width, height, this);
-//			mScreenshot.flush();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//
-//		if (mModel != null) {
-//			rect = mModel.getCurrentDrawingRect();
-//			if (rect != null) {
-//				g2.setColor(Color.RED);
-//				if (mModel.isExploreMode()) {
-//					s = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{15,10,}, 0.0f);
-//					g2.setColor(Color.RED);
-//					g2.setStroke(s);
-//				} else {
-//					s = new BasicStroke(1.5f);
-//					g2.setColor(Color.RED);
-//					g2.setStroke(s);
-//				}
-//				g2.drawRect(mDx + getScaledSize(rect.x), mDy + getScaledSize(rect.y),
-//	                    getScaledSize(rect.width), getScaledSize(rect.height));
-//			}
-//		}
-		
 		Graphics2D g2 = (Graphics2D) g;
 		try {
 			if (mScreenshot == null)
@@ -345,11 +317,12 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 						if (!isExploreMode()) {
 							screenPath = "screenshot/" + System.currentTimeMillis() + ".jpg";
 							node_info.replace("screenPath", screenPath);
-							File screenShot = new File(screenPath);
-							if (!screenShot.getParentFile().exists())
-								screenShot.getParentFile().mkdirs();
-							
-							ImageIO.write(screenImage, "jpg", screenShot);
+//							File screenShot = new File(screenPath);
+//							if (!screenShot.getParentFile().exists())
+//								screenShot.getParentFile().mkdirs();
+//							
+//							ImageIO.write(screenImage, "jpg", screenShot);
+							FileUtils.saveImgToLocal(screenImage, screenPath);
 						}
 					} catch (IOException e) {
 						e.printStackTrace();

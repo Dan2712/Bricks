@@ -264,11 +264,6 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		node_info = ((VariableChangeObserve) o).getInfo();
 		textFieldEleItem_1.setText(node_info.get("xpath"));
 		
-//    	if(textFieldEleItem_5.getText().equals(null) && textFieldEleItem_6.getText().equals(null)){
-//    		buttonSave.setEnabled(false);
-//    		System.out.println(textFieldEleItem_5.getText());	
-//    		}
-	
 		if(node_info.get("package").equals("dji.pilot"))
 			textFieldEleItem_4.setText("DJI GO3");
 		else if (node_info.get("package").equals("dji.go.v4"))

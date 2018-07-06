@@ -285,7 +285,18 @@ public class ConstantsUI {
             CURRENT_DIR + File.separator + "icon" + File.separator + "logsaveEnable.png");
     public final static ImageIcon ICON_LOGSAVE_DISABLE = new ImageIcon(
             CURRENT_DIR + File.separator + "icon" + File.separator + "logsaveEnable.png");
-
+    public final static ImageIcon ICON_ADDALL = new ImageIcon(
+    		CURRENT_DIR + File.separator + "icon" + File.separator + "addAll.png");
+    public final static ImageIcon ICON_ADDALL_DISABLE = new ImageIcon(
+    		CURRENT_DIR + File.separator + "icon" + File.separator + "addAllEnable.png");
+    public final static ImageIcon ICON_ADDALL_ENABLE = new ImageIcon(
+    		CURRENT_DIR + File.separator + "icon" + File.separator + "addAllEnable.png");
+    public final static ImageIcon ICON_CLEAR = new ImageIcon(
+    		CURRENT_DIR + File.separator + "icon" + File.separator + "clear.png");
+    public final static ImageIcon ICON_CLEAR_DISABLE = new ImageIcon(
+    		CURRENT_DIR + File.separator + "icon" + File.separator + "clearEnable.png");
+    public final static ImageIcon ICON_CLEAR_ENABLE = new ImageIcon(
+    		CURRENT_DIR + File.separator + "icon" + File.separator + "clearEnable.png");
     /**
      * 
      */
