@@ -57,7 +57,6 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	private RealTimeScreenUI realTimeScreen;
 	private IDevice device;
 	private VariableChangeObserve obs;
-	public final static String CURRENT_DIR = System.getProperty("user.dir");
 	
 	private SQLUtils sql;
 	

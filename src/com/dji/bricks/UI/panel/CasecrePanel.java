@@ -695,7 +695,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             	try {
             		MainEntry.cachedThreadPool.submit(new Runnable() {
 						public void run() {
-							ExecutionMain.getInstance().RunTestCase(jsonFile, logArea, device, pkg);
+							ExecutionMain.getInstance().RunTestCase(jsonFile, logArea, device, pkg, null);
 		            		RealTimeScreenUI.isRuncase = true;
 						}
 					});
@@ -795,15 +795,15 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 							try {
 //								device.executeShellCommand(String.format("push %s %s", System.getProperty("user.dir") + "/rm500_0042.bin", "/sdcard"), receiver, 0);
 //								device.pushFile(System.getProperty("user.dir") + File.separator + "rm500_0042.bin", "/sdcard");
-//								if (pid.equals("")) {
-//									device.executeShellCommand("ps | grep " + pkg, receiver);
-//									receiver.flush();
-//									pid = receiver.getOutput().split("\\s+")[1];
-//								}
-//								device.executeShellCommand("dumpsys meminfo " + pid, mReceiver);
+								if (pid.equals("")) {
+									device.executeShellCommand("ps | grep " + pkg, receiver);
+									receiver.flush();
+									pid = receiver.getOutput().split("\\s+")[1];
+								}
+								device.executeShellCommand("dumpsys meminfo " + pid, mReceiver);
 //								System.out.println(tmp);
-//								MemValue = Integer.parseInt(tmp.split("\\s+")[1]);
-////								chart.addCPUValue(CPUValue);
+								MemValue = Integer.parseInt(tmp.split("\\s+")[1]);
+//								chart.addCPUValue(CPUValue);
 //								chart.addMemValue(MemValue/10240);
 //								chart.repaint();
 //								Thread.sleep(1000);

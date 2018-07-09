@@ -9,6 +9,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JTextArea;
 
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -19,6 +20,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.MultiLineReceiver;
 import com.android.ddmlib.RawImage;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
@@ -33,7 +35,8 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.events.api.general.AppiumWebDriverEventListener;
 
 public class RunTestCase implements AppiumWebDriverEventListener{
-
+	private static final Logger LOG = Logger.getLogger("RunTestCase.class");
+	
 	private WebElement ele_sub;
 	private String ele_customName;
 	private int runMode;
@@ -41,13 +44,15 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 	private AndroidDriver driver;
 	private CusAction action;
 	private CusValidation validation;
+	private String pkg;
 	private JTextArea logText;
 	private IDevice device;
 	private JSONArray jsonFile;
 	private List<WebElement> dragedElement;
 	private Boolean isDraged = false;
+	private String tmp;
 	
-	public RunTestCase(JSONArray jsonFile, int runMode, AndroidDriver driver, JTextArea logText, IDevice device) {
+	public RunTestCase(JSONArray jsonFile, int runMode, AndroidDriver driver, JTextArea logText, IDevice device, String pkg) {
 //		this.path = path;
 		this.runMode = runMode;
 		this.driver = driver;
@@ -56,15 +61,42 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		this.jsonFile = jsonFile;
 		action = new CusAction(driver, device);
 		validation = new CusValidation(driver);
+		this.pkg = pkg;
 	}
 
 	public void run() {
 		int actionCount = 0;
-		String screenshotRunPath = System.getProperty("user.dir") + File.separator + "screenshotRunning" +
+		String screenshotRunPath = System.getProperty("user.dir") + File.separator + "screenshot/RunCap/" +
 	    		File.separator + TimeUtils.formatTimeForFile(System.currentTimeMillis());
 		File screenRun = new File(screenshotRunPath);
 		if (!screenRun.exists())
 			screenRun.mkdirs();
+		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
+		
+		MultiLineReceiver mReceiver = new MultiLineReceiver() {
+			
+			@Override
+			public boolean isCancelled() {
+				return false;
+			}
+			
+			@Override
+			public void processNewLines(String[] lines) {
+				for(String line : lines) { 
+		            if(line.contains("TOTAL")) {
+		            	tmp = line;
+		            }
+		        }
+			}
+		};
+		
+		try {
+			device.executeShellCommand("ps | grep " + pkg, receiver);
+		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e1) {
+			e1.printStackTrace();
+		}
+		receiver.flush();
+		String pid = receiver.getOutput().split("\\s+")[1];
 		
 		if (this.runMode == 0) {
 			for (int i=0; i<jsonFile.size(); i++) {
@@ -85,13 +117,16 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 						int time = ((Integer)obj.getJSONObject("params").get("time")) * 1000;
 						Thread.sleep(time);
 					}
+					
+					device.executeShellCommand("dumpsys meminfo " + pid, mReceiver);
+					int MemValue = Integer.parseInt(tmp.split("\\s+")[1]);
 				} catch (Exception e) {
 					if (e instanceof NoSuchElementException)
 						logText.append("No such element: " + this.ele_customName);
 					else {
 						logText.append("Case Failed" + "\n");
-						e.printStackTrace();
 					}
+					LOG.error(e);
 					break;
 				}
 			}

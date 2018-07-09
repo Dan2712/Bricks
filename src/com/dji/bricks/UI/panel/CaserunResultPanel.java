@@ -61,6 +61,7 @@ public class CaserunResultPanel extends JPanel{
 	private String appName;
 	private List<String> case_list;
 	private String pkg = "";
+	private String fileName = "";
 	
 	public CaserunResultPanel(IDevice device) {
 		this.device = device;
@@ -204,10 +205,10 @@ public class CaserunResultPanel extends JPanel{
                     jfc.showDialog(new JLabel(), "选择");  
                     filepath = jfc.getSelectedFile().getPath();
                     
-                    String filename = filepath.substring(filepath.lastIndexOf("\\")+1);
-                    appName = filename.substring(0, filename.indexOf("_"));
+                    fileName = filepath.substring(filepath.lastIndexOf("\\")+1);
+                    appName = fileName.substring(0, fileName.indexOf("_"));
                     
-                    table_row[0] = filename;
+                    table_row[0] = fileName;
                     table_row[1] = filepath;
                     model.addRow(table_row);
                     case_list.add(filepath);
@@ -275,7 +276,7 @@ public class CaserunResultPanel extends JPanel{
 						for (int i=0; i<Integer.parseInt(run_num.getText()); i++) {
 							for (int j=0; j<case_list.size(); j++) {
 								jsonFile = FileUtils.loadJson(case_list.get(j));
-								ExecutionMain.getInstance().RunTestCase(jsonFile, logprint, device, pkg);
+								ExecutionMain.getInstance().RunTestCase(jsonFile, logprint, device, pkg, fileName);
 								RealTimeScreenUI.isRuncase = true;
 							}
 						}
