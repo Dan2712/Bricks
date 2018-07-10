@@ -315,7 +315,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 				public void run() {
 					try {
 						if (!isExploreMode()) {
-							screenPath = "screenshot/EleCreate/" + System.currentTimeMillis() + ".jpg";
+							screenPath = System.getProperty("user.dir") + File.separator + "screenshot" + File.separator + "EleCreate" + File.separator + System.currentTimeMillis() + ".jpg";
 							node_info.replace("screenPath", screenPath);
 //							File screenShot = new File(screenPath);
 //							if (!screenShot.getParentFile().exists())

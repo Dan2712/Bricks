@@ -2,7 +2,9 @@ package com.dji.bricks.backgrounder.execution;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
@@ -66,6 +68,15 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 
 	public void run() {
 		int actionCount = 0;
+		File writename = new File(System.getProperty("user.dir") + File.separator + "output.txt");
+		BufferedWriter out = null;
+		try {
+			writename.createNewFile();
+			out = new BufferedWriter(new FileWriter(writename));
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		}
+
 		String screenshotRunPath = System.getProperty("user.dir") + File.separator + "screenshot/RunCap/" +
 	    		File.separator + TimeUtils.formatTimeForFile(System.currentTimeMillis());
 		File screenRun = new File(screenshotRunPath);
@@ -82,9 +93,11 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 			
 			@Override
 			public void processNewLines(String[] lines) {
-				for(String line : lines) { 
+				String[] proLines = lines[0].split("\n");
+				for(String line : proLines) { 
 		            if(line.contains("TOTAL")) {
 		            	tmp = line;
+		            	break;
 		            }
 		        }
 			}
@@ -119,7 +132,8 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					}
 					
 					device.executeShellCommand("dumpsys meminfo " + pid, mReceiver);
-					int MemValue = Integer.parseInt(tmp.split("\\s+")[1]);
+					int MemValue = Integer.parseInt(tmp.split("\\s+")[2]);
+					out.write(MemValue + "\n");
 				} catch (Exception e) {
 					if (e instanceof NoSuchElementException)
 						logText.append("No such element: " + this.ele_customName);
@@ -130,6 +144,12 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					break;
 				}
 			}
+		}
+		try {
+			out.flush();
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	

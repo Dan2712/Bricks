@@ -68,7 +68,6 @@ public class ExecutionMain {
 			AppiumInit.setUp(device, pkg, launchActivity);
 			RunTestCase testCase = new RunTestCase(jsonFile, 0, AppiumInit.driver, logText, device, pkg);
 			testCase.run();
-			saveLog(caseName);
 		} catch (NullPointerException e1) {
 			LOG.error(e1);
 		} catch (NoSuchSessionException e2) {
@@ -77,6 +76,7 @@ public class ExecutionMain {
 			LOG.error(e);
 		}finally {
 			try {
+				saveLog(caseName);
 				log_file_writer.close();
 				AppiumInit.driver.quit();
 			} catch (Exception e1) {
@@ -92,7 +92,7 @@ public class ExecutionMain {
 	    
 	    String logPath = System.getProperty("user.dir") + File.separator + "log" + File.separator + "AppiumLog_";
 	    LOG.info(AppiumInit.driver.getSessionId() + ": Saving device log...");
-	    List<LogEntry> logEntries = AppiumInit.driver.manage().logs().get("logcat").filter(Level.ALL);
+	    List<LogEntry> logEntries = AppiumInit.driver.manage().logs().get("logcat").filter(Level.CONFIG);
 	    File logFile = null;
 	    if (caseName != null)
 	    	logFile = new File(logPath + reportDate + "_" + caseName + ".log");

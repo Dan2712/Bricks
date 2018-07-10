@@ -305,6 +305,6 @@ public class FileUtils {
 		if (!file.getParentFile().exists())
 			file.getParentFile().mkdirs();
 		
-		ImageIO.write(image, ".jpg", file);
+		ImageIO.write(image, "jpg", file);
 	}
 }
