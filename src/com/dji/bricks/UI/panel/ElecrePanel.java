@@ -50,6 +50,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	private static JLabel Focustatus;
 	private static JLabel LongClickStatus;
 	private static MyIconButton buttonSave;
+	private static MyIconButton buttonRef;
 	private JPanel panelView;
 	private JPanel panelEreCenter;
 	
@@ -243,10 +244,13 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		labelEleItemNull_1.setPreferredSize(ConstantsUI.LABLE_SIZE_NULL_ITEM);
         buttonSave = new MyIconButton(ConstantsUI.ICON_SAVE, ConstantsUI.ICON_SAVE_ENABLE,
                 ConstantsUI.ICON_SAVE_DISABLE, "");
+        buttonRef = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
+        		ConstantsUI.ICON_ROW_REFRESH_DISABLE, "");
         
         panelGridSetting.add(labelEleItemNull_1);
         panelGridSetting.add(buttonSave);
-
+        panelGridSetting.add(buttonRef);
+        
 		panelRight.add(panelinfo, BorderLayout.NORTH);
 		panelRight.add(panelGridSetting, BorderLayout.CENTER);
 		return panelRight;
@@ -336,7 +340,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		buttonSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	if(textFieldEleItem_5.getText().equals(null) && textFieldEleItem_6.getText().equals(null)){
+            	if(textFieldEleItem_5.getText().equals(null) || textFieldEleItem_6.getText().equals(null)){
             		JOptionPane.showMessageDialog(buttonSave,"Failed");
             	}else{
             		buttonSave.setEnabled(true);
@@ -362,10 +366,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
                     	sql.insertEle("ELEMENT", sqllist);
                     	JOptionPane.showMessageDialog(buttonSave,"Save Complete");
                     	
-                    	textFieldEleItem_5.setText("");
                     	textFieldEleItem_6.setText("");
-
-                    	
                     } catch (SQLException e1) {
                     	if (e1.getMessage().equals("[SQLITE_CONSTRAINT_UNIQUE]  A UNIQUE constraint failed (UNIQUE constraint failed: ELEMENT.CUSTOM_NAME)"))
                     		JOptionPane.showMessageDialog(buttonSave, "Failed! The element already exists");
@@ -378,6 +379,50 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 //            	MainEntry.cachedThreadPool.shutdownNow();
             }
         });
+		
+		buttonRef.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(textFieldEleItem_5.getText().equals(null) || textFieldEleItem_6.getText().equals(null))
+            		JOptionPane.showMessageDialog(buttonSave,"Failed");
+				else {
+					try {
+						app_name_text = textFieldEleItem_4.getText();
+	                	activity_name_text = new String(textFieldEleItem_5.getText().getBytes(), "UTF-8");
+	                	custom_name_text = new String(textFieldEleItem_6.getText().getBytes(), "UTF-8");
+	                	state_text = node_info.get("clickable") + node_info.get("scrollable") + node_info.get("checkable") + node_info.get("focusable") + node_info.get("long-clickable");
+	                	xpath_text = node_info.get("xpath");
+	                	screen_text = node_info.get("screenPath");
+	                	app_name.put("APP_NAME", app_name_text);
+                    	custom_name.put("CUSTOM_NAME", custom_name_text);
+                    	activity_name.put("ACTIVITY_NAME", activity_name_text);
+                    	xpath.put("XPATH", xpath_text);
+                    	state.put("STATE", state_text);
+                    	screen.put("SCREEN_PATH", screen_text);
+                    	
+                    	sqllist.add(app_name);
+                    	sqllist.add(custom_name);
+                    	sqllist.add(activity_name);
+                    	sqllist.add(xpath);
+                    	sqllist.add(state);
+                    	sqllist.add(screen);
+                    	
+                    	int success = sql.updateElement("ELEMENT", sqllist);
+                    	if (success > 0)
+                    		JOptionPane.showMessageDialog(buttonSave,"Update Complete");
+                    	else
+                    		JOptionPane.showMessageDialog(buttonSave,"Update failed");
+                    	
+					} catch (SQLException e1) {
+                    	if (e1.getMessage().equals("[SQLITE_CONSTRAINT_UNIQUE]  A UNIQUE constraint failed (UNIQUE constraint failed: ELEMENT.CUSTOM_NAME)"))
+                    		JOptionPane.showMessageDialog(buttonSave, "Failed! The element already exists");
+                    } catch (UnsupportedEncodingException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
 		
 		textFieldEleItem_5.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) { 

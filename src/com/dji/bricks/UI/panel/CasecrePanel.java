@@ -566,10 +566,16 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             public void actionPerformed(ActionEvent e) {
             	try {
                     // i = the index of the selected row
-                    int i = casetable.getSelectedRow();
-                    if(i >= 0){
-                        model.removeRow(i);
-                        caseList.remove(i);
+//            		int[] rows = casetable.getSelectedRows();
+            		int i = casetable.getSelectedRow();
+//                    if(rows.length > 0){
+//                    	for (int i=0; i<rows.length; i++) {
+//                    		model.removeRow(rows[i]);
+//                    		caseList.remove(rows[i]);
+//                    	}
+            		if (i >= 0) {
+            			model.removeRow(i);
+            			caseList.remove(i);
                     } else {
                         System.out.println("Delete Error");
                     }
@@ -965,8 +971,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		scrshot_frame.setTitle("ScreenShot View");
 		scrshot_frame.setLayout(new BorderLayout());
 		scrshot_frame.setVisible(true);
-		ImageIcon Scrshot_image =new ImageIcon(
-	            CURRENT_DIR + File.separator + scrshot_pathname);
+		ImageIcon Scrshot_image =new ImageIcon(scrshot_pathname.toString());
 		JLabel picLabel = new JLabel(Scrshot_image);
 		JPanel posibtn_pane = new JPanel();
 		buttonDragAdd = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,

@@ -119,7 +119,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 							ele_sub = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(obj.getString("ele_xpath"));
 							this.ele_customName = obj.getString("custom_name");
 					} else if (obj.getString("property").equals("act")) {
-						Thread.sleep(500);
+						Thread.sleep(300);
 						actionCount ++;
 					    getScreenshot(screenshotRunPath, actionCount);
 						this.actionSwitch(obj);

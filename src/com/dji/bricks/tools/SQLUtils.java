@@ -61,19 +61,12 @@ public class SQLUtils {
 	}
 	
 	public void insertEle(String tableName, ArrayList<Map<String, String>> patterns) throws SQLException {
-		String activity_name = "";
-		String app_name = "";
-		String custom_name = "";
-		String xpath = "";
-		String state = "";
-		String screen_path = "";
-		
-		activity_name = patterns.get(2).get("ACTIVITY_NAME");
-		app_name = patterns.get(0).get("APP_NAME");
-		custom_name = patterns.get(1).get("CUSTOM_NAME");
-		xpath = patterns.get(3).get("XPATH");
-		state = patterns.get(4).get("STATE");
-		screen_path = patterns.get(5).get("SCREEN_PATH");
+		String activity_name = patterns.get(2).get("ACTIVITY_NAME");
+		String app_name = patterns.get(0).get("APP_NAME");
+		String custom_name = patterns.get(1).get("CUSTOM_NAME");
+		String xpath = patterns.get(3).get("XPATH");
+		String state = patterns.get(4).get("STATE");
+		String screen_path = patterns.get(5).get("SCREEN_PATH");
 		
 		Statement stmt = conn.createStatement();
 		String insert_act = "INSERT INTO ACTIVITY (ACTIVITY_NAME, APP_NAME) "
@@ -112,5 +105,19 @@ public class SQLUtils {
 			e.printStackTrace();
 		}
 		return rs;
+	}
+	
+	public int updateElement(String tableName, ArrayList<Map<String, String>> patterns) throws SQLException {
+		String activity_name = patterns.get(2).get("ACTIVITY_NAME");
+		String app_name = patterns.get(0).get("APP_NAME");
+		String custom_name = patterns.get(1).get("CUSTOM_NAME");
+		String xpath = patterns.get(3).get("XPATH");
+		String state = patterns.get(4).get("STATE");
+		String screen_path = patterns.get(5).get("SCREEN_PATH");
+		
+		Statement stmt = conn.createStatement();
+		String update_act = "UPDATE ELEMENT SET XPATH = " + xpath + ", STATE = " + state + ", SCREEN_PATH = " + screen_path +
+				" WHERE ACTIVITY_NAME = " + activity_name + ", APP_NAME = " + app_name + ", CUSTOM_NAME = " + custom_name + ";";
+		return stmt.executeUpdate(update_act);
 	}
 }
