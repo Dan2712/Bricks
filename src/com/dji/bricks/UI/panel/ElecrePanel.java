@@ -1,11 +1,14 @@
 package com.dji.bricks.UI.panel;
 import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.InputMethodEvent;
+import java.awt.event.InputMethodListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
@@ -25,8 +28,14 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
+import org.hamcrest.collection.IsIn;
+import org.hamcrest.core.IsInstanceOf;
 
 import com.android.ddmlib.IDevice;
 import com.dji.bricks.GlobalObserver;
@@ -37,6 +46,11 @@ import com.dji.bricks.node_selection.VariableChangeObserve;
 import com.dji.bricks.tools.PropertyUtil;
 import com.dji.bricks.tools.SQLUtils;
 import com.dji.bricks.tools.SwitchButton;
+
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.swing.*;
 
 /**
  *
@@ -128,14 +142,15 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 
 	private JTextField textFieldEleItem_1;
 	private JTextField textFieldEleItem_4;
-	private JTextField textFieldEleItem_5;
-	private JTextField textFieldEleItem_6;
+	private JComboBox<String> textFieldEleItem_5;
+	private JComboBox<String> textFieldEleItem_6;
 	private JPanel panelRight;
+	private JTextField textFieldActivity;
+	private JTextField textFieldElement;
+	
 	/*
 	 * TODO // @dan Viewbox 
 	 */
-	private JComboBox<String> viewBox;
-	
 	private JPanel getRightPanel() {
 		
 		panelRight = new JPanel();
@@ -213,9 +228,8 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		JLabel view_name = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item5"));
 		JLabel ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.elecre.item6"));
 		textFieldEleItem_4 = new JTextField();
-		textFieldEleItem_5 = new JTextField();
-		textFieldEleItem_6 = new JTextField();
-		viewBox = new JComboBox<String>();
+		textFieldEleItem_5 = new JComboBox<>();
+		textFieldEleItem_6 = new JComboBox<>();
 
 		app_name.setFont(ConstantsUI.SEC_TITLE);
 		view_name.setFont(ConstantsUI.SEC_TITLE);
@@ -230,15 +244,19 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		textFieldEleItem_4.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
 		textFieldEleItem_5.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
 		textFieldEleItem_6.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
-		viewBox.setPreferredSize(ConstantsUI.TEXT_FIELD_SIZE_ITEM);
+		
+		textFieldEleItem_5.setEditable(true);
+		textFieldEleItem_6.setEditable(true);
 		
 		panelGridSetting.add(app_name);
 		panelGridSetting.add(textFieldEleItem_4);
 		panelGridSetting.add(view_name);
 		panelGridSetting.add(textFieldEleItem_5);
-		panelGridSetting.add(viewBox);
 		panelGridSetting.add(ele_name);
 		panelGridSetting.add(textFieldEleItem_6);
+		
+		textFieldActivity = (JTextField) textFieldEleItem_5.getEditor().getEditorComponent();
+		textFieldElement = (JTextField) textFieldEleItem_6.getEditor().getEditorComponent();
 
 		JLabel labelEleItemNull_1 = new JLabel();
 		labelEleItemNull_1.setPreferredSize(ConstantsUI.LABLE_SIZE_NULL_ITEM);
@@ -327,27 +345,32 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	private String state_text;
 	private String activity_name_text;
 	private String screen_text;
-	Map<String, String> app_name = new HashMap<String, String>();
-	Map<String, String> custom_name = new HashMap<String, String>();
-	Map<String, String> xpath = new HashMap<String, String>();
-	Map<String, String> state = new HashMap<String, String>();
-	Map<String, String> activity_name = new HashMap<String, String>();
-	Map<String, String> screen = new HashMap<String, String>();
+	private Map<String, String> app_name = new HashMap<String, String>();
+	private Map<String, String> custom_name = new HashMap<String, String>();
+	private Map<String, String> xpath = new HashMap<String, String>();
+	private Map<String, String> state = new HashMap<String, String>();
+	private Map<String, String> activity_name = new HashMap<String, String>();
+	private Map<String, String> screen = new HashMap<String, String>();
 	
-	ArrayList<Map<String, String>> sqllist = new ArrayList<Map<String, String>>();
+	private ArrayList<Map<String, String>> sqllist = new ArrayList<Map<String, String>>();
+	private EventList<String> actEventList = new BasicEventList<>();
+	private EventList<String> eleEventList = new BasicEventList<>();
 	
 	public void addListener() {
+		AutoCompleteSupport.install(textFieldEleItem_5, actEventList);
+		AutoCompleteSupport.install(textFieldEleItem_6, eleEventList);
+		
 		buttonSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	if(textFieldEleItem_5.getText().equals(null) || textFieldEleItem_6.getText().equals(null)){
+            	if(textFieldActivity.getText().equals(null) || textFieldElement.getText().equals(null)){
             		JOptionPane.showMessageDialog(buttonSave,"Failed");
             	}else{
             		buttonSave.setEnabled(true);
                     try {
                     	app_name_text = textFieldEleItem_4.getText();
-                    	activity_name_text = new String(textFieldEleItem_5.getText().getBytes(), "UTF-8");
-                    	custom_name_text = new String(textFieldEleItem_6.getText().getBytes(), "UTF-8");
+                    	activity_name_text = new String(textFieldActivity.getText().getBytes(), "UTF-8");
+                    	custom_name_text = new String(textFieldElement.getText().getBytes(), "UTF-8");
                     	state_text = node_info.get("clickable") + node_info.get("scrollable") + node_info.get("checkable") + node_info.get("focusable") + node_info.get("long-clickable");
                     	xpath_text = node_info.get("xpath");
                     	screen_text = node_info.get("screenPath");
@@ -366,7 +389,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
                     	sql.insertEle("ELEMENT", sqllist);
                     	JOptionPane.showMessageDialog(buttonSave,"Save Complete");
                     	
-                    	textFieldEleItem_6.setText("");
+                    	textFieldElement.setText("");
                     } catch (SQLException e1) {
                     	if (e1.getMessage().equals("[SQLITE_CONSTRAINT_UNIQUE]  A UNIQUE constraint failed (UNIQUE constraint failed: ELEMENT.CUSTOM_NAME)"))
                     		JOptionPane.showMessageDialog(buttonSave, "Failed! The element already exists");
@@ -384,13 +407,13 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(textFieldEleItem_5.getText().equals(null) || textFieldEleItem_6.getText().equals(null))
+				if(textFieldActivity.getText().equals(null) || textFieldElement.getText().equals(null))
             		JOptionPane.showMessageDialog(buttonSave,"Failed");
 				else {
 					try {
 						app_name_text = textFieldEleItem_4.getText();
-	                	activity_name_text = new String(textFieldEleItem_5.getText().getBytes(), "UTF-8");
-	                	custom_name_text = new String(textFieldEleItem_6.getText().getBytes(), "UTF-8");
+	                	activity_name_text = new String(textFieldActivity.getText().getBytes(), "UTF-8");
+	                	custom_name_text = new String(textFieldElement.getText().getBytes(), "UTF-8");
 	                	state_text = node_info.get("clickable") + node_info.get("scrollable") + node_info.get("checkable") + node_info.get("focusable") + node_info.get("long-clickable");
 	                	xpath_text = node_info.get("xpath");
 	                	screen_text = node_info.get("screenPath");
@@ -424,62 +447,66 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 			}
 		});
 		
-		textFieldEleItem_5.addActionListener(new ActionListener() {
-	        public void actionPerformed(ActionEvent e) { 
-	            if(textFieldEleItem_5.getText().length() == 0 || textFieldEleItem_6.getText().length() == 0)
-	                buttonSave.setEnabled(false);
-	            else
-	            {
-	                buttonSave.setEnabled(true);
-	            }
-	        }
-		});
-		
-		viewBox.addMouseListener(new MouseListener() {
+		textFieldActivity.addFocusListener(new FocusListener() {
 			
 			@Override
-			public void mouseReleased(MouseEvent e) {
+			public void focusLost(FocusEvent e) {
+				// TODO Auto-generated method stub
+				actEventList.clear();
 			}
 			
 			@Override
-			public void mousePressed(MouseEvent e) {
-			}
-			
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
-			
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				viewBox.removeAllItems();
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
 				ResultSet rs = sql.queryElement("ACTIVITY", textFieldEleItem_4.getText());
+				ArrayList<String> actList = new ArrayList<>();
 				try {
 					while (rs.next()) {
-						viewBox.addItem(new String(rs.getBytes("ACTIVITY_NAME"), "UTF-8"));
+						actList.add(new String(rs.getBytes("ACTIVITY_NAME"), "UTF-8"));
 					}
 				} catch (SQLException e1) {
 					e1.printStackTrace();
 				} catch (UnsupportedEncodingException e2) {
 					e2.printStackTrace();
 				}
-			}
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
+				actEventList.addAll(actList);
 			}
 		});
 		
-		viewBox.addItemListener(new ItemListener() {
+		textFieldEleItem_5.addItemListener(new ItemListener() {
 			
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-					viewBox.setSelectedItem(e);
-					textFieldEleItem_5.setText(e.getItem().toString());
-				}
+				// TODO Auto-generated method stub
+				if (e.getStateChange() == ItemEvent.SELECTED)
+					textFieldElement.setText("");
 			}
 		});
 		
+		textFieldElement.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				eleEventList.clear();
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				ResultSet rs = sql.queryElement("ELEMENT", textFieldEleItem_4.getText(), textFieldActivity.getText());
+				ArrayList<String> eleList = new ArrayList<>();
+				try {
+					while (rs.next()) {
+						eleList.add(new String(rs.getBytes("CUSTOM_NAME"), "UTF-8"));
+					}
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				} catch (UnsupportedEncodingException e2) {
+					e2.printStackTrace();
+				}
+				eleEventList.addAll(eleList);
+			}
+		});
 	}
 
 	@Override

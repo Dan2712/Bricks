@@ -19,5 +19,6 @@
 	<classpathentry kind="lib" path="lib/httpclient-4.5.3.jar"/>
 	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.19.3.jar"/>
 	<classpathentry kind="lib" path="lib/jxl-2.6.jar"/>
+	<classpathentry kind="lib" path="lib/glazedlists-1.7.0_java15.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
