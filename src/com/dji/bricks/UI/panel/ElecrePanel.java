@@ -1,18 +1,13 @@
 package com.dji.bricks.UI.panel;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.InputMethodEvent;
-import java.awt.event.InputMethodListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.UnsupportedEncodingException;
 import java.sql.ResultSet;
@@ -28,14 +23,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.JTextComponent;
-import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
-import org.hamcrest.collection.IsIn;
-import org.hamcrest.core.IsInstanceOf;
 
 import com.android.ddmlib.IDevice;
 import com.dji.bricks.GlobalObserver;
@@ -49,8 +38,7 @@ import com.dji.bricks.tools.SwitchButton;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.swing.*;
+import ca.odell.glazedlists.swing.AutoCompleteSupport;
 
 /**
  *

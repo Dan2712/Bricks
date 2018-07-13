@@ -9,6 +9,8 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
@@ -63,6 +65,10 @@ import com.dji.bricks.tools.FileUtils;
 import com.dji.bricks.tools.PropertyUtil;
 import com.dji.bricks.tools.SQLUtils;
 import com.dji.bricks.tools.TimeSeriesChart;
+
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.AutoCompleteSupport;
 
 /**
  * Case create page 
@@ -121,14 +127,12 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private String filepath;
 	private SQLUtils sql = null;
 	private ResultSet xpathSet = null;
-	private PrintStream standardOut;
 	private Object[] table_row = new Object[5];
 	private int[] speAddList = {2, 4, 7, 11};
 	
-	private EleListener elisten;
-	private ViewListener vlisten;
-	
 	private PopUpWindow popWin;
+	private EventList<String> actEventList = new BasicEventList<>();
+	private EventList<String> eleEventList = new BasicEventList<>();
 	
 	/**
 	 * Initialize
@@ -148,9 +152,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		cus_name = new StringBuilder();
 		scrshot_pathname = new StringBuilder();
 		appName = new StringBuilder();
-		
-		elisten = new EleListener(sql, xpath, cus_name, scrshot_pathname);
-		vlisten = new ViewListener(sql, comboxEleName, elisten, appName);
 		
 		popWin = new PopUpWindow(table_row, model, casetable, sql, caseList);
 	}
@@ -566,16 +567,17 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             public void actionPerformed(ActionEvent e) {
             	try {
                     // i = the index of the selected row
-//            		int[] rows = casetable.getSelectedRows();
-            		int i = casetable.getSelectedRow();
-//                    if(rows.length > 0){
-//                    	for (int i=0; i<rows.length; i++) {
-//                    		model.removeRow(rows[i]);
-//                    		caseList.remove(rows[i]);
-//                    	}
-            		if (i >= 0) {
-            			model.removeRow(i);
-            			caseList.remove(i);
+            		int[] rows = casetable.getSelectedRows();
+            		int count = 0;
+                    if(rows.length > 0){
+                    	for (int i=0; i<rows.length; i++) {
+                    		model.removeRow(rows[i] - count);
+                    		caseList.remove(rows[i] - count);
+                    		count ++;
+                    	}
+//            		if (i >= 0) {
+//            			model.removeRow(i);
+//            			caseList.remove(i);
                     } else {
                         System.out.println("Delete Error");
                     }
@@ -1049,47 +1051,165 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		comboxAppName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
 		
 		comboxViewName = new JComboBox<String>();
-		comboxViewName.setEditable(false);
+		comboxViewName.setEditable(true);
 		comboxViewName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
 		
 		comboxEleName = new JComboBox<String>();
-		comboxEleName.setEditable(false);
+		comboxEleName.setEditable(true);
 		comboxEleName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
 		
-		comboxAppName.addItemListener(new ItemListener() {
-			// combobox item changed method
+		AutoCompleteSupport.install(comboxViewName, actEventList);
+		AutoCompleteSupport.install(comboxEleName, eleEventList);
+		JTextField textView = (JTextField) comboxViewName.getEditor().getEditorComponent();
+		JTextField textEle = (JTextField) comboxEleName.getEditor().getEditorComponent();
+		
+//		comboxAppName.addItemListener(new ItemListener() {
+//			// combobox item changed method
+//			@Override
+//			public void itemStateChanged(ItemEvent e) {
+//				if (e.getStateChange() == ItemEvent.SELECTED) {
+//					ResultSet rs = null;
+//					try {
+//						appName.delete(0, appName.length()).append(new String(((String) e.getItem()).getBytes(), "UTF-8"));
+//    					rs = sql.queryElement("ACTIVITY", appName.toString());
+//    					
+//    					comboxViewName.removeAllItems();
+//    					comboxEleName.removeAllItems();
+//    					comboxViewName.removeItemListener(vlisten);
+//					
+//						while (rs.next()) {
+//							String viewName = new String(rs.getBytes("ACTIVITY_NAME"), "UTF-8");
+//							comboxViewName.addItem(viewName);
+//						}
+//						comboxViewName.setSelectedItem(null);
+//						comboxViewName.addItemListener(vlisten);
+//						
+//					} catch (SQLException e1) {
+//						e1.printStackTrace();
+//					} catch (UnsupportedEncodingException e1) {
+//						e1.printStackTrace();
+//					} finally {
+//						if (rs != null) {
+//							try {
+//								rs.close();
+//							} catch (SQLException e1) {
+//								e1.printStackTrace();
+//							}
+//						}
+//					}
+//				}
+//			}
+//		});
+		
+		textView.addFocusListener(new FocusListener() {
+			
 			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-					ResultSet rs = null;
-					try {
-						appName.delete(0, appName.length()).append(new String(((String) e.getItem()).getBytes(), "UTF-8"));
-    					rs = sql.queryElement("ACTIVITY", appName.toString());
-    					
-    					comboxViewName.removeAllItems();
-    					comboxEleName.removeAllItems();
-    					comboxViewName.removeItemListener(vlisten);
+			public void focusLost(FocusEvent e) {
+				// TODO Auto-generated method stub
+				actEventList.clear();
+				comboxEleName.setSelectedItem(null);
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				ResultSet rs = null;
+				try {
+					appName.delete(0, appName.length()).append(new String(((String) comboxAppName.getSelectedItem()).getBytes(), "UTF-8"));
+					rs = sql.queryElement("ACTIVITY", appName.toString());
 					
-						while (rs.next()) {
-							String viewName = new String(rs.getBytes("ACTIVITY_NAME"), "UTF-8");
-							comboxViewName.addItem(viewName);
-						}
-						comboxViewName.setSelectedItem(null);
-						comboxViewName.addItemListener(vlisten);
-						
-					} catch (SQLException e1) {
-						e1.printStackTrace();
-					} catch (UnsupportedEncodingException e1) {
-						e1.printStackTrace();
-					} finally {
-						if (rs != null) {
-							try {
-								rs.close();
-							} catch (SQLException e1) {
-								e1.printStackTrace();
-							}
+					ArrayList<String> actList = new ArrayList<>();
+					
+					while (rs.next()) {
+						actList.add(new String(rs.getBytes("ACTIVITY_NAME"), "UTF-8"));
+					}
+					actEventList.addAll(actList);
+				} catch (UnsupportedEncodingException | SQLException e1) {
+					e1.printStackTrace();
+				} finally {
+					if (rs != null) {
+						try {
+							rs.close();
+							rs = null;
+						} catch (SQLException e1) {
+							e1.printStackTrace();
 						}
 					}
+				}
+			}
+		});
+		
+		textEle.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				// TODO Auto-generated method stub
+				eleEventList.clear();
+			}
+			
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				// TODO Auto-generated method stub
+				String viewName = textView.getText();
+				ResultSet rs = sql.queryElement("ELEMENT", appName.toString(), viewName);
+				
+				ArrayList<String> eleList = new ArrayList<>();
+				try {
+					rs.next();
+					String eleFirst = new String(rs.getBytes(1), "UTF-8");
+					eleEventList.add(eleFirst);
+					while ((rs.next())) {
+						String eleName = rs.getString(1);
+						eleList.add(eleName);
+					}
+					eleEventList.addAll(eleList);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				} catch (UnsupportedEncodingException e1) {
+					e1.printStackTrace();
+				} finally {
+					if (rs != null) {
+						try {
+							rs.close();
+							rs = null;
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+					}
+				}
+			}
+		});
+		
+		comboxViewName.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				// TODO Auto-generated method stub
+				eleEventList.clear();
+			}
+		});
+		
+		comboxEleName.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				// TODO Auto-generated method stub
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					String ele_cus = (String) e.getItem();
+					xpathSet = sql.queryElement("ELEMENT", ele_cus);
+				}
+				
+				try {
+					while (xpathSet.next()) {
+						xpath.delete(0, xpath.length()).append(xpathSet.getString("XPATH"));
+						cus_name.delete(0, cus_name.length()).append(xpathSet.getString("CUSTOM_NAME"));
+						scrshot_pathname.delete(0, scrshot_pathname.length()).append(xpathSet.getString("SCREEN_PATH"));
+						String state = xpathSet.getString(5);
+					}
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				} finally {
+					
 				}
 			}
 		});
