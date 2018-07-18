@@ -1,45 +1,82 @@
-//package com.dji.bricks.tools;
-//
-//import java.io.File;
-//import java.io.FileInputStream;
-//import java.io.FileNotFoundException;
-//import java.io.FileWriter;
-//import java.io.IOException;
-//import java.io.InputStream;
-//import java.io.PrintWriter;
-//
-//import jxl.Sheet;
-//import jxl.Workbook;
-//import jxl.read.biff.BiffException;
-//import jxl.write.Label;
-//import jxl.write.Number;
-//import jxl.write.WritableSheet;
-//import jxl.write.WritableWorkbook;
-//
-//public class ExcelUtils {
-//	
-//	private WritableWorkbook book;
-//	private WritableSheet writeSheet;
-//	
-//	public ExcelUtils() {
-//		init();
-//	}
-//	
-//	private void init() {
-//		try {
-//			File xlsFile = new File(System.getProperty("user.dir") + File.separator + "SystemInfo.xls");
-//			if (xlsFile.exists())
-//				book = Workbook.getWorkbook(xlsFile);
-//			
-//			book = Workbook.createWorkbook();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}  
-//	}
-//	
-//	public void createSheet(String sheetName) {
-//		writeSheet = book.createSheet(sheetName, book.getNumberOfSheets());
-//	}
+package com.dji.bricks.tools;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import com.dji.bricks.MainEntry;
+
+public class ExcelUtils {
+	private static final Logger LOG = Logger.getLogger(ExcelUtils.class);
+	
+	private final String CURRENT_DIR = System.getProperty("user.dir");
+	
+	private XSSFWorkbook workbook;
+	private File xlsFile;
+	
+	public ExcelUtils() {
+		init();
+	}
+	
+	private void init() {
+		Date now = new Date();
+		SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd"); 
+		try {
+			xlsFile = new File(CURRENT_DIR + File.separator + "performanceIndex" + File.separator + format.format(now) + ".xlsx");
+			if (xlsFile.exists()) {
+				FileInputStream fip = new FileInputStream(xlsFile);
+				workbook = new XSSFWorkbook(fip);
+			} else {
+				workbook = new XSSFWorkbook();
+				xlsFile.getParentFile().mkdirs();
+				FileOutputStream out = new FileOutputStream(xlsFile);
+				workbook.write(out);
+				out.close();
+			}
+			
+		} catch (Exception e) {
+			LOG.error(e);
+		}  
+	}
+	
+	public XSSFSheet getSheet(String sheetName) {
+		XSSFSheet worksheet = null;
+		if (workbook.getSheet(sheetName) == null)
+			worksheet = workbook.createSheet(sheetName);	
+		else
+			worksheet = workbook.getSheet(sheetName);
+		
+		return worksheet;
+	}
+	
+	public void updateWorkbook() {
+		try {
+			FileOutputStream out = new FileOutputStream(xlsFile);
+			workbook.write(out);
+		} catch (FileNotFoundException e) {
+			LOG.error(e);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public XSSFCellStyle setCellAlignCenter() {
+		XSSFCellStyle style = workbook.createCellStyle();
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
+        return style;
+	}
 //	
 //	public void readExcel(File file) {
 //		try {
@@ -69,7 +106,7 @@
 //			e.printStackTrace();
 //		}
 //	}
-//
+
 //	public void readExcelWrite2TXT(File file) {
 //		// 创建文件输出流
 //		FileWriter fw = null;
@@ -117,7 +154,7 @@
 //			}
 //		}
 //	}
-//	
+	
 //	public void writeExcel() {
 //		try {  
 //            // 在Label对象的构造子中指名单元格位置是第一列第一行(0,0),单元格内容为string  
@@ -135,4 +172,4 @@
 //            System.out.println(e);  
 //        } 
 //	}
-//}
+}

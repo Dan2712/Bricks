@@ -1,2 +1,0 @@
-ME is clicked
-setting_btn is clicked

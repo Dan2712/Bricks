@@ -4,14 +4,21 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.JTextArea;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -26,11 +33,11 @@ import com.android.ddmlib.MultiLineReceiver;
 import com.android.ddmlib.RawImage;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
-import com.dji.bricks.backgrounder.ExecutionMain;
 import com.dji.bricks.backgrounder.base.CusAction;
 import com.dji.bricks.backgrounder.base.CusElement;
 import com.dji.bricks.backgrounder.base.CusValidation;
-import com.dji.bricks.tools.FileUtils;
+import com.dji.bricks.tools.ExcelUtils;
+import com.dji.bricks.tools.GfxAnalyse;
 import com.dji.bricks.tools.TimeUtils;
 
 import io.appium.java_client.android.AndroidDriver;
@@ -53,38 +60,55 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 	private List<WebElement> dragedElement;
 	private Boolean isDraged = false;
 	private String tmp;
+	private String caseName;
+	private ExcelUtils exlUtils;
+	private GfxAnalyse gfxUtil;
+	private CollectingOutputReceiver receiver;
+	private MultiLineReceiver mReceiver;
+	private String pid;
+	private XSSFSheet CPUSheet;
+	private XSSFSheet MemSheet;
+	private XSSFSheet FPSSheet;
+	private XSSFRow CPURow;
+	private XSSFRow MemRow;
+	private XSSFRow FPSRow;
+	private XSSFCellStyle style;
+	private String screenshotRunPath;
+	private int CPURowNum;
+	private int MemRowNum;
+	private int FPSRowNum;
+	private Map<String, Object[]> CPUInfo = null;
+	private Map<String, Object[]> MemInfo = null;
+	private Map<String, Object[]> FPSInfo = null;
 	
-	public RunTestCase(JSONArray jsonFile, int runMode, AndroidDriver driver, JTextArea logText, IDevice device, String pkg) {
+	public RunTestCase(JSONArray jsonFile, int runMode, AndroidDriver driver, JTextArea logText, IDevice device, String pkg, String caseName) {
 //		this.path = path;
 		this.runMode = runMode;
 		this.driver = driver;
 		this.logText = logText;
 		this.device = device;
 		this.jsonFile = jsonFile;
+		this.pkg = pkg;
+		this.caseName = caseName;
+		init();
+	}
+	
+	private void init() {
 		action = new CusAction(driver, device);
 		validation = new CusValidation(driver);
-		this.pkg = pkg;
-	}
-
-	public void run() {
-		int actionCount = 0;
-		File writename = new File(System.getProperty("user.dir") + File.separator + "output.txt");
-		BufferedWriter out = null;
-		try {
-			writename.createNewFile();
-			out = new BufferedWriter(new FileWriter(writename));
-		} catch (IOException e2) {
-			e2.printStackTrace();
-		}
-
-		String screenshotRunPath = System.getProperty("user.dir") + File.separator + "screenshot/RunCap/" +
+		exlUtils = new ExcelUtils();
+		gfxUtil = new GfxAnalyse(device, pkg);
+		
+		//init screenshot running cap
+		screenshotRunPath = System.getProperty("user.dir") + File.separator + "screenshot/RunCap/" +
 	    		File.separator + TimeUtils.formatTimeForFile(System.currentTimeMillis());
 		File screenRun = new File(screenshotRunPath);
 		if (!screenRun.exists())
 			screenRun.mkdirs();
-		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
 		
-		MultiLineReceiver mReceiver = new MultiLineReceiver() {
+		//init performance archive
+		receiver = new CollectingOutputReceiver();
+		mReceiver = new MultiLineReceiver() {
 			
 			@Override
 			public boolean isCancelled() {
@@ -94,12 +118,6 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 			@Override
 			public void processNewLines(String[] lines) {
 				String[] proLines = lines[0].split("\n");
-				for(String line : proLines) { 
-		            if(line.contains("TOTAL")) {
-		            	tmp = line;
-		            	break;
-		            }
-		        }
 			}
 		};
 		
@@ -109,8 +127,98 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 			e1.printStackTrace();
 		}
 		receiver.flush();
-		String pid = receiver.getOutput().split("\\s+")[1];
+		pid = receiver.getOutput().split("\\s+")[1];
 		
+		style = exlUtils.setCellAlignCenter();
+		
+		CPUSheet = exlUtils.getSheet("CPU");
+		MemSheet = exlUtils.getSheet("Memory");
+		FPSSheet = exlUtils.getSheet("FPS");
+		CPURowNum = CPUSheet.getLastRowNum();
+		MemRowNum = MemSheet.getLastRowNum();
+		FPSRowNum = FPSSheet.getLastRowNum();
+		CPUInfo = new TreeMap<String, Object[]>();
+		MemInfo = new TreeMap<String, Object[]>();
+		FPSInfo = new TreeMap<String, Object[]>();
+		
+		if (CPURowNum == 0) 
+			initRow(CPUInfo, CPURow, CPUSheet);
+		
+		if (MemRowNum == 0)
+			initRow(MemInfo, MemRow, MemSheet);
+		
+		if (FPSRowNum == 0)
+			initRow(FPSInfo, FPSRow, FPSSheet);
+	}
+	
+	private void initRow(Map<String, Object[]> infoMap, XSSFRow row, XSSFSheet sheet) {
+		Object[] arrayOb = new Object[101];
+		arrayOb[0] = "caseName/Num";
+		for (int i=1; i<=100; i++) {
+			arrayOb[i] = i;
+		}
+		
+		infoMap.put("1", arrayOb);
+		int rowid = 0;
+		
+//		if (type == 0) {
+		row = sheet.createRow(rowid ++);
+		Object [] objectArr = infoMap.get("1");
+		int cellid = 0;
+		for (Object obj : objectArr) {
+			Cell cell = row.createCell(cellid ++);
+			if (obj instanceof String)
+				cell.setCellValue((String) obj);
+			else if (obj instanceof Integer)
+				cell.setCellValue(String.valueOf(obj));
+		}
+//		} else if (type == 1) {
+//			row = sheet.createRow(0);
+//			XSSFRow rowGPU = sheet.createRow(1);
+//			Object[] objectArr = infoMap.get("1");
+//			for (Object obj : objectArr) {
+//				if (obj instanceof String) {
+//					Cell cell = row.createCell(0);
+//					cell.setCellValue((String) obj);
+//					GPUSheet.addMergedRegion(new CellRangeAddress(0, 1, 0, 0));
+//				} else if (obj instanceof Integer) {
+//					int cellid = ((Integer) obj) * 3 - 2;
+//					Cell cell = row.createCell(cellid);
+//					cell.setCellValue(String.valueOf(obj));
+//					
+//					int cellGpuid = (Integer) obj;
+//					if (cellGpuid % 3 == 1) {
+//						Cell cellDraw = rowGPU.createCell(cellGpuid);
+//						cellDraw.setCellValue("Draw");
+//						cellDraw.setCellStyle(style);
+//					} else if (cellGpuid % 3 == 2) {
+//						Cell cellPro = rowGPU.createCell(cellGpuid);
+//						cellPro.setCellValue("Process");
+//						cellPro.setCellStyle(style);
+//					} else if (cellGpuid % 3 == 0) {
+//						Cell cellExe = rowGPU.createCell(cellGpuid);
+//						cellExe.setCellValue("Execute");
+//						cellExe.setCellStyle(style);
+//					}
+//					cell.setCellStyle(style);
+//					GPUSheet.addMergedRegion(new CellRangeAddress(0, 0, cellid, cellid + 2));
+//				}
+//			}
+//		}
+		exlUtils.updateWorkbook();
+	}
+
+	public void run() {
+		int actionCount = 0;
+		BufferedWriter out = null;
+		
+		Object[] memList = new Object[jsonFile.size() + 1];
+		memList[0] = caseName;
+		
+		Object[] fpsList = new Object[jsonFile.size() + 1];
+		fpsList[0] = caseName;
+		
+		//running start
 		if (this.runMode == 0) {
 			for (int i=0; i<jsonFile.size(); i++) {
 				JSONObject obj = jsonFile.getJSONObject(i);
@@ -123,6 +231,8 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 						actionCount ++;
 					    getScreenshot(screenshotRunPath, actionCount);
 						this.actionSwitch(obj);
+						
+						performanceGet(memList, fpsList, actionCount);
 					} else if (obj.getString("property").equals("val")) {
 						this.validationSwitch(obj);
 						Thread.sleep(1000);
@@ -130,10 +240,6 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 						int time = ((Integer)obj.getJSONObject("params").get("time")) * 1000;
 						Thread.sleep(time);
 					}
-					
-					device.executeShellCommand("dumpsys meminfo " + pid, mReceiver);
-					int MemValue = Integer.parseInt(tmp.split("\\s+")[2]);
-					out.write(MemValue + "\n");
 				} catch (Exception e) {
 					if (e instanceof NoSuchElementException)
 						logText.append("No such element: " + this.ele_customName);
@@ -144,13 +250,45 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					break;
 				}
 			}
+			updateRow(memList, fpsList);
 		}
-		try {
-			out.flush();
-			out.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+	}
+	
+	private void performanceGet(Object[] memList, Object[] fpsList, int index) throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
+		//get mem value
+		device.executeShellCommand("adb shell \"su 0 \"procrank | grep \'dji.go.v4\'\"\"", receiver);
+		receiver.flush();
+		int memValue = Integer.parseInt(receiver.getOutput().split("\\s+")[3]);
+		memList[index] = memValue;
+		
+		//get FPS value
+		int fps = gfxUtil.getGfxInfo();
+		fpsList[index] = fps;
+	}
+	
+	private void updateRow(Object[] memList, Object[] fpsList) {
+		MemInfo.put(String.valueOf(MemRowNum++), memList);
+		MemRow = MemSheet.createRow(MemRowNum);
+		int cellMemid = 0;
+		for (Object obj : memList) {
+			Cell cell = MemRow.createCell(cellMemid++);
+			if (obj instanceof String)
+				cell.setCellValue((String)obj);
+			else if (obj instanceof Integer)
+				cell.setCellValue(String.valueOf(obj));
 		}
+		
+		FPSInfo.put(String.valueOf(FPSRowNum++), fpsList);
+		FPSRow = FPSSheet.createRow(FPSRowNum);
+		int cellFpsid = 0;
+		for (Object obj : fpsList) {
+			Cell cell = FPSRow.createCell(cellFpsid++);
+			if (obj instanceof String)
+				cell.setCellValue((String)obj);
+			else if (obj instanceof Integer)
+				cell.setCellValue(String.valueOf(obj));
+		}
+		exlUtils.updateWorkbook();
 	}
 	
 	public void actionSwitch(JSONObject action_info) throws Exception {

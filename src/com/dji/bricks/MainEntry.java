@@ -34,6 +34,7 @@ import com.dji.bricks.UI.panel.ToolBarPanel;
 import com.dji.bricks.backgrounder.execution.AppiumInit;
 import com.dji.bricks.node_selection.VariableChangeObserve;
 import com.dji.bricks.tools.DeviceConnection;
+import com.dji.bricks.tools.ExcelUtils;
 import com.dji.bricks.tools.SQLUtils;
 
 /**
@@ -42,7 +43,7 @@ import com.dji.bricks.tools.SQLUtils;
  */
 
 public class MainEntry implements GlobalObserver {
-    private static Logger LOG = Logger.getLogger(MainEntry.class);
+    private static final Logger LOG = Logger.getLogger(MainEntry.class);
 
     public static JFrame frame;
     private ToolBarPanel toolbar;
@@ -60,6 +61,7 @@ public class MainEntry implements GlobalObserver {
 	private DeviceConnection adb;
 	public static ExecutorService cachedThreadPool = Executors.newFixedThreadPool(100);
 	private VariableChangeObserve obs = new VariableChangeObserve();
+	public static ExcelUtils exlUtil = null;
 	
 	/**
      * 
@@ -92,14 +94,16 @@ public class MainEntry implements GlobalObserver {
                 .configure(ConstantsUI.CURRENT_DIR + File.separator + "config" + File.separator + "log4j.properties");
         LOG.info("==================BricksInitStart====================");
         
+        //init adb
 		adb = new DeviceConnection();
 		adb.registerObserver(MainEntry.this);
 
+		//init UImanager
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
                 | UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
+            LOG.error(e);
         }
         
         //init sqlite
@@ -111,7 +115,7 @@ public class MainEntry implements GlobalObserver {
             sql = new SQLUtils(connection);
             sql.creatTable();
         } catch (Exception e) {
-        	e.printStackTrace();
+        	LOG.error(e);
         	System.exit(0);
         }
         
@@ -123,12 +127,13 @@ public class MainEntry implements GlobalObserver {
 				try {
 					Runtime.getRuntime().exec("cmd /c start appium");
 				} catch (IOException e) {
-					e.printStackTrace();
+					LOG.error(e);
 				}
 			}
 		});
     	cachedThreadPool.submit(appium);
 			
+    	//init UI
         frame = new JFrame();
         frame.setBounds(ConstantsUI.MAIN_WINDOW_X, ConstantsUI.MAIN_WINDOW_Y, ConstantsUI.MAIN_WINDOW_WIDTH,
                 ConstantsUI.MAIN_WINDOW_HEIGHT);
@@ -201,7 +206,7 @@ public class MainEntry implements GlobalObserver {
             		
                     connection.close();
                 }catch(Exception e1) {
-                	e1.printStackTrace();
+                	LOG.error(e1);
                 } 
             	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 LOG.info("==================BricksEnd==================");
@@ -218,7 +223,6 @@ public class MainEntry implements GlobalObserver {
 
             }
         });
-        
     }
 
 	@Override

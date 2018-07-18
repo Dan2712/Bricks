@@ -31,9 +31,7 @@ public class ExecutionMain {
 	
 	private static final ExecutionMain instance = new ExecutionMain();
     
-    private ExecutionMain(){
-    	
-    }
+    private ExecutionMain(){}
     
     public static ExecutionMain getInstance(){
         return instance;
@@ -64,9 +62,12 @@ public class ExecutionMain {
 				break;
 		}
 		
+		if (caseName == null)
+			caseName = "tmpTest";
+		
 		try {
 			AppiumInit.setUp(device, pkg, launchActivity);
-			RunTestCase testCase = new RunTestCase(jsonFile, 0, AppiumInit.driver, logText, device, pkg);
+			RunTestCase testCase = new RunTestCase(jsonFile, 0, AppiumInit.driver, logText, device, pkg, caseName);
 			testCase.run();
 		} catch (NullPointerException e1) {
 			LOG.error(e1);
@@ -94,10 +95,7 @@ public class ExecutionMain {
 	    LOG.info(AppiumInit.driver.getSessionId() + ": Saving device log...");
 	    List<LogEntry> logEntries = AppiumInit.driver.manage().logs().get("logcat").filter(Level.CONFIG);
 	    File logFile = null;
-	    if (caseName != null)
-	    	logFile = new File(logPath + reportDate + "_" + caseName + ".log");
-	    else
-	    	logFile = new File(logPath + reportDate + "_" + "tmpTest.log");
+    	logFile = new File(logPath + reportDate + "_" + caseName + ".log");
 	    
 	    if (!logFile.exists())
 	    	logFile.getParentFile().mkdirs();
