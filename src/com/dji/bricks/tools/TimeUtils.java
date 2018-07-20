@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class TimeUtils {
 
-    private final static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
     private final static SimpleDateFormat TIME_FORMAT_MSEC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
     private final static SimpleDateFormat FILE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
     

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.openqa.selenium.support.ui.Sleeper;
 
 import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.AndroidDebugBridge;
@@ -17,7 +18,9 @@ import com.android.ddmlib.SyncException;
 import com.android.ddmlib.TimeoutException;
 import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.MainEntry;
+import com.dji.bricks.PerformanceWatcher;
 import com.dji.bricks.SubjectForListener;
+import com.gargoylesoftware.htmlunit.javascript.host.performance.Performance;
 
 /**
 *
@@ -134,6 +137,49 @@ public class DeviceConnection implements IDeviceChangeListener, SubjectForListen
 				@Override
 				public void run() {
 					try {
+//SystemInfoGet sysinfo = new SystemInfoGet(devices[0], "dji.go.v4");
+//int pid = sysinfo.getPid();
+//System.out.println(sysinfo.getTotalCpu());
+//System.out.println(sysinfo.getProcessCpu(pid));
+////System.out.println(sysinfo.getMemory());
+//System.out.println(sysinfo.getFps());
+//System.out.println("1------");
+//System.out.println(sysinfo.getTotalCpu());
+//System.out.println(sysinfo.getProcessCpu(pid));
+////System.out.println(sysinfo.getMemory());
+//System.out.println(sysinfo.getFps());
+//System.out.println("2------");
+//System.out.println(sysinfo.getTotalCpu());
+//System.out.println(sysinfo.getProcessCpu(pid));
+////System.out.println(sysinfo.getMemory());
+//System.out.println(sysinfo.getFps());
+//System.out.println("3------");
+//System.out.println(sysinfo.getTotalCpu());
+//System.out.println(sysinfo.getProcessCpu(pid));
+////System.out.println(sysinfo.getMemory());
+//System.out.println(sysinfo.getFps());
+//System.out.println("4------");
+//System.out.println(sysinfo.getTotalCpu());
+//System.out.println(sysinfo.getProcessCpu(pid));
+////System.out.println(sysinfo.getMemory());
+//System.out.println(sysinfo.getFps());
+//System.out.println("5------");
+PerformanceWatcher watcher = new PerformanceWatcher(devices[0], "dji.go.v4");
+MainEntry.cachedThreadPool.submit(new Runnable() {
+	
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		while (true) {
+			watcher.startWatch();
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+});
 						IDevice device = devices[0];
 						String appPath = System.getProperty("user.dir") + "/lib/app-debug.apk";
 						String testPath = System.getProperty("user.dir") + "/lib/app-debug-androidTest.apk";

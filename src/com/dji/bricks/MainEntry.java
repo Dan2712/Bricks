@@ -93,7 +93,7 @@ public class MainEntry implements GlobalObserver {
         PropertyConfigurator
                 .configure(ConstantsUI.CURRENT_DIR + File.separator + "config" + File.separator + "log4j.properties");
         LOG.info("==================BricksInitStart====================");
-        
+
         //init adb
 		adb = new DeviceConnection();
 		adb.registerObserver(MainEntry.this);
