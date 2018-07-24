@@ -89,6 +89,8 @@ public class PerformanceWatcher {
 		infoList[1] = (float)(Math.round(sysInfo.getTotalCpu()*100)) / 100;
 		infoList[2] = (float)(Math.round(sysInfo.getProcessCpu(pid)*100)) / 100;
 //		infoList[3] = sysInfo.getMemory();
+		System.out.println(infoList[1]);
+		System.out.println(infoList[2]);
 //		infoList[1] = sysInfo.getTotalCpu();
 //		infoList[2] = sysInfo.getProcessCpu(pid);
 		infoList[4] = sysInfo.getFps();

@@ -245,7 +245,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					break;
 				}
 			}
-			updateRow(memList, fpsList);
+			updateRow(cpuTotalList, cpuProcessList, memList, fpsList);
 		}
 	}
 	
@@ -257,8 +257,8 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 //		memList[index] = memValue;
 		
 		//get CPU value
-		float CPUTotal = sysInfoGet.getTotalCpu();
-		float CPUProcess = sysInfoGet.getProcessCpu(pid);
+		float CPUTotal = (float)(Math.round(sysInfoGet.getTotalCpu()*100)) / 100;
+		float CPUProcess = (float)(Math.round(sysInfoGet.getProcessCpu(pid)*100)) / 100;
 		cpuTotalList[index] = CPUTotal;
 		cpuProcessList[index] = CPUProcess;
 		
@@ -267,7 +267,29 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		fpsList[index] = fps;
 	}
 	
-	private void updateRow(Object[] memList, Object[] fpsList) {
+	private void updateRow(Object[] cpuTotalList, Object[] cpuProcessList, Object[] memList, Object[] fpsList) {
+		CPUTotalInfo.put(String.valueOf(CPUTotalRowNum++), cpuTotalList);
+		CPUTotalRow = CPUTotalSheet.createRow(CPUTotalRowNum);
+		int cellCPUTotalid = 0;
+		for (Object obj : cpuTotalList) {
+			Cell cell = CPUTotalRow.createCell(cellCPUTotalid++);
+			if (obj instanceof String)
+				cell.setCellValue((String) obj);
+			else if (obj instanceof Float)
+				cell.setCellValue((Float) obj);
+		}
+		
+		CPUProcessInfo.put(String.valueOf(CPUProcessRowNum++), cpuProcessList);
+		CPUProcessRow = CPUProcessSheet.createRow(CPUProcessRowNum);
+		int cellCPUProcessid = 0;
+		for (Object obj : cpuProcessList) {
+			Cell cell = CPUProcessRow.createCell(cellCPUProcessid++);
+			if (obj instanceof String)
+				cell.setCellValue((String) obj);
+			else if (obj instanceof Float)
+				cell.setCellValue((Float) obj);
+		}
+		
 		MemInfo.put(String.valueOf(MemRowNum++), memList);
 		MemRow = MemSheet.createRow(MemRowNum);
 		int cellMemid = 0;
@@ -277,10 +299,6 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 				cell.setCellValue((String) obj);
 			else if (obj instanceof Integer)
 				cell.setCellValue((Integer) obj);
-			else if (obj instanceof Float) {
-				cell.setCellValue((Float) obj);
-				cell.setCellStyle(exlUtils.getPercentageStyle());
-			}
 		}
 		
 		FPSInfo.put(String.valueOf(FPSRowNum++), fpsList);
