@@ -18,6 +18,8 @@ import org.openqa.selenium.logging.LogEntry;
 
 import com.alibaba.fastjson.JSONArray;
 import com.android.ddmlib.IDevice;
+import com.dji.bricks.MainEntry;
+import com.dji.bricks.PerformanceWatcher;
 import com.dji.bricks.backgrounder.execution.AppiumInit;
 import com.dji.bricks.backgrounder.execution.RunTestCase;
 
@@ -28,6 +30,7 @@ public class ExecutionMain {
 	private String launchActivity = null;
 	private String startAct = "";
 	private PrintWriter log_file_writer;
+	private boolean isRunning = false;
 	
 	private static final ExecutionMain instance = new ExecutionMain();
     
@@ -40,6 +43,7 @@ public class ExecutionMain {
 	public void RunTestCase(JSONArray jsonFile, JTextArea logText, IDevice device, String pkg, String caseName) {
 
 		this.pkg = pkg;
+		isRunning = true;
 		
 		switch (pkg) {
 			case "com.dji.industry.pilot":
@@ -67,6 +71,24 @@ public class ExecutionMain {
 		
 		try {
 			AppiumInit.setUp(device, pkg, launchActivity);
+			
+			PerformanceWatcher watcher = new PerformanceWatcher(device, pkg);
+			MainEntry.cachedThreadPool.submit(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					while (isRunning) {
+						watcher.startWatch();
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			});
+			
 			RunTestCase testCase = new RunTestCase(jsonFile, 0, AppiumInit.driver, logText, device, pkg, caseName);
 			testCase.run();
 		} catch (NullPointerException e1) {
@@ -77,6 +99,7 @@ public class ExecutionMain {
 			LOG.error(e);
 		}finally {
 			try {
+				isRunning = false;
 				saveLog(caseName);
 				log_file_writer.close();
 				AppiumInit.driver.quit();

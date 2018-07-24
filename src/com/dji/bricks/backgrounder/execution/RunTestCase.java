@@ -36,6 +36,7 @@ import com.dji.bricks.backgrounder.base.CusElement;
 import com.dji.bricks.backgrounder.base.CusValidation;
 import com.dji.bricks.tools.ExcelUtils;
 import com.dji.bricks.tools.GfxAnalyse;
+import com.dji.bricks.tools.SystemInfoGet;
 import com.dji.bricks.tools.TimeUtils;
 
 import io.appium.java_client.android.AndroidDriver;
@@ -61,21 +62,24 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 	private String caseName;
 	private ExcelUtils exlUtils;
 	private GfxAnalyse gfxUtil;
-	private CollectingOutputReceiver receiver;
-	private MultiLineReceiver mReceiver;
-	private String pid;
-	private XSSFSheet CPUSheet;
+	private int pid;
+	private XSSFSheet CPUTotalSheet;
+	private XSSFSheet CPUProcessSheet;
 	private XSSFSheet MemSheet;
 	private XSSFSheet FPSSheet;
-	private XSSFRow CPURow;
+	private XSSFRow CPUTotalRow;
+	private XSSFRow CPUProcessRow;
 	private XSSFRow MemRow;
 	private XSSFRow FPSRow;
 	private XSSFCellStyle style;
 	private String screenshotRunPath;
-	private int CPURowNum;
+	private SystemInfoGet sysInfoGet;
+	private int CPUTotalRowNum;
+	private int CPUProcessRowNum;
 	private int MemRowNum;
 	private int FPSRowNum;
-	private Map<String, Object[]> CPUInfo = null;
+	private Map<String, Object[]> CPUTotalInfo = null;
+	private Map<String, Object[]> CPUProcessInfo = null;
 	private Map<String, Object[]> MemInfo = null;
 	private Map<String, Object[]> FPSInfo = null;
 	
@@ -94,8 +98,9 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 	private void init() {
 		action = new CusAction(driver, device);
 		validation = new CusValidation(driver);
-		exlUtils = new ExcelUtils();
+		exlUtils = ExcelUtils.getInstance();
 		gfxUtil = new GfxAnalyse(device, pkg);
+		sysInfoGet = new SystemInfoGet(device, pkg);
 		
 		//init screenshot running cap
 		screenshotRunPath = System.getProperty("user.dir") + File.separator + "screenshot/RunCap/" +
@@ -105,42 +110,28 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 			screenRun.mkdirs();
 		
 		//init performance archive
-		receiver = new CollectingOutputReceiver();
-		mReceiver = new MultiLineReceiver() {
-			
-			@Override
-			public boolean isCancelled() {
-				return false;
-			}
-			
-			@Override
-			public void processNewLines(String[] lines) {
-				String[] proLines = lines[0].split("\n");
-			}
-		};
-		
-		try {
-			device.executeShellCommand("ps | grep " + pkg, receiver);
-		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e1) {
-			e1.printStackTrace();
-		}
-		receiver.flush();
-		pid = receiver.getOutput().split("\\s+")[1];
+		pid = sysInfoGet.getPid();
 		
 		style = exlUtils.setCellAlignCenter();
 		
-		CPUSheet = exlUtils.getSheet("CPU");
+		CPUTotalSheet = exlUtils.getSheet("CPU Total");
+		CPUProcessSheet = exlUtils.getSheet("CPU Process");
 		MemSheet = exlUtils.getSheet("Memory");
 		FPSSheet = exlUtils.getSheet("FPS");
-		CPURowNum = CPUSheet.getLastRowNum();
+		CPUTotalRowNum = CPUTotalSheet.getLastRowNum();
+		CPUProcessRowNum = CPUProcessSheet.getLastRowNum();
 		MemRowNum = MemSheet.getLastRowNum();
 		FPSRowNum = FPSSheet.getLastRowNum();
-		CPUInfo = new TreeMap<String, Object[]>();
+		CPUTotalInfo = new TreeMap<String, Object[]>();
+		CPUProcessInfo = new TreeMap<String, Object[]>();
 		MemInfo = new TreeMap<String, Object[]>();
 		FPSInfo = new TreeMap<String, Object[]>();
 		
-		if (CPURowNum == 0) 
-			initRow(CPUInfo, CPURow, CPUSheet);
+		if (CPUTotalRowNum == 0)
+			initRow(CPUTotalInfo, CPUTotalRow, CPUTotalSheet);
+		
+		if (CPUProcessRowNum == 0) 
+			initRow(CPUProcessInfo, CPUProcessRow, CPUProcessSheet);
 		
 		if (MemRowNum == 0)
 			initRow(MemInfo, MemRow, MemSheet);
@@ -210,6 +201,12 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		int actionCount = 0;
 		BufferedWriter out = null;
 		
+		Object[] cpuTotalList = new Object[jsonFile.size() + 1];
+		cpuTotalList[0] = caseName;
+		
+		Object[] cpuProcessList = new Object[jsonFile.size() + 1];
+		cpuProcessList[0] = caseName;
+		
 		Object[] memList = new Object[jsonFile.size() + 1];
 		memList[0] = caseName;
 		
@@ -230,7 +227,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					    getScreenshot(screenshotRunPath, actionCount);
 						this.actionSwitch(obj);
 						
-						performanceGet(memList, fpsList, actionCount);
+						performanceGet(cpuTotalList, cpuProcessList, memList, fpsList, actionCount);
 					} else if (obj.getString("property").equals("val")) {
 						this.validationSwitch(obj);
 						Thread.sleep(1000);
@@ -252,12 +249,18 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		}
 	}
 	
-	private void performanceGet(Object[] memList, Object[] fpsList, int index) throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
+	private void performanceGet(Object[] cpuTotalList, Object[] cpuProcessList, Object[] memList, Object[] fpsList, int index) throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
 		//get mem value
-		device.executeShellCommand("adb shell \"su 0 \"procrank | grep \'dji.go.v4\'\"\"", receiver);
-		receiver.flush();
-		int memValue = Integer.parseInt(receiver.getOutput().split("\\s+")[3]);
-		memList[index] = memValue;
+//		device.executeShellCommand("adb shell \"su 0 \"procrank | grep \'dji.go.v4\'\"\"", receiver);
+//		receiver.flush();
+//		int memValue = Integer.parseInt(receiver.getOutput().split("\\s+")[3]);
+//		memList[index] = memValue;
+		
+		//get CPU value
+		float CPUTotal = sysInfoGet.getTotalCpu();
+		float CPUProcess = sysInfoGet.getProcessCpu(pid);
+		cpuTotalList[index] = CPUTotal;
+		cpuProcessList[index] = CPUProcess;
 		
 		//get FPS value
 		int fps = gfxUtil.getGfxInfo();
@@ -271,9 +274,13 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		for (Object obj : memList) {
 			Cell cell = MemRow.createCell(cellMemid++);
 			if (obj instanceof String)
-				cell.setCellValue((String)obj);
+				cell.setCellValue((String) obj);
 			else if (obj instanceof Integer)
-				cell.setCellValue(String.valueOf(obj));
+				cell.setCellValue((Integer) obj);
+			else if (obj instanceof Float) {
+				cell.setCellValue((Float) obj);
+				cell.setCellStyle(exlUtils.getPercentageStyle());
+			}
 		}
 		
 		FPSInfo.put(String.valueOf(FPSRowNum++), fpsList);

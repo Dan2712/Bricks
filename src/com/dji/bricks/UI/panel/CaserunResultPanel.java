@@ -8,6 +8,9 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -18,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -34,6 +38,7 @@ import org.apache.log4j.Logger;
 import com.alibaba.fastjson.JSONArray;
 import com.android.ddmlib.IDevice;
 import com.dji.bricks.MainEntry;
+import com.dji.bricks.PerformanceWatcher;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
 import com.dji.bricks.backgrounder.ExecutionMain;
@@ -244,10 +249,11 @@ public class CaserunResultPanel extends JPanel{
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				new Thread(new Runnable() {
+				MainEntry.cachedThreadPool.submit((new Runnable() {
 					
 					@Override
 					public void run() {
+						
 						switch (appName) {
 							case "DJI GO4":
 		            			pkg = "dji.go.v4";
@@ -281,7 +287,7 @@ public class CaserunResultPanel extends JPanel{
 							}
 						}
 					}
-				}).start();
+				}));
 			}
 		});
 		
@@ -338,6 +344,83 @@ public class CaserunResultPanel extends JPanel{
 
             }
         });
+		
+//		buttonChart.addActionListener(new ActionListener() {
+//			
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				// TODO Auto-generated method stub
+//				JFrame appSelectFrame = new JFrame();
+//				appSelectFrame.setSize(270, 130);
+//				appSelectFrame.setTitle("App Select");
+//				appSelectFrame.setLayout(new BorderLayout());
+//				appSelectFrame.setLocation(MainEntry.frame.getLocationOnScreen());
+//				appSelectFrame.setLocationRelativeTo(MainEntry.frame);
+//				
+//				JPanel appSelectPanel = new JPanel();
+//				appSelectPanel.setPreferredSize(new Dimension(270, 60));
+//				JLabel appName = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appname"));
+//				appName.setFont(ConstantsUI.FONT_NORMAL);
+//				JComboBox<String> comboxAppName = new JComboBox<String>();
+//				comboxAppName.setPreferredSize(new Dimension(150, 40));
+//				comboxAppName.addItem("DJI GO3");
+//				comboxAppName.addItem("DJI GO4");
+//				comboxAppName.addItem("DJI Pilot");
+//				comboxAppName.addItem("RM500 Launcher");
+//				comboxAppName.addItem("RM500 Settings");
+//				comboxAppName.addItem("MG 1A/P");
+//				comboxAppName.addItem("MG 1S");
+//				comboxAppName.addItem("DJI GO4 Pad");
+//				comboxAppName.addItemListener(new ItemListener() {
+//					
+//					@Override
+//					public void itemStateChanged(ItemEvent e) {
+//						// TODO Auto-generated method stub
+//						if (e.getStateChange() == ItemEvent.SELECTED) {
+//							switch ((String)e.getItem()) {
+//								case "DJI GO4":
+//			            			pkg = "dji.go.v4";
+//			            			break;
+//			            		case "DJI GO3":
+//			            			pkg = "dji.pilot";
+//			            			break;
+//			            		case "RM500 Launcher":
+//			            			pkg = "com.dpad.launcher";
+//			            			break;
+//			            		case "RM500 Settings":
+//			            			pkg = "com.android.settings.Settings";
+//			            			break;
+//			            		case "MG 1A/P":
+//			            			pkg = "dji.prof.mg";
+//			            			break;
+//			            		case "MG 1S":
+//			            			pkg = "dji.prof.args.tiny";
+//			            			break;
+//			            		case "DJI GO4 Pad":
+//			            			pkg = "dji.pilot.pad";
+//			            			break;
+//							}
+//						}
+//					}
+//				});
+//				
+//				MyIconButton buttonWatchStart = new MyIconButton(ConstantsUI.ICON_PLAY, ConstantsUI.ICON_PLAY_ENABLE,
+//						ConstantsUI.ICON_PLAY_DISABLE, PropertyUtil.getProperty("bricks.ui.runresult.btnwatch"));
+//				buttonWatchStart.addActionListener(new ActionListener() {
+//					
+//					@Override
+//					public void actionPerformed(ActionEvent e) {
+//						// TODO Auto-generated method stub
+//						
+//					}
+//				});
+//				
+//				appSelectPanel.add(appName);
+//				appSelectPanel.add(comboxAppName);
+//				appSelectFrame.add(appSelectPanel, BorderLayout.NORTH);
+//				appSelectFrame.add(buttonWatchStart, BorderLayout.SOUTH);
+//				appSelectFrame.setVisible(true);
+//			}
+//		});
 	}
-
 }

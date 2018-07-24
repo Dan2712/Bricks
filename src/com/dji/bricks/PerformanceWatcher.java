@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
@@ -32,7 +33,7 @@ public class PerformanceWatcher {
 	}
 	
 	private void init() {
-		exlUtils = new ExcelUtils();
+		exlUtils = ExcelUtils.getInstance();
 		sysInfo = new SystemInfoGet(device, pkg);
 		watchSheet = exlUtils.getSheet("Persistent observation");
 		sysInfoRowNum = watchSheet.getLastRowNum();
@@ -73,7 +74,11 @@ public class PerformanceWatcher {
 			if (obj instanceof String)
 				cell.setCellValue((String) obj);
 			else if (obj instanceof Integer)
-				cell.setCellValue(String.valueOf(obj));
+				cell.setCellValue((Integer) obj);
+			else if (obj instanceof Float) {
+				cell.setCellValue((Float) obj);
+//				cell.setCellStyle(exlUtils.getPercentageStyle());
+			}
 		}
 		exlUtils.updateWorkbook();
 	}
@@ -81,9 +86,11 @@ public class PerformanceWatcher {
 	public void startWatch() {
 		Object[] infoList = new Object[5];
 		infoList[0] = TimeUtils.formatTimeStamp(System.currentTimeMillis());
-		infoList[1] = String.format("%.2f%%", sysInfo.getTotalCpu());
-		infoList[2] = String.format("%.2f%%", sysInfo.getProcessCpu(pid));
+		infoList[1] = (float)(Math.round(sysInfo.getTotalCpu()*100)) / 100;
+		infoList[2] = (float)(Math.round(sysInfo.getProcessCpu(pid)*100)) / 100;
 //		infoList[3] = sysInfo.getMemory();
+//		infoList[1] = sysInfo.getTotalCpu();
+//		infoList[2] = sysInfo.getProcessCpu(pid);
 		infoList[4] = sysInfo.getFps();
 		
 		updateRow(infoList);
