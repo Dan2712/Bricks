@@ -71,13 +71,24 @@ public class ExcelUtils {
 	}
 	
 	public synchronized void updateWorkbook() {
+System.out.println(Thread.currentThread());
+		FileOutputStream out = null;
 		try {
-			FileOutputStream out = new FileOutputStream(xlsFile);
+			out = new FileOutputStream(xlsFile);
 			workbook.write(out);
 		} catch (FileNotFoundException e) {
-			LOG.error(e);
+			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			if (out != null) {
+				try {
+					out.close();
+					out = null;
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	

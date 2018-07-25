@@ -1115,7 +1115,10 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 				// TODO Auto-generated method stub
 				ResultSet rs = null;
 				try {
-					appName.delete(0, appName.length()).append(new String(((String) comboxAppName.getSelectedItem()).getBytes(), "UTF-8"));
+					String app = new String(((String) comboxAppName.getSelectedItem()).getBytes(), "UTF-8");
+					if (app.equals(""))
+						return;
+					appName.delete(0, appName.length()).append(app);
 					rs = sql.queryElement("ACTIVITY", appName.toString());
 					
 					ArrayList<String> actList = new ArrayList<>();

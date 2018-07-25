@@ -67,10 +67,12 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 	private XSSFSheet CPUProcessSheet;
 	private XSSFSheet MemSheet;
 	private XSSFSheet FPSSheet;
+	private XSSFSheet PowerSheet;
 	private XSSFRow CPUTotalRow;
 	private XSSFRow CPUProcessRow;
 	private XSSFRow MemRow;
 	private XSSFRow FPSRow;
+	private XSSFRow PowerRow;
 	private XSSFCellStyle style;
 	private String screenshotRunPath;
 	private SystemInfoGet sysInfoGet;
@@ -78,10 +80,17 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 	private int CPUProcessRowNum;
 	private int MemRowNum;
 	private int FPSRowNum;
+	private int PowerRowNum;
 	private Map<String, Object[]> CPUTotalInfo = null;
 	private Map<String, Object[]> CPUProcessInfo = null;
 	private Map<String, Object[]> MemInfo = null;
 	private Map<String, Object[]> FPSInfo = null;
+	private Map<String, Object[]> PowerInfo = null;
+	private Object[] cpuTotalList;
+	private Object[] cpuProcessList;
+	private Object[] memList;
+	private Object[] fpsList;
+	private Object[] powerList;
 	
 	public RunTestCase(JSONArray jsonFile, int runMode, AndroidDriver driver, JTextArea logText, IDevice device, String pkg, String caseName) {
 //		this.path = path;
@@ -102,6 +111,17 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		gfxUtil = new GfxAnalyse(device, pkg);
 		sysInfoGet = new SystemInfoGet(device, pkg);
 		
+		cpuTotalList = new Object[jsonFile.size() + 1];
+		cpuProcessList = new Object[jsonFile.size() + 1];
+		memList = new Object[jsonFile.size() + 1];
+		fpsList = new Object[jsonFile.size() + 1];
+		powerList = new Object[jsonFile.size() + 1];
+		cpuTotalList[0] = caseName;
+		cpuProcessList[0] = caseName;
+		memList[0] = caseName;
+		fpsList[0] = caseName;
+		powerList[0] = caseName;
+		
 		//init screenshot running cap
 		screenshotRunPath = System.getProperty("user.dir") + File.separator + "screenshot/RunCap/" +
 	    		File.separator + TimeUtils.formatTimeForFile(System.currentTimeMillis());
@@ -118,14 +138,17 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		CPUProcessSheet = exlUtils.getSheet("CPU Process");
 		MemSheet = exlUtils.getSheet("Memory");
 		FPSSheet = exlUtils.getSheet("FPS");
+		PowerSheet = exlUtils.getSheet("Power Consume");
 		CPUTotalRowNum = CPUTotalSheet.getLastRowNum();
 		CPUProcessRowNum = CPUProcessSheet.getLastRowNum();
 		MemRowNum = MemSheet.getLastRowNum();
 		FPSRowNum = FPSSheet.getLastRowNum();
+		PowerRowNum = PowerSheet.getLastRowNum();
 		CPUTotalInfo = new TreeMap<String, Object[]>();
 		CPUProcessInfo = new TreeMap<String, Object[]>();
 		MemInfo = new TreeMap<String, Object[]>();
 		FPSInfo = new TreeMap<String, Object[]>();
+		PowerInfo = new TreeMap<String, Object[]>();
 		
 		if (CPUTotalRowNum == 0)
 			initRow(CPUTotalInfo, CPUTotalRow, CPUTotalSheet);
@@ -138,6 +161,9 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		
 		if (FPSRowNum == 0)
 			initRow(FPSInfo, FPSRow, FPSSheet);
+		
+		if (PowerRowNum == 0)
+			initRow(PowerInfo, PowerRow, PowerSheet);
 	}
 	
 	private void initRow(Map<String, Object[]> infoMap, XSSFRow row, XSSFSheet sheet) {
@@ -201,18 +227,6 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		int actionCount = 0;
 		BufferedWriter out = null;
 		
-		Object[] cpuTotalList = new Object[jsonFile.size() + 1];
-		cpuTotalList[0] = caseName;
-		
-		Object[] cpuProcessList = new Object[jsonFile.size() + 1];
-		cpuProcessList[0] = caseName;
-		
-		Object[] memList = new Object[jsonFile.size() + 1];
-		memList[0] = caseName;
-		
-		Object[] fpsList = new Object[jsonFile.size() + 1];
-		fpsList[0] = caseName;
-		
 		//running start
 		if (this.runMode == 0) {
 			for (int i=0; i<jsonFile.size(); i++) {
@@ -227,7 +241,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					    getScreenshot(screenshotRunPath, actionCount);
 						this.actionSwitch(obj);
 						
-						performanceGet(cpuTotalList, cpuProcessList, memList, fpsList, actionCount);
+						performanceGet(actionCount);
 					} else if (obj.getString("property").equals("val")) {
 						this.validationSwitch(obj);
 						Thread.sleep(1000);
@@ -245,11 +259,11 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					break;
 				}
 			}
-			updateRow(cpuTotalList, cpuProcessList, memList, fpsList);
+			updateRow();
 		}
 	}
 	
-	private void performanceGet(Object[] cpuTotalList, Object[] cpuProcessList, Object[] memList, Object[] fpsList, int index) throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
+	private void performanceGet(int index) throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
 		//get mem value
 //		device.executeShellCommand("adb shell \"su 0 \"procrank | grep \'dji.go.v4\'\"\"", receiver);
 //		receiver.flush();
@@ -265,9 +279,13 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		//get FPS value
 		int fps = gfxUtil.getGfxInfo();
 		fpsList[index] = fps;
+		
+		//get power
+		int power = sysInfoGet.getPower();
+		powerList[index] = power;
 	}
 	
-	private void updateRow(Object[] cpuTotalList, Object[] cpuProcessList, Object[] memList, Object[] fpsList) {
+	private void updateRow() {
 		CPUTotalInfo.put(String.valueOf(CPUTotalRowNum++), cpuTotalList);
 		CPUTotalRow = CPUTotalSheet.createRow(CPUTotalRowNum);
 		int cellCPUTotalid = 0;
@@ -306,6 +324,17 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		int cellFpsid = 0;
 		for (Object obj : fpsList) {
 			Cell cell = FPSRow.createCell(cellFpsid++);
+			if (obj instanceof String)
+				cell.setCellValue((String)obj);
+			else if (obj instanceof Integer)
+				cell.setCellValue(String.valueOf(obj));
+		}
+		
+		PowerInfo.put(String.valueOf(PowerRowNum++), powerList);
+		PowerRow = PowerSheet.createRow(PowerRowNum);
+		int cellPowerid = 0;
+		for (Object obj : powerList) {
+			Cell cell = PowerRow.createCell(cellPowerid++);
 			if (obj instanceof String)
 				cell.setCellValue((String)obj);
 			else if (obj instanceof Integer)

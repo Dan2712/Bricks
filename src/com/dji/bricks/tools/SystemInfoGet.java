@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -53,6 +54,8 @@ public class SystemInfoGet {
 			@Override
 			public void processNewLines(String[] lines) {
 				// TODO Auto-generated method stub
+				if (lines[0].equals(""))
+					return;
 				if (lines.length == 1) 
 					proLines = lines[0].split("\n");
 				else
@@ -96,9 +99,10 @@ public class SystemInfoGet {
 			
 			all = user + nice + sys + idle + iowait + irq + softirq;
 			reader.close();
-			
+//System.out.println("Tall:"+all+"--"+"Tidle:"+idle+"--"+"Tlasttotalall:"+lastTotalAll+"--"+"Tlasttotalidle:"+lastTotalIdle);
 			if (lastTotalAll != -1) {
 				totalCpuUsage = (float)((all - idle) - (lastTotalAll - lastTotalIdle)) / (all - lastTotalAll) * 100;
+//System.out.println("total cpu:"+totalCpuUsage);
 			}
 			
 			lastTotalASec = all - lastTotalAll;
@@ -141,9 +145,10 @@ public class SystemInfoGet {
 			
 			all = utime + stime + cutime + cstime;
 			reader.close();
-			
+//System.out.println("Pall:"+all+"--"+"Plastmyall:"+lastMyAll+"--"+"Plasttotalasec:"+lastTotalASec);			
 			if (lastTotalASec != -1) {
 				cpuUsage = (float)(all - lastMyAll) / lastTotalASec * 100;
+//System.out.println("process cpu:"+cpuUsage);
 			}
 			lastMyAll = all;
 		} catch (SyncException | IOException | AdbCommandRejectedException | TimeoutException e) {
@@ -163,6 +168,19 @@ public class SystemInfoGet {
 	
 	public int getFps() {
 		return new GfxAnalyse(device, pkg).getGfxInfo();
+	}
+	
+	public int getPower() {
+		singleReceiver.clearBuffer();
+		try {
+			device.executeShellCommand("getprop hw.bat_current", singleReceiver, 5, TimeUnit.SECONDS);
+		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
+			LOG.error(e);
+		}
+		singleReceiver.flush();
+		
+		int power = Math.abs(Integer.parseInt(singleReceiver.getOutput().trim()));
+		return power;
 	}
 	
 	public int getPid(){

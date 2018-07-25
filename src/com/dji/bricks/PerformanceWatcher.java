@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
@@ -46,12 +45,13 @@ public class PerformanceWatcher {
 	}
 	
 	private void initRow() {
-		Object[] arrayOb = new Object[5];
+		Object[] arrayOb = new Object[6];
 		arrayOb[0] = "time/type";
 		arrayOb[1] = "CPU(Total)";
 		arrayOb[2] = "CPU(Process)";
 		arrayOb[3] = "Memory";
 		arrayOb[4] = "FPS";
+		arrayOb[5] = "Power Consume";
 		
 		sysInfoMap.put("1", arrayOb);
 		
@@ -84,16 +84,15 @@ public class PerformanceWatcher {
 	}
 	
 	public void startWatch() {
-		Object[] infoList = new Object[5];
+		Object[] infoList = new Object[6];
 		infoList[0] = TimeUtils.formatTimeStamp(System.currentTimeMillis());
 		infoList[1] = (float)(Math.round(sysInfo.getTotalCpu()*100)) / 100;
 		infoList[2] = (float)(Math.round(sysInfo.getProcessCpu(pid)*100)) / 100;
 //		infoList[3] = sysInfo.getMemory();
-		System.out.println(infoList[1]);
-		System.out.println(infoList[2]);
-//		infoList[1] = sysInfo.getTotalCpu();
-//		infoList[2] = sysInfo.getProcessCpu(pid);
+		System.out.println("1:"+infoList[1]);
+		System.out.println("2:"+infoList[2]);
 		infoList[4] = sysInfo.getFps();
+		infoList[5] = sysInfo.getPower();
 		
 		updateRow(infoList);
 	}
