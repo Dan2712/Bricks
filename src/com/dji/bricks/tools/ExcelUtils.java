@@ -71,7 +71,6 @@ public class ExcelUtils {
 	}
 	
 	public synchronized void updateWorkbook() {
-System.out.println(Thread.currentThread());
 		FileOutputStream out = null;
 		try {
 			out = new FileOutputStream(xlsFile);

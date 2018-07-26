@@ -18,6 +18,7 @@ public class GfxAnalyse {
 	
 	private IDevice device;
 	private String appPackage;
+	private String[] lineList;
 	
 	public GfxAnalyse(IDevice device, String appPackage) {
 		super();
@@ -27,7 +28,6 @@ public class GfxAnalyse {
 	
 	public int getGfxInfo() {
 		String cmd = String.format("dumpsys gfxinfo %s", appPackage);
-		StringBuilder receiveLines = new StringBuilder();
 		double vsync_sum = 0.0;
 		int count = 0;
 		
@@ -42,7 +42,10 @@ public class GfxAnalyse {
 			@Override
 			public void processNewLines(String[] line) {
 				// TODO Auto-generated method stub
-				receiveLines.append(line[0]);
+//				receiveLines.append(line[0]);
+				if (line[0].equals(""))
+					return;
+				lineList = line;
 			}
 		};
 		try {
@@ -54,9 +57,9 @@ public class GfxAnalyse {
 		}
 
         LinkedList<DumpItem> items = new LinkedList<DumpItem>();
-        Pattern p = Pattern.compile("(\\s+[0-9,.]{4})(\\s+[0-9,.]{4})(\\s+[0-9,.]{4})(\\s+[0-9,.]{4})");
+        Pattern p = Pattern.compile("([0-9,.]{4})(\\s+[0-9,.]{4})(\\s+[0-9,.]{4})(\\s+[0-9,.]{4})");
         
-        String[] lineList = receiveLines.toString().split("\n");
+//        String[] lineList = receiveLines.toString().split("\n");
         DecimalFormat df = new DecimalFormat();
         for (int i=0; i<lineList.length; i++) {
         	Matcher m = p.matcher(lineList[i]);

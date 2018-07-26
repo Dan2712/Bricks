@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.JTextArea;
@@ -447,7 +448,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		Boolean landscape = false;
 		
 		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
-		device.executeShellCommand("dumpsys display | grep 'mDefaultViewport'", receiver, 0);
+		device.executeShellCommand("dumpsys display | grep 'mDefaultViewport'", receiver, 0, TimeUnit.SECONDS);
 		switch (Character.getNumericValue(receiver.getOutput().charAt(72))) {
 			case 0:
 				landscape = false;
