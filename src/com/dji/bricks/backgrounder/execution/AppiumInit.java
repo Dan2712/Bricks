@@ -4,12 +4,16 @@ import java.net.URL;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.websocket.common.events.EventDriverFactory;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import com.alibaba.fastjson.JSONObject;
 import com.android.ddmlib.IDevice;
+import com.dji.bricks.backgrounder.AlertListener;
+
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.Setting;
+import io.appium.java_client.events.EventFiringWebDriverFactory;
 
 public class AppiumInit {
 	
@@ -33,13 +37,14 @@ public class AppiumInit {
         capabilities.setCapability("ignoreUnimportantViews", false);
         capabilities.setCapability("newCommandTimeout", 600);
 
-        ChromeOptions options = new ChromeOptions();
-        options.setExperimentalOption("androidProcess", appPackage + ":web");
-        capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+//        ChromeOptions options = new ChromeOptions();
+//        options.setExperimentalOption("androidProcess", appPackage + ":web");
+//        capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
 //        driver = EventFiringWebDriverFactory.getEventFiringWebDriver(driver, new AlertListener());
 //        driver.setSetting(Setting.WAIT_FOR_IDLE_TIMEOUT, Duration.ofMillis(100));
         driver.manage().timeouts().implicitlyWait(5,TimeUnit.SECONDS);
+//        driver = EventFiringWebDriverFactory.getEventFiringWebDriver(driver, new AlertListener());
 	}
 	
 	public static void setUp(JSONObject[] devices, String appPackage, String launchActivity, String url) throws Exception {

@@ -33,6 +33,7 @@ public class SystemInfoGet {
 	private int lastTotalASec = -1;
 	
 	private final static String CURRENT_DIR = System.getProperty("user.dir");
+	private String statPath = CURRENT_DIR + File.separator + "log" + File.separator + "stat";
 	
 	public SystemInfoGet(IDevice device, String pkg) {
 		this.device = device;
@@ -83,8 +84,12 @@ public class SystemInfoGet {
 		
 		BufferedReader reader = null;
 		try {
-			device.pullFile("/proc/stat", CURRENT_DIR + File.separator + "log" + File.separator + "stat");
-			reader = new BufferedReader(new FileReader(CURRENT_DIR + File.separator + "log" + File.separator + "stat"));
+			File file = new File(statPath);
+			if (!file.getParentFile().exists())
+				file.getParentFile().mkdirs();
+			
+			device.pullFile("/proc/stat", statPath);
+			reader = new BufferedReader(new FileReader(statPath));
 			
 			String tmpStr = reader.readLine();
 			String[] toks = tmpStr.split(" ");
@@ -132,8 +137,12 @@ public class SystemInfoGet {
 		
 		BufferedReader reader = null;
 		try {
-			device.pullFile("/proc/" + pid + "/stat", CURRENT_DIR + File.separator + "log" + File.separator + "stat");
-			reader = new BufferedReader(new FileReader(CURRENT_DIR + File.separator + "log" + File.separator + "stat"));
+			File file = new File(statPath);
+			if (!file.getParentFile().exists())
+				file.getParentFile().mkdirs();
+			
+			device.pullFile("/proc/" + pid + "/stat", statPath);
+			reader = new BufferedReader(new FileReader(statPath));
 			
 			String tmpStr = reader.readLine();
 			String[] toks = tmpStr.split(" ");
