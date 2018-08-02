@@ -125,6 +125,7 @@ public class PopUpWindow extends JFrame {
     			eleVer();
     			break;
     		case 3:
+    			cmpVer();
     			break;
     		case 4:
     			addTime();
@@ -923,4 +924,105 @@ public class PopUpWindow extends JFrame {
 		
 		
 	}
+    
+    private void cmpVer() {
+    	StringBuilder xpath = new StringBuilder();
+    	StringBuilder cus_name = new StringBuilder();
+    	StringBuilder scrshot_pathname = new StringBuilder();
+    	StringBuilder appName = new StringBuilder();
+    	
+    	// Element exist verification method
+		popup_frame.setSize(300, 200);
+		popup_frame.setTitle("Element Picking");
+		popup_frame.setLayout(new GridLayout(4,1));
+		JPanel app_name_pick = new JPanel();
+		JPanel app_view_pick = new JPanel();
+		JPanel ele_name_pick = new JPanel();
+		JPanel button_pane = new JPanel();
+		JLabel app_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appname"));
+		app_name.setFont(ConstantsUI.FONT_NORMAL);
+		JLabel app_view = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.appview"));
+		app_view.setFont(ConstantsUI.FONT_NORMAL);
+		JLabel ele_name = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.elename"));
+		ele_name.setFont(ConstantsUI.FONT_NORMAL);
+		JComboBox<String> comboxAppName = new JComboBox<String>();
+    	JComboBox<String> comboxViewName = new JComboBox<String>();
+    	JComboBox<String> comboxEleName = new JComboBox<String>();
+		addEleCombox(comboxAppName, comboxViewName, comboxEleName, xpath, cus_name, scrshot_pathname, appName);
+		
+		MyIconButton buttonVersetEE_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
+                ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
+		MyIconButton buttonVersetEE_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
+                ConstantsUI.ICON_ROW_REFRESH_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.rever"));
+		
+		// inside-button method
+		buttonVersetEE_add.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                try {
+                	table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.cmpver");
+                	table_row[2] = comboxAppName.getSelectedItem();
+                	table_row[3] = comboxViewName.getSelectedItem();
+                	table_row[4] = comboxEleName.getSelectedItem();
+                	
+                	int i = casetable.getSelectedRow();
+                    if(i >= 0){
+                    	model.insertRow(i+1, table_row);
+                    }else{
+                    	model.addRow(table_row);
+                    }
+                	
+                	String ele_path_eleVal = xpath.toString();
+					BrickBean brick_valCmp = new BrickBean();
+					brick_valCmp.setProperty("val");
+					brick_valCmp.setValidation_name(3);
+					Map<String, Object> params_eleCmp = new HashMap<>();
+					params_eleCmp.put("ele_path", ele_path_eleVal);
+					brick_valCmp.setParams(params_eleCmp);
+					caseList.add(brick_valCmp);
+                } catch (Exception e1) {
+                	e1.printStackTrace();
+                }
+
+                popup_frame.dispatchEvent(new WindowEvent(popup_frame, WindowEvent.WINDOW_CLOSING));
+            }
+        });
+		
+		buttonVersetEE_re.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try{
+					// i = the index of the selected row
+					int i = casetable.getSelectedRow();
+            
+					if(i >= 0) 
+					{
+						model.setValueAt("ver_re", i, 1);
+					}
+					else{
+						System.out.println("Update Act Error");
+					}
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+
+			}
+		});
+		app_name_pick.add(app_name);
+		app_name_pick.add(comboxAppName);
+		app_view_pick.add(app_view);
+		app_view_pick.add(comboxViewName);
+		ele_name_pick.add(ele_name);
+		ele_name_pick.add(comboxEleName);
+		button_pane.add(buttonVersetEE_add);
+		button_pane.add(buttonVersetEE_re);
+		popup_frame.add(app_name_pick);
+		popup_frame.add(app_view_pick);
+		popup_frame.add(ele_name_pick);
+		popup_frame.add(button_pane);
+		popup_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
+		popup_frame.setLocationRelativeTo(MainEntry.frame);
+		popup_frame.setVisible(true);
+    }
 }

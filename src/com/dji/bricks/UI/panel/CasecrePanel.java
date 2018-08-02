@@ -128,7 +128,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	private SQLUtils sql = null;
 	private ResultSet xpathSet = null;
 	private Object[] table_row = new Object[5];
-	private int[] speAddList = {2, 4, 7, 11};
+	private int[] speAddList = {2, 4, 7, 11, 12};
 	
 	private PopUpWindow popWin;
 	private EventList<String> actEventList = new BasicEventList<>();
@@ -297,6 +297,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
     	comboxActName.addItem("Spinner select");
     	comboxActName.addItem("Key HOME");
     	comboxActName.addItem("Key BACK");
+    	comboxActName.addItem("Tap Point");
+    	comboxActName.addItem("Save text to tmp");
     	comboxActName.setSelectedItem(null);
 		comboxActName.addItemListener(new ActListener());
 		JLabel ActNull = new JLabel();
@@ -321,6 +323,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		comboxVerName.addItem(PropertyUtil.getProperty("bricks.ui.casecre.textver"));
 //		comboxVerName.addItem(PropertyUtil.getProperty("bricks.ui.casecre.imgver"));
 		comboxVerName.addItem(PropertyUtil.getProperty("bricks.ui.casecre.extver"));
+		comboxVerName.addItem(PropertyUtil.getProperty("bricks.ui.casecre.cmpver"));
 		comboxVerName.setEditable(false);
 		comboxVerName.setSelectedItem(null);
 		comboxVerName.setPreferredSize(ConstantsUI.TEXT_COMBOX_SIZE_ITEM);
@@ -336,6 +339,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 					ver_type = 2;
 				} else if (item == null){
 					ver_type = 0;
+				} else if (PropertyUtil.getProperty("bricks.ui.casecre.cmpver").equals(item)) {
+					ver_type = 3;
 				}
 			}
 		});
@@ -939,6 +944,12 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 					case "Spinner select":
 						action = 11;
 						break;
+					case "Tap Point":
+						action = 12;
+						break;
+					case "Save text to tmp":
+						action = 13;
+						break;
 					}
 				}
 		}
@@ -1229,15 +1240,13 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 	    		break;
 			case 2:
 	    		act_name = "Set Text";
-	    		if (!caseLoad) {
+	    		if (!caseLoad) 
 	    			popWin.popSelect(5, brick, 1);
-	    		}
 	    		break;
 			case 4:
 	    		act_name = "Point Drag";
-	    		if (!caseLoad) {
+	    		if (!caseLoad) 
 	    			screenPointGet(brick);
-	    		}
 	    		break;
 			case 5:
 				act_name = "Push To Device";
@@ -1247,9 +1256,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 				break;
 			case 7:
 				act_name = "Scroll";
-				if (!caseLoad) {
+				if (!caseLoad) 
 	    			popWin.popSelect(6, brick, 2);
-	    		}
 				break;
 			case 8:
 				act_name = "Key HOME";
@@ -1265,6 +1273,14 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 				if (!caseLoad) {
 					popWin.popSelect(5, brick, 2);
 				}
+				break;
+			case 12:
+				act_name = "Tap Point";
+				if (!caseLoad)
+					screenPointGet(brick);
+				break;
+			case 13:
+				act_name = "Save text to tmp";
 				break;
 		}
 		

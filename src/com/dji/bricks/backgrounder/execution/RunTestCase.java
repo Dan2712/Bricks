@@ -227,6 +227,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 	public void run() {
 		int actionCount = 0;
 		BufferedWriter out = null;
+		StringBuilder tmpStore = new StringBuilder();
 		
 		//running start
 		if (this.runMode == 0) {
@@ -240,11 +241,11 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 						Thread.sleep(300);
 						actionCount ++;
 					    getScreenshot(screenshotRunPath, actionCount);
-						this.actionSwitch(obj);
+						this.actionSwitch(obj, tmpStore);
 						
 						performanceGet(actionCount);
 					} else if (obj.getString("property").equals("val")) {
-						this.validationSwitch(obj);
+						this.validationSwitch(obj, tmpStore);
 						Thread.sleep(1000);
 					} else if (obj.getString("property").equals("time")) {
 						int time = ((Integer)obj.getJSONObject("params").get("time")) * 1000;
@@ -344,7 +345,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		exlUtils.updateWorkbook();
 	}
 	
-	public void actionSwitch(JSONObject action_info) throws Exception {
+	public void actionSwitch(JSONObject action_info, StringBuilder tmpStore) throws Exception {
 		int action_name = action_info.getIntValue("action_name");
 		switch (action_name) {
 		case 0:
@@ -414,11 +415,18 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 			action.spinnerSelect(ele_sub, params_spinner.getString("choose"));
 			logText.append("Spinner choose " + params_spinner.getString("choose") + "\n");
 			break;
+		case 12:
+			JSONObject params_tap = action_info.getJSONObject("params");
+			action.tapPoint(params_tap.getJSONObject("DesPoint").getIntValue("x"), params_tap.getJSONObject("DesPoint").getIntValue("y"));
+			break;
+		case 13:
+			action.saveToTmp(ele_sub, tmpStore);
+			break;
 		}
 		
 	}
 	
-	public void validationSwitch(JSONObject validation_info) throws Exception {
+	public void validationSwitch(JSONObject validation_info, StringBuilder tmpStore) throws Exception {
 		int validation_name = validation_info.getIntValue("validation_name");
 		JSONObject params = validation_info.getJSONObject("params");
 		
@@ -439,7 +447,12 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					logText.append("Element validation fail" + "\n");
 				break;
 			case 3:
-				String ele_name_numVal = (String) params.get("ele_path");
+				String ele_name_tmpVal = (String) params.get("ele_path");
+				if (validation.checkTmp(ele_name_tmpVal, tmpStore))
+					logText.append("Text compare success" + "\n");
+				else
+					logText.append("Text compare fail" + "\n");
+				break;
 		}
 	}
 

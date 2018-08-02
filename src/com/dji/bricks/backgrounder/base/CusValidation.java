@@ -16,7 +16,8 @@ public class CusValidation {
 		this.driver = driver;
 	}
 	
-	public Boolean getText(String eleName, String expectText) {
+	//1.text val
+	public boolean getText(String eleName, String expectText) {
 		WebElement ele = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(eleName);
 		String text = ele.getAttribute("text");
 		
@@ -26,7 +27,8 @@ public class CusValidation {
 		return false;
 	}
 	
-	public Boolean getExactEle(String eleName) {
+	//2.ele val
+	public boolean getExactEle(String eleName) {
 		WebElement ele = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(eleName);
 		
 		if (ele != null)
@@ -39,5 +41,15 @@ public class CusValidation {
 		int num = Integer.parseInt(ele.getAttribute("text"));
 		
 		return num;
+	}
+	
+	//4.tmp val
+	public boolean checkTmp(String eleName, StringBuilder tmpStore) {
+		WebElement ele = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(eleName);
+		String text = ele.getAttribute("text");
+		if (text.equals(tmpStore.toString()))
+			return true;
+		
+		return false;
 	}
 }

@@ -179,4 +179,15 @@ public class CusAction {
 		ele.click();
 		driver.findElement(MobileBy.AndroidUIAutomator("new UiScrollable(new UiSelector()).scrollIntoView(" + "new UiSelector().text(\"" + option + "\"));")).click();;
 	}
+	
+	//12.tap point
+	public void tapPoint(int x, int y) {
+		touchAction.tap(x, y);
+	}
+	
+	//13.save to tmp store
+	public void saveToTmp(WebElement ele, StringBuilder tmpStore) {
+		String text = ele.getText();
+		tmpStore.delete(0, tmpStore.length()).append(text);
+	}
 }
