@@ -134,18 +134,18 @@ public class UiNode extends BasicTreeNode {
 				flag = true;
 			}
 		}
-		
-		String text = getAttribute("text");
-		if (text != null && !text.equals("")) {
-			text = text.replaceAll("\"", "\\\\\"");
-			if(flag){
-				if (!(xpath.substring(xpath.length()-7, xpath.length()-1)).equals("editor"))
-					xpath += " and @text=\'" + text + "\'";
-			}else{
-				xpath += "[@text=\'" + text + "\'";
-				flag = true;
-			}
-		}
+//		
+//		String text = getAttribute("text");
+//		if (text != null && !text.equals("")) {
+//			text = text.replaceAll("\"", "\\\\\"");
+//			if(flag){
+//				if (!(xpath.substring(xpath.length()-7, xpath.length()-1)).equals("editor"))
+//					xpath += " and @text=\'" + text + "\'";
+//			}else{
+//				xpath += "[@text=\'" + text + "\'";
+//				flag = true;
+//			}
+//		}
 		String content_desc = getAttribute("content-desc");
 		if(!content_desc.equals("")){
 			content_desc = content_desc.replaceAll("'", "\\\\'");
