@@ -11,7 +11,9 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 
 import com.android.ddmlib.AdbCommandRejectedException;
+import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.SyncException;
 import com.android.ddmlib.TimeoutException;
 import com.dji.bricks.backgrounder.execution.AppiumInit;
@@ -60,7 +62,6 @@ public class CusAction {
 		int yAxisEndPoint = desPoint.y;
 		
 		touchAction.longPress(ele)
-					.waitAction(3000)
 					.moveTo(xAxisEndPoint, yAxisEndPoint)
 					.release();
 		touchAction.perform();
@@ -147,6 +148,10 @@ public class CusAction {
 			case 1:
 				driver.swipe((int)scrollX, (int)scrollY_DOWN, (int)scrollX, endY - 5, 500);
 				break;
+			case 2:
+				break;
+			case 3:
+				break;
 		}
 	}
 	
@@ -189,5 +194,14 @@ public class CusAction {
 	public void saveToTmp(WebElement ele, StringBuilder tmpStore) {
 		String text = ele.getText();
 		tmpStore.delete(0, tmpStore.length()).append(text);
+	}
+	
+	//14.send adb cmd
+	public void sendAdb(String cmd) {
+		try {
+			device.executeShellCommand(cmd, new CollectingOutputReceiver());
+		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

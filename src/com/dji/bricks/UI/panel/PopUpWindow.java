@@ -494,6 +494,17 @@ public class PopUpWindow extends JFrame {
 						if (brick != null) {
 							brick.setParams(params_spinner);
 						}
+					} else if (winType == 3) {
+						table_row[1] = PropertyUtil.getProperty("bricks.ui.casecre.act");
+						table_row[2] = PropertyUtil.getProperty("bricks.ui.casecre.adbcmd");
+						table_row[3] = text_content.getText();
+						table_row[4] = "N/A";
+						
+						Map<String, Object> params_adb = new HashMap<>();
+						params_adb.put("cmd", text_content.getText());
+						if (brick != null) {
+							brick.setParams(params_adb);
+						}
 					}
 					
                     int i = casetable.getSelectedRow();
@@ -866,7 +877,7 @@ public class PopUpWindow extends JFrame {
 				// TODO Auto-generated method stub
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					String ele_cus = (String) e.getItem();
-					xpathSet = sql.queryElement("ELEMENT", ele_cus);
+					xpathSet = sql.queryElement("ELEMENT", comboxAppName.getSelectedItem().toString(), comboxViewName.getSelectedItem().toString(), ele_cus);
 				}
 				
 				try {

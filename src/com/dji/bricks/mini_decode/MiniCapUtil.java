@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
@@ -163,7 +164,7 @@ public class MiniCapUtil implements SubjectForListener{
 		
 //		DdmPreferences.setTimeOut(20000);
 		try {
-			device.executeShellCommand(command, receiver, 0);
+			device.executeShellCommand(command, receiver, 0, TimeUnit.SECONDS);
 		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
 			e.printStackTrace();
 			if (e.getMessage().contains("not found"))

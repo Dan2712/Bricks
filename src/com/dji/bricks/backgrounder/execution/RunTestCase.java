@@ -240,7 +240,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					} else if (obj.getString("property").equals("act")) {
 						Thread.sleep(300);
 						actionCount ++;
-					    getScreenshot(screenshotRunPath, actionCount);
+//					    getScreenshot(screenshotRunPath, actionCount);
 						this.actionSwitch(obj, tmpStore);
 						
 						performanceGet(actionCount);
@@ -364,6 +364,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		case 4:
 			JSONObject params_drag = action_info.getJSONObject("params");
 			action.pointDrag(ele_sub, new Point(params_drag.getJSONObject("DesPoint").getIntValue("x"), params_drag.getJSONObject("DesPoint").getIntValue("y")));
+			Thread.sleep(500);
 			logText.append(this.ele_customName + " is draged to the position" + "\n");
 			break;
 		case 5:
@@ -389,7 +390,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 						position = 0.5;
 						break;
 					case "From Bottom":
-						position = 0.9;
+						position = 1;
 						break;
 				}
 				action.swipe(position, params_swipe.getString("containerPath"), params_swipe.getIntValue("heading"));
@@ -418,9 +419,16 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		case 12:
 			JSONObject params_tap = action_info.getJSONObject("params");
 			action.tapPoint(params_tap.getJSONObject("DesPoint").getIntValue("x"), params_tap.getJSONObject("DesPoint").getIntValue("y"));
+			logText.append("Point is tapped");
 			break;
 		case 13:
 			action.saveToTmp(ele_sub, tmpStore);
+			logText.append(this.ele_customName + " value saved to tmp" + "\n");
+			break;
+		case 14:
+			JSONObject params_adb = action_info.getJSONObject("params");
+			action.sendAdb(params_adb.getString("cmd"));
+			logText.append("Adb cmd is send" + "\n");
 			break;
 		}
 		
@@ -449,9 +457,9 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 			case 3:
 				String ele_name_tmpVal = (String) params.get("ele_path");
 				if (validation.checkTmp(ele_name_tmpVal, tmpStore))
-					logText.append("Text compare success" + "\n");
+					logText.append("Text remains" + "\n");
 				else
-					logText.append("Text compare fail" + "\n");
+					logText.append("Text differs" + "\n");
 				break;
 		}
 	}

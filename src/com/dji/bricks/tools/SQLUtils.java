@@ -44,12 +44,13 @@ public class SQLUtils {
 			if (!isTableExist("ACTIVITY"))
 				stmt.executeUpdate(createActivityTable);
 			String createElementTable = "CREATE TABLE ELEMENT "
-					+ "(CUSTOM_NAME TEXT NOT NULL UNIQUE,"
+					+ "(CUSTOM_NAME TEXT NOT NULL,"
 					+ "XPATH TEXT NOT NULL,"
 					+ "ACTIVITY_NAME TEXT NOT NULL,"
 					+ "APP_NAME TEXT NOT NULL,"
 					+ "STATE TEXT NOT NULL,"
-					+ "SCREEN_PATH TEXT NOT NULL)";
+					+ "SCREEN_PATH TEXT NOT NULL);"
+					+ "CREATE UNIQUE INDEX ELEMENT_I ON ELEMENT(CUSTOM_NAME, ACTIVITY_NAME);";
 			if (!isTableExist("ELEMENT"))
 				stmt.executeUpdate(createElementTable);
 			
@@ -71,10 +72,10 @@ public class SQLUtils {
 		Statement stmt = conn.createStatement();
 		String insert_act = "INSERT INTO ACTIVITY (ACTIVITY_NAME, APP_NAME) "
 				+ "VALUES (\"" + activity_name + "\", \"" + app_name + "\");";
-		stmt.executeUpdate(insert_act);
 		String insert_ele = "INSERT INTO ELEMENT (CUSTOM_NAME, XPATH, ACTIVITY_NAME, APP_NAME, STATE, SCREEN_PATH) "
 				+ "VALUES (\"" + custom_name + "\", \"" + xpath + "\", \"" + activity_name + "\", \"" + app_name + "\", \"" + state + "\", \"" + screen_path + "\");";
 		stmt.executeUpdate(insert_ele);
+		stmt.executeUpdate(insert_act);
 		
 		stmt.close();
 	}
@@ -82,10 +83,7 @@ public class SQLUtils {
 	public ResultSet queryElement(String tableName, String appName) {
 		ResultSet rs = null;
 		String query = "";
-		if (tableName.equals("ACTIVITY"))
-			query = "SELECT DISTINCT * FROM " + tableName + " WHERE APP_NAME = \"" + appName + "\";";
-		else if (tableName.equals("ELEMENT"))
-			query = "SELECT * FROM " + tableName + " WHERE CUSTOM_NAME = \"" + appName + "\";";
+		query = "SELECT DISTINCT * FROM " + tableName + " WHERE APP_NAME = \"" + appName + "\";";
 		try {
 			Statement stmt = conn.createStatement();
 			rs = stmt.executeQuery(query);
@@ -98,6 +96,18 @@ public class SQLUtils {
 	public ResultSet queryElement(String tableName, String appName, String viewName) {
 		ResultSet rs = null;
 		String query = "SELECT * FROM " + tableName + " WHERE APP_NAME = \"" + appName + "\" AND ACTIVITY_NAME = \"" + viewName +  "\";";
+		try {
+			Statement stmt = conn.createStatement();
+			rs = stmt.executeQuery(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rs;
+	}
+	
+	public ResultSet queryElement(String tableName, String appName, String viewName, String customName) {
+		ResultSet rs = null;
+		String query = "SELECT * FROM " + tableName + " WHERE APP_NAME = \"" + appName + "\" AND ACTIVITY_NAME = \"" + viewName + "\" AND CUSTOM_NAME = \"" + customName + "\";";
 		try {
 			Statement stmt = conn.createStatement();
 			rs = stmt.executeQuery(query);
