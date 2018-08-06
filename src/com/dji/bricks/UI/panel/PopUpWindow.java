@@ -459,7 +459,7 @@ public class PopUpWindow extends JFrame {
 		JLabel text_set_label = new JLabel(PropertyUtil.getProperty("bricks.ui.casecre.btntip.textset"));
 		text_set_label.setFont(ConstantsUI.FONT_NORMAL);
 		JTextField text_content = new JTextField();
-		text_content.setPreferredSize(new Dimension(80,20));
+		text_content.setPreferredSize(new Dimension(160,20));
 		JPanel text_btn_pane = new JPanel();
 		MyIconButton buttonText_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
                 ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.textset"));

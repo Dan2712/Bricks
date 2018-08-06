@@ -426,7 +426,7 @@ public class MiniCapUtil implements SubjectForListener{
 							restore();
 							
 						} else {
-							LOG.debug("frame needed : " + frameLength);
+//							LOG.debug("frame needed : " + frameLength);
 							byte[] subByte = subByteArray(buffer, cursor, buf_length);
 							frameBody = byteMerger(frameBody, subByte);
 							frameLength -= (buf_length - cursor);

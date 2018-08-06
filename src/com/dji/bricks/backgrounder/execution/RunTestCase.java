@@ -227,7 +227,8 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 	public void run() {
 		int actionCount = 0;
 		BufferedWriter out = null;
-		StringBuilder tmpStore = new StringBuilder();
+		StringBuilder tmpStore1 = new StringBuilder();
+		StringBuilder tmpStore2 = new StringBuilder();
 		
 		//running start
 		if (this.runMode == 0) {
@@ -241,11 +242,11 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 						Thread.sleep(300);
 						actionCount ++;
 //					    getScreenshot(screenshotRunPath, actionCount);
-						this.actionSwitch(obj, tmpStore);
+						this.actionSwitch(obj, tmpStore1, tmpStore2);
 						
 						performanceGet(actionCount);
 					} else if (obj.getString("property").equals("val")) {
-						this.validationSwitch(obj, tmpStore);
+						this.validationSwitch(obj, tmpStore1);
 						Thread.sleep(1000);
 					} else if (obj.getString("property").equals("time")) {
 						int time = ((Integer)obj.getJSONObject("params").get("time")) * 1000;
@@ -253,7 +254,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					}
 				} catch (Exception e) {
 					if (e instanceof NoSuchElementException)
-						logText.append("No such element: " + this.ele_customName);
+						logText.append("No such element: " + this.ele_customName + "\n");
 					else {
 						logText.append("Case Failed" + "\n");
 					}
@@ -345,91 +346,96 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		exlUtils.updateWorkbook();
 	}
 	
-	public void actionSwitch(JSONObject action_info, StringBuilder tmpStore) throws Exception {
+	public void actionSwitch(JSONObject action_info, StringBuilder tmpStore1, StringBuilder tmpStore2) throws Exception {
 		int action_name = action_info.getIntValue("action_name");
 		switch (action_name) {
-		case 0:
-			action.click(ele_sub);
-			logText.append(this.ele_customName + " is clicked" + "\n");
-			break;
-		case 1:
-			action.longPress(ele_sub);
-			logText.append(this.ele_customName + " is long pressed" + "\n");
-			break;
-		case 2:
-			JSONObject params_text = action_info.getJSONObject("params");
-			action.setText(ele_sub, params_text.getString("inputText"));
-			logText.append(this.ele_customName + " set text successed" + "\n");
-			break;
-		case 4:
-			JSONObject params_drag = action_info.getJSONObject("params");
-			action.pointDrag(ele_sub, new Point(params_drag.getJSONObject("DesPoint").getIntValue("x"), params_drag.getJSONObject("DesPoint").getIntValue("y")));
-			Thread.sleep(500);
-			logText.append(this.ele_customName + " is draged to the position" + "\n");
-			break;
-		case 5:
-			action.pushFileToDevice();
-			logText.append("Pushing files..." + "\n");
-			break;
-		case 6:
-			action.reboot();
-			logText.append("Rebooting..." + "\n");
-			AppiumInit.setUp(device, "com.dpad.launcher", "com.dpad.launcher.Launcher");
-			this.driver = AppiumInit.driver;
-			break;
-		case 7:
-			JSONObject params_swipe = action_info.getJSONObject("params");
-			if (params_swipe.getString("elePath") == null) {
-				String scrollPosition = params_swipe.getString("scrollPos");
-				double position = 0.0;
-				switch (scrollPosition) {
-					case "From quarter":
-						position = 0.25;
-						break;
-					case "From half":
-						position = 0.5;
-						break;
-					case "From Bottom":
-						position = 1;
-						break;
+			case 0:
+				action.click(ele_sub);
+				logText.append(this.ele_customName + " is clicked" + "\n");
+				break;
+			case 1:
+				action.longPress(ele_sub);
+				logText.append(this.ele_customName + " is long pressed" + "\n");
+				break;
+			case 2:
+				JSONObject params_text = action_info.getJSONObject("params");
+				action.setText(ele_sub, params_text.getString("inputText"));
+				logText.append(this.ele_customName + " set text successed" + "\n");
+				break;
+			case 4:
+				JSONObject params_drag = action_info.getJSONObject("params");
+				action.pointDrag(ele_sub, new Point(params_drag.getJSONObject("DesPoint").getIntValue("x"), params_drag.getJSONObject("DesPoint").getIntValue("y")));
+				Thread.sleep(500);
+				logText.append(this.ele_customName + " is draged to the position" + "\n");
+				break;
+			case 5:
+				action.pushFileToDevice();
+				logText.append("Pushing files..." + "\n");
+				break;
+			case 6:
+				action.reboot();
+				logText.append("Rebooting..." + "\n");
+				AppiumInit.setUp(device, "com.dpad.launcher", "com.dpad.launcher.Launcher");
+				this.driver = AppiumInit.driver;
+				break;
+			case 7:
+				JSONObject params_swipe = action_info.getJSONObject("params");
+				if (params_swipe.getString("elePath") == null) {
+					String scrollPosition = params_swipe.getString("scrollPos");
+					double position = 0.0;
+					switch (scrollPosition) {
+						case "From quarter":
+							position = 0.25;
+							break;
+						case "From half":
+							position = 0.5;
+							break;
+						case "From Bottom":
+							position = 1;
+							break;
+					}
+					action.swipe(position, params_swipe.getString("containerPath"), params_swipe.getIntValue("heading"));
+				} else {
+					action.swipe(params_swipe.getString("elePath"), params_swipe.getString("containerPath"), params_swipe.getIntValue("heading"));
 				}
-				action.swipe(position, params_swipe.getString("containerPath"), params_swipe.getIntValue("heading"));
-			} else {
-				action.swipe(params_swipe.getString("elePath"), params_swipe.getString("containerPath"), params_swipe.getIntValue("heading"));
-			}
-			logText.append("Page is swiped" + "\n");
-			break;
-		case 8:
-			action.keyHOME();
-			logText.append("Press HOME" + "\n");
-			break;
-		case 9:
-			action.KeyBACK();
-			logText.append("Press BACK" + "\n");
-			break;
-		case 10:
-			action.dragBar(ele_sub);
-			logText.append(this.ele_customName + " is dragged" + "\n");
-			break;
-		case 11:
-			JSONObject params_spinner = action_info.getJSONObject("params");
-			action.spinnerSelect(ele_sub, params_spinner.getString("choose"));
-			logText.append("Spinner choose " + params_spinner.getString("choose") + "\n");
-			break;
-		case 12:
-			JSONObject params_tap = action_info.getJSONObject("params");
-			action.tapPoint(params_tap.getJSONObject("DesPoint").getIntValue("x"), params_tap.getJSONObject("DesPoint").getIntValue("y"));
-			logText.append("Point is tapped");
-			break;
-		case 13:
-			action.saveToTmp(ele_sub, tmpStore);
-			logText.append(this.ele_customName + " value saved to tmp" + "\n");
-			break;
-		case 14:
-			JSONObject params_adb = action_info.getJSONObject("params");
-			action.sendAdb(params_adb.getString("cmd"));
-			logText.append("Adb cmd is send" + "\n");
-			break;
+				logText.append("Page is swiped" + "\n");
+				break;
+			case 8:
+				action.keyHOME();
+				logText.append("Press HOME" + "\n");
+				break;
+			case 9:
+				action.KeyBACK();
+				logText.append("Press BACK" + "\n");
+				break;
+			case 10:
+				action.dragBar(ele_sub);
+				logText.append(this.ele_customName + " is dragged" + "\n");
+				break;
+			case 11:
+				JSONObject params_spinner = action_info.getJSONObject("params");
+				action.spinnerSelect(ele_sub, params_spinner.getString("choose"));
+				logText.append("Spinner choose " + params_spinner.getString("choose") + "\n");
+				break;
+			case 12:
+				JSONObject params_tap = action_info.getJSONObject("params");
+				action.tapPoint(params_tap.getJSONObject("DesPoint").getIntValue("x"), params_tap.getJSONObject("DesPoint").getIntValue("y"));
+				logText.append("Point is tapped");
+				break;
+			case 13:
+				action.saveToTmp(ele_sub, tmpStore1);
+				logText.append(this.ele_customName + " value saved to tmp" + "\n");
+				break;
+			case 14:
+				JSONObject params_adb = action_info.getJSONObject("params");
+				action.sendAdb(params_adb.getString("cmd"));
+				logText.append("Adb cmd is send" + "\n");
+				break;
+			case 15:
+				JSONObject params_eles = action_info.getJSONObject("params");
+				action.getChildViewNum(params_eles.getString("parentName"), params_eles.getString("childClass"), tmpStore2);
+				logText.append("ChildView num is " + tmpStore2.toString() + " and save to tmp2 \n");
+				break;
 		}
 		
 	}

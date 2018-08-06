@@ -64,6 +64,9 @@ public class ExecutionMain {
 			case "dji.pilot.pad":
 				launchActivity = "dji.pilot.main.activity.DJILauncherActivity";
 				break;
+			case "com.android.settings":
+				launchActivity = "com.android.settings.Settings";
+				break;
 		}
 		
 		if (caseName == null)

@@ -700,7 +700,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             			pkg = "com.dpad.launcher";
             			break;
             		case "RM500 Settings":
-            			pkg = "com.android.settings.Settings";
+            			pkg = "com.android.settings";
             			break;
             		case "MG 1A/P":
             			pkg = "dji.prof.mg";

@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
 import com.android.ddmlib.AdbCommandRejectedException;
@@ -38,20 +39,28 @@ public class CusAction {
 		touchAction = new TouchAction(driver);
 	}
 	
-	//1.click
+	//0.click
 	public void click(WebElement ele) {
 //		for (int i=0; i<Math.random()*6; i++) {
-			ele.click();
+		ele.click();
+		driver.getPageSource();
+		WebElement parent = driver.findElement(By.xpath("//android.support.v7.widget.RecyclerView[@resource-id='com.android.systemui:id/ntf']"));
+		System.out.println(parent.findElements(By.className("android.widget.ImageView")).size());
 //		}
 	}
 	
-	//2.long press
+	//1.long press
 	public void longPress(WebElement ele) {
 		driver.performTouchAction(touchAction.longPress(ele));
 	}
 	
-	//3.input text
+	//2.input text
 	public void setText(WebElement ele, String text) {
+		try {
+	        driver.hideKeyboard();
+	    } catch (WebDriverException e) {
+	        
+	    }
 		ele.clear();
 		ele.sendKeys(text);
 	}
@@ -124,34 +133,47 @@ public class CusAction {
 	}
 	
 	public void swipe(double position, String containerPath, int heading) {
-		WebElement eleContainer = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(containerPath);
-		
-		Dimension size = eleContainer.getSize();
-		int x = size.getWidth();
-		int y = size.getHeight();
-		
-		org.openqa.selenium.Point start = eleContainer.getLocation();
-		int startX = start.x;
-		int startY = start.y;
-		
-		int endX = x + startX;
-		int endY = y + startY;
-		
-		double scrollX = (startX + endX) / 2;
-		double scrollY_UP = y * position + startY;
-		double scrollY_DOWN = endY - y * position;
-		
-		switch (heading) {
-			case 0:
-				driver.swipe((int)scrollX, (int)scrollY_UP, (int)scrollX, startY + 5, 500);
-				break;
-			case 1:
-				driver.swipe((int)scrollX, (int)scrollY_DOWN, (int)scrollX, endY - 5, 500);
-				break;
-			case 2:
-				break;
-			case 3:
-				break;
+		if (!containerPath.equals("")) {
+			WebElement eleContainer = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(containerPath);
+			
+			Dimension size = eleContainer.getSize();
+			int x = size.getWidth();
+			int y = size.getHeight();
+			
+			org.openqa.selenium.Point start = eleContainer.getLocation();
+			int startX = start.x;
+			int startY = start.y;
+			
+			int endX = x + startX;
+			int endY = y + startY;
+			
+			double scrollX = (startX + endX) / 2;
+			double scrollY_UP = y * position + startY;
+			double scrollY_DOWN = endY - y * position;
+			
+			switch (heading) {
+				case 0:
+					driver.swipe((int)scrollX, (int)scrollY_UP, (int)scrollX, startY + 5, 500);
+					break;
+				case 1:
+					driver.swipe((int)scrollX, (int)scrollY_DOWN, (int)scrollX, endY - 5, 500);
+					break;
+				case 2:
+					break;
+				case 3:
+					break;
+			}
+		} else {
+			int x = 1920;
+			int y = 1080;
+			switch (heading) {
+				case 0:
+					driver.swipe(x / 2, (int)(y * position), x / 2, 5, 500);
+					break;
+				case 1:
+					driver.swipe(x / 2, (int)((1 - position) * y), x / 2, y - 5, 500);
+					break;
+			}
 		}
 	}
 	
@@ -203,5 +225,11 @@ public class CusAction {
 		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	//15.get children view num
+	public void getChildViewNum(String parentName, String childClass, StringBuilder tmpStore) {
+		driver.getPageSource();
+		tmpStore.delete(0, tmpStore.length()).append(driver.findElement(By.name(parentName)).findElements(By.className(childClass)).size());
 	}
 }
