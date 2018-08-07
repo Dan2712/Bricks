@@ -23,6 +23,8 @@ import com.dji.bricks.PerformanceWatcher;
 import com.dji.bricks.backgrounder.execution.AppiumInit;
 import com.dji.bricks.backgrounder.execution.RunTestCase;
 
+import io.appium.java_client.android.AndroidDriver;
+
 public class ExecutionMain {
 	private static final Logger LOG = Logger.getLogger("ExecutionMain.class");
 	
@@ -31,6 +33,7 @@ public class ExecutionMain {
 	private String startAct = "";
 	private PrintWriter log_file_writer;
 	private boolean isRunning = false;
+	private AndroidDriver driver;
 	
 	private static final ExecutionMain instance = new ExecutionMain();
     
@@ -73,7 +76,7 @@ public class ExecutionMain {
 			caseName = "tmpTest";
 		
 		try {
-			AppiumInit.setUp(device, pkg, launchActivity);
+			driver = AppiumInit.getInstance(device, pkg, launchActivity).getDriver();
 			
 			PerformanceWatcher watcher = new PerformanceWatcher(device, pkg);
 			MainEntry.cachedThreadPool.submit(new Runnable() {
@@ -92,7 +95,7 @@ public class ExecutionMain {
 				}
 			});
 			
-			RunTestCase testCase = new RunTestCase(jsonFile, 0, AppiumInit.driver, logText, device, pkg, caseName);
+			RunTestCase testCase = new RunTestCase(jsonFile, 0, driver, logText, device, pkg, caseName);
 			testCase.run();
 		} catch (NullPointerException e1) {
 			LOG.error(e1);
@@ -105,7 +108,7 @@ public class ExecutionMain {
 				isRunning = false;
 				saveLog(caseName);
 				log_file_writer.close();
-				AppiumInit.driver.quit();
+//				driver.quit();
 			} catch (Exception e1) {
 				LOG.error(e1);
 			}
@@ -118,8 +121,8 @@ public class ExecutionMain {
 	    String reportDate = df.format(date);
 	    
 	    String logPath = System.getProperty("user.dir") + File.separator + "log" + File.separator + "AppiumLog_";
-	    LOG.info(AppiumInit.driver.getSessionId() + ": Saving device log...");
-	    List<LogEntry> logEntries = AppiumInit.driver.manage().logs().get("logcat").filter(Level.CONFIG);
+	    LOG.info(driver.getSessionId() + ": Saving device log...");
+	    List<LogEntry> logEntries = driver.manage().logs().get("logcat").filter(Level.CONFIG);
 	    File logFile = null;
     	logFile = new File(logPath + reportDate + "_" + caseName + ".log");
 	    
@@ -130,7 +133,7 @@ public class ExecutionMain {
 		for (int i=0; i<logEntries.size(); i++)
 			log_file_writer.println(logEntries.get(i));
 	    log_file_writer.flush();
-	    LOG.info(AppiumInit.driver.getSessionId() + ": Saving device log - Done.");
+	    LOG.info(driver.getSessionId() + ": Saving device log - Done.");
 	}
 	
 	public String getPkg() {

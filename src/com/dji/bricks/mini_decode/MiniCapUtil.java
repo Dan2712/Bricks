@@ -162,7 +162,6 @@ public class MiniCapUtil implements SubjectForListener{
 	private String executeShellCommand(String command) {
 		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
 		
-//		DdmPreferences.setTimeOut(20000);
 		try {
 			device.executeShellCommand(command, receiver, 0, TimeUnit.SECONDS);
 		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
@@ -310,7 +309,7 @@ public class MiniCapUtil implements SubjectForListener{
 					
 					@Override
 					public void run() {
-						LOG.info("minicap start: " + start_command);
+						LOG.debug("minicap start: " + start_command);
 						executeShellCommand(start_command);
 					}
 				});

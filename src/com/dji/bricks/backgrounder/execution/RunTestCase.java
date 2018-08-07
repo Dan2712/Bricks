@@ -375,8 +375,8 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 			case 6:
 				action.reboot();
 				logText.append("Rebooting..." + "\n");
-				AppiumInit.setUp(device, "com.dpad.launcher", "com.dpad.launcher.Launcher");
-				this.driver = AppiumInit.driver;
+//				AppiumInit.setUp(device, "com.dpad.launcher", "com.dpad.launcher.Launcher");
+//				this.driver = AppiumInit.driver;
 				break;
 			case 7:
 				JSONObject params_swipe = action_info.getJSONObject("params");

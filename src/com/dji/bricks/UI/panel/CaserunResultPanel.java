@@ -207,16 +207,20 @@ public class CaserunResultPanel extends JPanel{
                 try {
                     JFileChooser jfc = new JFileChooser(new File(System.getProperty("user.dir") + "/json"));  
                     jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES );  
-                    jfc.showDialog(new JLabel(), "选择");  
-                    filepath = jfc.getSelectedFile().getPath();
+                    jfc.setMultiSelectionEnabled(true);
+                    jfc.showDialog(new JLabel(), "选择"); 
+                    File[] files = jfc.getSelectedFiles();
+                    filepath = files[0].getPath();
                     
                     fileName = filepath.substring(filepath.lastIndexOf("\\")+1);
                     appName = fileName.substring(0, fileName.indexOf("_"));
                     
-                    table_row[0] = fileName;
-                    table_row[1] = filepath;
-                    model.addRow(table_row);
-                    case_list.add(filepath);
+                    for (int i=0; i<files.length; i++) {
+	                    table_row[0] = files[i].getPath().substring(filepath.lastIndexOf("\\")+1);
+	                    table_row[1] = files[i].getPath();
+	                    model.addRow(table_row);
+	                    case_list.add(files[i].getPath());
+                    }
                 } catch (Exception e1) {
                     logger.error("open table_field file fail:" + e1.toString());
                     e1.printStackTrace();

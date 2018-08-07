@@ -198,9 +198,6 @@ public class MainEntry implements GlobalObserver {
             @Override
             public void windowClosing(WindowEvent e) {
             	try {
-            		if (AppiumInit.driver != null)
-            			AppiumInit.driver.quit();
-            	
 //            		Runtime.getRuntime().exec("cmd start " + System.getProperty("user.dir") + "/close.bat");
             		Runtime.getRuntime().exec("taskkill /F /IM node.exe");
             		
