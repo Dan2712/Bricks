@@ -21,6 +21,8 @@ public class UiNode extends BasicTreeNode {
     private List<UiNode> uChildren = new ArrayList<UiNode>();
 
 	public void addAtrribute(String key, String value) {
+		if (value != null)
+			value = value.replaceAll("\\$", ".");
 		mAttributes.put(key, value);
 		updateDisplayName();
 		if ("bounds".equals(key)) {
@@ -72,6 +74,9 @@ public class UiNode extends BasicTreeNode {
 	}
 
 	private void updateBounds(String bounds) {
+//		if (bounds.charAt(bounds.length() - 1) == '.') {
+//			bounds = bounds.substring(0, bounds.length() - 1);
+//		}
 		Matcher m = BOUNDS_PATTERN.matcher(bounds);
 		if (m.matches()) {
 			x = Integer.parseInt(m.group(1));

@@ -14,6 +14,7 @@ public class CusElement {
 	private int wait_time;
 	private AndroidDriver driver;
 	private WebElement element;
+	private String eleModify;
 	
 	public CusElement(int wait_time, AndroidDriver driver) {
 		this.wait_time = wait_time;
@@ -21,13 +22,18 @@ public class CusElement {
 	}
 
 	public WebElement explicitlyWait(String ele) throws NoSuchElementException{
+		if (ele.contains("//android.support.v7.app.ActionBar.Tab")) {
+			System.out.println(java.util.regex.Matcher.quoteReplacement("//*[@class='android.support.v7.app.ActionBar$Tab']"));
+			eleModify = ele.replaceAll("//android.support.v7.app.ActionBar.Tab", java.util.regex.Matcher.quoteReplacement("//*[@class='android.support.v7.app.ActionBar$Tab']"));
+		} else
+			eleModify = ele;
 		WebDriverWait wait = new WebDriverWait(driver, wait_time);
 		
 		element = wait.until(new ExpectedCondition<WebElement>() {
 
 			@Override
 			public WebElement apply(WebDriver d) {
-				return d.findElement(By.xpath(ele));
+				return d.findElement(By.xpath(eleModify));
 			}
 		});
 		return element;
