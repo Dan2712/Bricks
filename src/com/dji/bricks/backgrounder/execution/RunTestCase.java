@@ -131,11 +131,11 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		
 		style = exlUtils.setCellAlignCenter();
 		
-		CPUTotalSheet = exlUtils.getSheet("CPU Total");
-		CPUProcessSheet = exlUtils.getSheet("CPU Process");
-		MemSheet = exlUtils.getSheet("Memory");
-		FPSSheet = exlUtils.getSheet("FPS");
-		PowerSheet = exlUtils.getSheet("Power Consume");
+		CPUTotalSheet = exlUtils.getCaseSheet("CPU Total");
+		CPUProcessSheet = exlUtils.getCaseSheet("CPU Process");
+		MemSheet = exlUtils.getCaseSheet("Memory");
+		FPSSheet = exlUtils.getCaseSheet("FPS");
+		PowerSheet = exlUtils.getCaseSheet("Power Consume");
 		CPUTotalRowNum = CPUTotalSheet.getLastRowNum();
 		CPUProcessRowNum = CPUProcessSheet.getLastRowNum();
 		MemRowNum = MemSheet.getLastRowNum();
@@ -217,7 +217,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 //				}
 //			}
 //		}
-		exlUtils.updateWorkbook();
+		exlUtils.updateCaseWorkbook();
 	}
 
 	public void run(JSONArray jsonFile, String caseName) {
@@ -350,7 +350,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 			else if (obj instanceof Integer)
 				cell.setCellValue(String.valueOf(obj));
 		}
-		exlUtils.updateWorkbook();
+		exlUtils.updateCaseWorkbook();
 	}
 	
 	public void actionSwitch(JSONObject action_info, StringBuilder tmpStore1, StringBuilder tmpStore2) throws Exception {

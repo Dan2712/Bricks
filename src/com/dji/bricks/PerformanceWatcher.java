@@ -34,7 +34,7 @@ public class PerformanceWatcher {
 	private void init() {
 		exlUtils = ExcelUtils.getInstance();
 		sysInfo = new SystemInfoGet(device, pkg);
-		watchSheet = exlUtils.getSheet("Persistent observation");
+		watchSheet = exlUtils.getWatchSheet("Persistent observation");
 		sysInfoRowNum = watchSheet.getLastRowNum();
 		sysInfoMap = new TreeMap<>();
 		
@@ -62,7 +62,7 @@ public class PerformanceWatcher {
 			cell.setCellValue((String) obj);
 		}
 		
-		exlUtils.updateWorkbook();
+		exlUtils.updateWatchWorkbook();
 	}
 	
 	private void updateRow(Object[] infoList) {
@@ -80,7 +80,7 @@ public class PerformanceWatcher {
 //				cell.setCellStyle(exlUtils.getPercentageStyle());
 			}
 		}
-		exlUtils.updateWorkbook();
+		exlUtils.updateWatchWorkbook();
 	}
 	
 	public void startWatch() {
