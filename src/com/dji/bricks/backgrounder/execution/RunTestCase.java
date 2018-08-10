@@ -56,11 +56,9 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 	private String pkg;
 	private JTextArea logText;
 	private IDevice device;
-	private JSONArray jsonFile;
 	private List<WebElement> dragedElement;
 	private Boolean isDraged = false;
 	private String tmp;
-	private String caseName;
 	private ExcelUtils exlUtils;
 	private GfxAnalyse gfxUtil;
 	private int pid;
@@ -87,21 +85,19 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 	private Map<String, Object[]> MemInfo = null;
 	private Map<String, Object[]> FPSInfo = null;
 	private Map<String, Object[]> PowerInfo = null;
-	private Object[] cpuTotalList;
-	private Object[] cpuProcessList;
-	private Object[] memList;
-	private Object[] fpsList;
-	private Object[] powerList;
+//	private Object[] cpuTotalList;
+//	private Object[] cpuProcessList;
+//	private Object[] memList;
+//	private Object[] fpsList;
+//	private Object[] powerList;
 	
-	public RunTestCase(JSONArray jsonFile, int runMode, AndroidDriver driver, JTextArea logText, IDevice device, String pkg, String caseName) {
+	public RunTestCase(int runMode, AndroidDriver driver, JTextArea logText, IDevice device, String pkg) {
 //		this.path = path;
 		this.runMode = runMode;
 		this.driver = driver;
 		this.logText = logText;
 		this.device = device;
-		this.jsonFile = jsonFile;
 		this.pkg = pkg;
-		this.caseName = caseName;
 		init();
 	}
 	
@@ -112,16 +108,16 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		gfxUtil = new GfxAnalyse(device, pkg);
 		sysInfoGet = new SystemInfoGet(device, pkg);
 		
-		cpuTotalList = new Object[jsonFile.size() + 1];
-		cpuProcessList = new Object[jsonFile.size() + 1];
-		memList = new Object[jsonFile.size() + 1];
-		fpsList = new Object[jsonFile.size() + 1];
-		powerList = new Object[jsonFile.size() + 1];
-		cpuTotalList[0] = caseName;
-		cpuProcessList[0] = caseName;
-		memList[0] = caseName;
-		fpsList[0] = caseName;
-		powerList[0] = caseName;
+//		cpuTotalList = new Object[jsonFile.size() + 1];
+//		cpuProcessList = new Object[jsonFile.size() + 1];
+//		memList = new Object[jsonFile.size() + 1];
+//		fpsList = new Object[jsonFile.size() + 1];
+//		powerList = new Object[jsonFile.size() + 1];
+//		cpuTotalList[0] = caseName;
+//		cpuProcessList[0] = caseName;
+//		memList[0] = caseName;
+//		fpsList[0] = caseName;
+//		powerList[0] = caseName;
 		
 		//init screenshot running cap
 		screenshotRunPath = System.getProperty("user.dir") + File.separator + "screenshot/RunCap/" +
@@ -224,11 +220,22 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		exlUtils.updateWorkbook();
 	}
 
-	public void run() {
+	public void run(JSONArray jsonFile, String caseName) {
 		int actionCount = 0;
 		BufferedWriter out = null;
 		StringBuilder tmpStore1 = new StringBuilder();
 		StringBuilder tmpStore2 = new StringBuilder();
+		
+		Object[] cpuTotalList = new Object[jsonFile.size() + 1];
+		Object[] cpuProcessList = new Object[jsonFile.size() + 1];
+		Object[] memList = new Object[jsonFile.size() + 1];
+		Object[] fpsList = new Object[jsonFile.size() + 1];
+		Object[] powerList = new Object[jsonFile.size() + 1];
+		cpuTotalList[0] = caseName;
+		cpuProcessList[0] = caseName;
+		memList[0] = caseName;
+		fpsList[0] = caseName;
+		powerList[0] = caseName;
 		
 		//running start
 		if (this.runMode == 0) {
@@ -244,7 +251,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 //					    getScreenshot(screenshotRunPath, actionCount);
 						this.actionSwitch(obj, tmpStore1, tmpStore2);
 						
-						performanceGet(actionCount);
+						performanceGet(actionCount, cpuTotalList, cpuProcessList, memList, fpsList, powerList);
 					} else if (obj.getString("property").equals("val")) {
 						this.validationSwitch(obj, tmpStore1);
 						Thread.sleep(1000);
@@ -262,11 +269,11 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					break;
 				}
 			}
-			updateRow();
+			updateRow(cpuTotalList, cpuProcessList, memList, fpsList, powerList);
 		}
 	}
 	
-	private void performanceGet(int index) throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
+	private void performanceGet(int index, Object[] cpuTotalList, Object[] cpuProcessList, Object[] memList, Object[] fpsList, Object[] powerList) throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
 		//get mem value
 //		device.executeShellCommand("adb shell \"su 0 \"procrank | grep \'dji.go.v4\'\"\"", receiver);
 //		receiver.flush();
@@ -288,7 +295,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		powerList[index] = power;
 	}
 	
-	private void updateRow() {
+	private void updateRow(Object[] cpuTotalList, Object[] cpuProcessList, Object[] memList, Object[] fpsList, Object[] powerList) {
 		CPUTotalInfo.put(String.valueOf(CPUTotalRowNum++), cpuTotalList);
 		CPUTotalRow = CPUTotalSheet.createRow(CPUTotalRowNum);
 		int cellCPUTotalid = 0;

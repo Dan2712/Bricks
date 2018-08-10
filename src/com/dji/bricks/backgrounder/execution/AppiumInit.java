@@ -63,9 +63,6 @@ public class AppiumInit {
         capabilities.setCapability("ignoreUnimportantViews", false);
         capabilities.setCapability("newCommandTimeout", 600);
 
-//        ChromeOptions options = new ChromeOptions();
-//        options.setExperimentalOption("androidProcess", appPackage + ":web");
-//        capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         try {
 			driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
 		} catch (MalformedURLException e) {
@@ -74,7 +71,6 @@ public class AppiumInit {
 //        driver = EventFiringWebDriverFactory.getEventFiringWebDriver(driver, new AlertListener());
 //        driver.setSetting(Setting.WAIT_FOR_IDLE_TIMEOUT, Duration.ofMillis(100));
         driver.manage().timeouts().implicitlyWait(5,TimeUnit.SECONDS);
-//        driver = EventFiringWebDriverFactory.getEventFiringWebDriver(driver, new AlertListener());
 	}
 	
 	public static void setUp(JSONObject[] devices, String appPackage, String launchActivity, String url) throws Exception {

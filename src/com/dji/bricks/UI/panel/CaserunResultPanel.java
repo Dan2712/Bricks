@@ -253,7 +253,7 @@ public class CaserunResultPanel extends JPanel{
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				MainEntry.cachedThreadPool.submit((new Runnable() {
+				MainEntry.cachedThreadPool.execute((new Runnable() {
 					
 					@Override
 					public void run() {
@@ -283,13 +283,13 @@ public class CaserunResultPanel extends JPanel{
 						}
 						
 						logprint.setText("");
-						for (int i=0; i<Integer.parseInt(run_num.getText()); i++) {
-							for (int j=0; j<case_list.size(); j++) {
-								jsonFile = FileUtils.loadJson(case_list.get(j));
-								ExecutionMain.getInstance().RunTestCase(jsonFile, logprint, device, pkg, fileName);
-								RealTimeScreenUI.isRuncase = true;
-							}
-						}
+//						for (int i=0; i<Integer.parseInt(run_num.getText()); i++) {
+//							for (int j=0; j<case_list.size(); j++) {
+//								jsonFile = FileUtils.loadJson(case_list.get(j));
+						new ExecutionMain(case_list, logprint, device, pkg, Integer.parseInt(run_num.getText())).runTestCase();;
+						RealTimeScreenUI.isRuncase = true;
+//							}
+//						}
 					}
 				}));
 			}

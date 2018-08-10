@@ -22,6 +22,8 @@ import com.dji.bricks.MainEntry;
 import com.dji.bricks.PerformanceWatcher;
 import com.dji.bricks.backgrounder.execution.AppiumInit;
 import com.dji.bricks.backgrounder.execution.RunTestCase;
+import com.dji.bricks.tools.ExcelUtils;
+import com.dji.bricks.tools.FileUtils;
 
 import io.appium.java_client.android.AndroidDriver;
 
@@ -34,21 +36,40 @@ public class ExecutionMain {
 	private PrintWriter log_file_writer;
 	private boolean isRunning = false;
 	private AndroidDriver driver;
+	private List<String> caseList;
+	private JTextArea logText;
+	private IDevice device;
+	private int num;
+	private RunTestCase testCase;
 	
-	private static final ExecutionMain instance = new ExecutionMain();
+//	private static final ExecutionMain instance = new ExecutionMain();
     
-    private ExecutionMain(){}
-    
-    public static ExecutionMain getInstance(){
-        return instance;
+    public ExecutionMain(List<String> caseList, JTextArea logText, IDevice device, String pkg, int num){
+    	this.caseList = caseList;
+    	this.logText = logText;
+    	this.device = device;
+    	this.pkg = pkg;
+    	this.num = num;
+    	init();
     }
     
-	public void RunTestCase(JSONArray jsonFile, JTextArea logText, IDevice device, String pkg, String caseName) {
-
-		this.pkg = pkg;
-		isRunning = true;
-		
-		switch (pkg) {
+//    private static class HolderClass {
+//		private final static ExecutionMain instance = new ExecutionMain();
+//	}
+    
+//    public static ExecutionMain getInstance(List<String> caseList1, JTextArea logText1, IDevice device1, String pkg1, int num1){
+//    	caseList = caseList1;
+//    	logText = logText1;
+//    	device = device1;
+//    	pkg = pkg1;
+//    	num = num1;
+//        return HolderClass.instance;
+//    }
+    
+    private void init() {
+    	isRunning = true;
+    	
+    	switch (pkg) {
 			case "com.dji.industry.pilot":
 				launchActivity = "com.dji.industry.pilot.SplashActivity";
 				break;
@@ -71,32 +92,89 @@ public class ExecutionMain {
 				launchActivity = "com.android.settings.Settings";
 				break;
 		}
+    	
+    	driver = AppiumInit.getInstance(device, pkg, launchActivity).getDriver();
 		
-		if (caseName == null)
-			caseName = "tmpTest";
-		
-		try {
-			driver = AppiumInit.getInstance(device, pkg, launchActivity).getDriver();
+		PerformanceWatcher watcher = new PerformanceWatcher(device, pkg);
+		MainEntry.cachedThreadPool.submit(new Runnable() {
 			
-			PerformanceWatcher watcher = new PerformanceWatcher(device, pkg);
-			MainEntry.cachedThreadPool.submit(new Runnable() {
-				
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					while (isRunning) {
-						watcher.startWatch();
-						try {
-							Thread.sleep(500);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				while (isRunning) {
+					watcher.startWatch();
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
 				}
-			});
+			}
+		});
+		
+		testCase = new RunTestCase(0, driver, logText, device, pkg);
+    }
+    
+	public void runTestCase() {
+
+//		this.pkg = pkg;
+//		isRunning = true;
+//		
+//		switch (pkg) {
+//			case "com.dji.industry.pilot":
+//				launchActivity = "com.dji.industry.pilot.SplashActivity";
+//				break;
+//			case "dji.pilot":
+//				launchActivity = "dji.pilot.home.cs.activity.DJICsMainActivity";
+//				break;
+//			case "dji.go.v4":
+//				launchActivity = "dji.pilot.main.activity.DJILauncherActivity";
+//				break;
+//			case "com.dpad.launcher":
+//				launchActivity = "com.dpad.launcher.Launcher";
+//				break;
+//			case "dji.prof.mg": case "dji.prof.args.tiny":
+//				launchActivity = "dji.prof.mg.main.SplashActivity";
+//				break;
+//			case "dji.pilot.pad":
+//				launchActivity = "dji.pilot.main.activity.DJILauncherActivity";
+//				break;
+//			case "com.android.settings":
+//				launchActivity = "com.android.settings.Settings";
+//				break;
+//		}
+		
+//		if (caseName == null)
+//			caseName = "tmpTest";
+		
+		try {
+//			driver = AppiumInit.getInstance(device, pkg, launchActivity).getDriver();
+//			
+//			PerformanceWatcher watcher = new PerformanceWatcher(device, pkg);
+//			MainEntry.cachedThreadPool.submit(new Runnable() {
+//				
+//				@Override
+//				public void run() {
+//					// TODO Auto-generated method stub
+//					while (isRunning) {
+//						watcher.startWatch();
+//						try {
+//							Thread.sleep(500);
+//						} catch (InterruptedException e) {
+//							e.printStackTrace();
+//						}
+//					}
+//				}
+//			});
 			
-			RunTestCase testCase = new RunTestCase(jsonFile, 0, driver, logText, device, pkg, caseName);
-			testCase.run();
+//			RunTestCase testCase = new RunTestCase(jsonFile, 0, driver, logText, device, pkg, caseName);
+			for (int i=0; i<num; i++) {
+				for (int j=0; j<caseList.size(); j++) {
+					String casePath = caseList.get(j);
+					JSONArray jsonFile = FileUtils.loadJson(casePath);
+					testCase.run(jsonFile, casePath.substring(casePath.lastIndexOf("\\")+1));
+				}
+			}
 		} catch (NullPointerException e1) {
 			LOG.error(e1);
 		} catch (NoSuchSessionException e2) {
@@ -106,7 +184,7 @@ public class ExecutionMain {
 		}finally {
 			try {
 				isRunning = false;
-				saveLog(caseName);
+//				saveLog(caseName);
 				log_file_writer.close();
 //				driver.quit();
 			} catch (Exception e1) {

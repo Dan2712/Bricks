@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -716,8 +717,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             	try {
             		MainEntry.cachedThreadPool.submit(new Runnable() {
 						public void run() {
-							ExecutionMain.getInstance().RunTestCase(jsonFile, logArea, device, pkg, null);
-		            		RealTimeScreenUI.isRuncase = true;
+//							ExecutionMain.getInstance().RunTestCase(jsonFile, logArea, device, pkg, null);
+//		            		RealTimeScreenUI.isRuncase = true;
 						}
 					});
             	}catch (Exception e1) {
