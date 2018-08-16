@@ -22,8 +22,10 @@ import com.dji.bricks.MainEntry;
 import com.dji.bricks.PerformanceWatcher;
 import com.dji.bricks.backgrounder.execution.AppiumInit;
 import com.dji.bricks.backgrounder.execution.RunTestCase;
+import com.dji.bricks.mini_decode.MiniCapUtil;
 import com.dji.bricks.tools.ExcelUtils;
 import com.dji.bricks.tools.FileUtils;
+import com.dji.bricks.tools.SystemInfoGet;
 
 import io.appium.java_client.android.AndroidDriver;
 
@@ -46,6 +48,14 @@ public class ExecutionMain {
     
     public ExecutionMain(List<String> caseList, JTextArea logText, IDevice device, String pkg, int num){
     	this.caseList = caseList;
+    	this.logText = logText;
+    	this.device = device;
+    	this.pkg = pkg;
+    	this.num = num;
+    	init();
+    }
+    
+    public ExecutionMain(JTextArea logText, IDevice device, String pkg, int num){
     	this.logText = logText;
     	this.device = device;
     	this.pkg = pkg;
@@ -94,8 +104,9 @@ public class ExecutionMain {
 		}
     	
     	driver = AppiumInit.getInstance(device, pkg, launchActivity).getDriver();
+    	SystemInfoGet sysInfoGet = new SystemInfoGet(device, pkg);
 		
-		PerformanceWatcher watcher = new PerformanceWatcher(device, pkg);
+		PerformanceWatcher watcher = new PerformanceWatcher(device, pkg, sysInfoGet);
 		MainEntry.cachedThreadPool.submit(new Runnable() {
 			
 			@Override
@@ -112,62 +123,12 @@ public class ExecutionMain {
 			}
 		});
 		
-		testCase = new RunTestCase(0, driver, logText, device, pkg);
+		testCase = new RunTestCase(0, driver, logText, device, pkg, sysInfoGet);
     }
     
 	public void runTestCase() {
-
-//		this.pkg = pkg;
-//		isRunning = true;
-//		
-//		switch (pkg) {
-//			case "com.dji.industry.pilot":
-//				launchActivity = "com.dji.industry.pilot.SplashActivity";
-//				break;
-//			case "dji.pilot":
-//				launchActivity = "dji.pilot.home.cs.activity.DJICsMainActivity";
-//				break;
-//			case "dji.go.v4":
-//				launchActivity = "dji.pilot.main.activity.DJILauncherActivity";
-//				break;
-//			case "com.dpad.launcher":
-//				launchActivity = "com.dpad.launcher.Launcher";
-//				break;
-//			case "dji.prof.mg": case "dji.prof.args.tiny":
-//				launchActivity = "dji.prof.mg.main.SplashActivity";
-//				break;
-//			case "dji.pilot.pad":
-//				launchActivity = "dji.pilot.main.activity.DJILauncherActivity";
-//				break;
-//			case "com.android.settings":
-//				launchActivity = "com.android.settings.Settings";
-//				break;
-//		}
-		
-//		if (caseName == null)
-//			caseName = "tmpTest";
-		
 		try {
-//			driver = AppiumInit.getInstance(device, pkg, launchActivity).getDriver();
-//			
-//			PerformanceWatcher watcher = new PerformanceWatcher(device, pkg);
-//			MainEntry.cachedThreadPool.submit(new Runnable() {
-//				
-//				@Override
-//				public void run() {
-//					// TODO Auto-generated method stub
-//					while (isRunning) {
-//						watcher.startWatch();
-//						try {
-//							Thread.sleep(500);
-//						} catch (InterruptedException e) {
-//							e.printStackTrace();
-//						}
-//					}
-//				}
-//			});
-			
-//			RunTestCase testCase = new RunTestCase(jsonFile, 0, driver, logText, device, pkg, caseName);
+			MiniCapUtil.getInstance(device).stopScreenListener();
 			for (int i=0; i<num; i++) {
 				for (int j=0; j<caseList.size(); j++) {
 					String casePath = caseList.get(j);
@@ -182,6 +143,30 @@ public class ExecutionMain {
 		} catch (Exception e) {
 			LOG.error(e);
 		}finally {
+			MiniCapUtil.getInstance(device).startScreenListener();
+			try {
+				isRunning = false;
+//				saveLog(caseName);
+				log_file_writer.close();
+//				driver.quit();
+			} catch (Exception e1) {
+				LOG.error(e1);
+			}
+		}
+	}
+	
+	public void runTestCase(JSONArray jsonFile) {
+		try {
+			MiniCapUtil.getInstance(device).stopScreenListener();
+			testCase.run(jsonFile, "tmpTest");
+		} catch (NullPointerException e1) {
+			LOG.error(e1);
+		} catch (NoSuchSessionException e2) {
+			LOG.error(e2);
+		} catch (Exception e) {
+			LOG.error(e);
+		}finally {
+			MiniCapUtil.getInstance(device).startScreenListener();
 			try {
 				isRunning = false;
 //				saveLog(caseName);

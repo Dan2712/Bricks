@@ -23,6 +23,7 @@ public class ExcelUtils {
 	
 	private XSSFWorkbook workbookCase;
 	private XSSFWorkbook workbookWatch;
+
 	private File xlsFileCase;
 	private File xlsFileWatch;
 	
@@ -81,6 +82,14 @@ public class ExcelUtils {
 		}  
 	}
 	
+	public XSSFWorkbook getWorkbookWatch() {
+		return workbookWatch;
+	}
+	
+	public XSSFWorkbook getWorkbookCase() {
+		return workbookCase;
+	}
+	
 	public XSSFSheet getCaseSheet(String sheetName) {
 		XSSFSheet worksheet = null;
 		if (workbookCase.getSheet(sheetName) == null)
@@ -124,7 +133,6 @@ public class ExcelUtils {
 	}
 	
 	public synchronized void updateWatchWorkbook() {
-		System.out.println(Thread.currentThread());
 		FileOutputStream out = null;
 		try {
 			out = new FileOutputStream(xlsFileWatch);
@@ -145,16 +153,11 @@ public class ExcelUtils {
 		}
 	}
 	
-	public XSSFCellStyle setCellAlignCenter() {
-		XSSFCellStyle style = workbookCase.createCellStyle();
+	public XSSFCellStyle getCellAlignCenter(XSSFWorkbook workbook) {
+		XSSFCellStyle style = workbook.createCellStyle();
         style.setAlignment(HorizontalAlignment.CENTER);
         style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setWrapText(true);
         return style;
-	}
-	
-	public CellStyle getPercentageStyle() {
-		XSSFCellStyle style = workbookCase.createCellStyle();
-		style.setDataFormat(workbookCase.createDataFormat().getFormat("0.000%"));
-		return style;
 	}
 }

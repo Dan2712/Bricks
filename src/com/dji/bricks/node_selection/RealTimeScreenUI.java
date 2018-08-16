@@ -68,7 +68,6 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
     private VariableChangeObserve obs = null;
     private JPanel parentPanel = null;
     private String screenPath = "";
-    public static Boolean isRuncase = false;
     private Rectangle rect;
 	private int showStaticImage = 0;
 	private boolean mExploreMode = true;
@@ -84,9 +83,8 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
     	this.device = device;
     	this.obs = obs;
     	this.parentPanel = parentPanel;
-    	minicap = new MiniCapUtil(device);
+    	minicap = MiniCapUtil.getInstance(device);
 		minicap.registerObserver(this);
-//		minicap.takeScreenShotOnce();
 		minicap.startScreenListener();
 		
 		waitframe = new JFrame();
@@ -103,25 +101,6 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 		if (!staticMode) {
 				this.mScreenshot = image;
 				tmpImg = image;
-//				if (!isRuncase) {
-//					cachedThreadPool.submit((new Runnable() {
-//						
-//						@Override
-//						public void run() {
-//							try {
-//								mModel = null;
-//								result = UiAutomatorHelper.takeSnapshot(device, null, false, mScreenshot);
-//	
-//								if (result != null)
-//									//get the model	
-//									mModel = result.model;
-//							} catch (UiAutomatorException e) {
-//								LOG.debug("Loading. Current page doesn't contain UI Hierarchy xml.");
-//	//							System.out.println("Loading. Current page doesn't contain UI Hierarchy xml.");
-//							}
-//						}
-//					}));
-//				}
 				
 				this.updateScreenshotTransformation();
 				this.setSize(panel_bounds, panel_bounds);

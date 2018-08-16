@@ -434,9 +434,6 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                         tmpJson = FileUtils.loadJson(filepath);
                         String filename = filepath.substring(filepath.lastIndexOf("\\")+1);
                         appStartName = filename.substring(0, filename.indexOf("_"));
-                        
-//                        String str = JSONObject.toJSONString(tmp, SerializerFeature.WriteClassName);
-//                        caseList = JSONArray.parseArray(str, BrickBean.class);
                     }
                 } catch (Exception e1) {
                     e1.printStackTrace();
@@ -717,8 +714,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             	try {
             		MainEntry.cachedThreadPool.submit(new Runnable() {
 						public void run() {
-//							ExecutionMain.getInstance().RunTestCase(jsonFile, logArea, device, pkg, null);
-//		            		RealTimeScreenUI.isRuncase = true;
+							new ExecutionMain(logArea, device, pkg, 1).runTestCase(jsonFile);
 						}
 					});
             	}catch (Exception e1) {

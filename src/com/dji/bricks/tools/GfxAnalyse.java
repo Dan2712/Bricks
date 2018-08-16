@@ -17,17 +17,15 @@ import com.android.ddmlib.TimeoutException;
 public class GfxAnalyse {
 	
 	private IDevice device;
-	private String appPackage;
 	private String[] lineList;
 	
-	public GfxAnalyse(IDevice device, String appPackage) {
+	public GfxAnalyse(IDevice device) {
 		super();
 		this.device = device;
-		this.appPackage = appPackage;
 	}
 	
 	public int getGfxInfo() {
-		String cmd = String.format("dumpsys gfxinfo %s", appPackage);
+		String cmd = String.format("dumpsys gfxinfo");
 		double vsync_sum = 0.0;
 		int count = 0;
 		

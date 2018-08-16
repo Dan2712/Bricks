@@ -61,7 +61,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 	private String tmp;
 	private ExcelUtils exlUtils;
 	private GfxAnalyse gfxUtil;
-	private int pid;
+	private int[] pids;
 	private XSSFSheet CPUTotalSheet;
 	private XSSFSheet CPUProcessSheet;
 	private XSSFSheet MemSheet;
@@ -91,13 +91,14 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 //	private Object[] fpsList;
 //	private Object[] powerList;
 	
-	public RunTestCase(int runMode, AndroidDriver driver, JTextArea logText, IDevice device, String pkg) {
+	public RunTestCase(int runMode, AndroidDriver driver, JTextArea logText, IDevice device, String pkg, SystemInfoGet sysInfoGet) {
 //		this.path = path;
 		this.runMode = runMode;
 		this.driver = driver;
 		this.logText = logText;
 		this.device = device;
 		this.pkg = pkg;
+		this.sysInfoGet = sysInfoGet;
 		init();
 	}
 	
@@ -105,8 +106,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		action = new CusAction(driver, device);
 		validation = new CusValidation(driver);
 		exlUtils = ExcelUtils.getInstance();
-		gfxUtil = new GfxAnalyse(device, pkg);
-		sysInfoGet = new SystemInfoGet(device, pkg);
+		gfxUtil = new GfxAnalyse(device);
 		
 //		cpuTotalList = new Object[jsonFile.size() + 1];
 //		cpuProcessList = new Object[jsonFile.size() + 1];
@@ -127,9 +127,9 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 			screenRun.mkdirs();
 		
 		//init performance archive
-		pid = sysInfoGet.getPid();
+		pids = sysInfoGet.getPids();
 		
-		style = exlUtils.setCellAlignCenter();
+//		style = exlUtils.setCellAlignCenter();
 		
 		CPUTotalSheet = exlUtils.getCaseSheet("CPU Total");
 		CPUProcessSheet = exlUtils.getCaseSheet("CPU Process");
@@ -251,7 +251,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 //					    getScreenshot(screenshotRunPath, actionCount);
 						this.actionSwitch(obj, tmpStore1, tmpStore2);
 						
-						performanceGet(actionCount, cpuTotalList, cpuProcessList, memList, fpsList, powerList);
+//						performanceGet(actionCount, cpuTotalList, cpuProcessList, memList, fpsList, powerList);
 					} else if (obj.getString("property").equals("val")) {
 						this.validationSwitch(obj, tmpStore1);
 						Thread.sleep(1000);
@@ -269,7 +269,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					break;
 				}
 			}
-			updateRow(cpuTotalList, cpuProcessList, memList, fpsList, powerList);
+//			updateRow(cpuTotalList, cpuProcessList, memList, fpsList, powerList);
 		}
 	}
 	
@@ -281,10 +281,11 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 //		memList[index] = memValue;
 		
 		//get CPU value
-		float CPUTotal = (float)(Math.round(sysInfoGet.getTotalCpu()*100)) / 100;
-		float CPUProcess = (float)(Math.round(sysInfoGet.getProcessCpu(pid)*100)) / 100;
+		float[] totalCpuInfo = sysInfoGet.getTotalCpu();
+		float CPUTotal = (float)(Math.round(totalCpuInfo[0]*100)) / 100;
+//		float CPUProcess = (float)(Math.round(sysInfoGet.getProcessCpu(pid)*100)) / 100;
 		cpuTotalList[index] = CPUTotal;
-		cpuProcessList[index] = CPUProcess;
+//		cpuProcessList[index] = CPUProcess;
 		
 		//get FPS value
 		int fps = gfxUtil.getGfxInfo();

@@ -5,6 +5,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.BindException;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -20,29 +24,45 @@ import com.android.ddmlib.TimeoutException;
 public class SystemInfoGet {
 	private static Logger LOG = Logger.getLogger(SystemInfoGet.class);
 	
-	private CollectingOutputReceiver singleReceiver;
 	private MultiLineReceiver multiReceiver;
 	
 	private String[] proLines;
 	private IDevice device;
-	private String pkg;
+//	private String pkg;
 	
 	private int lastTotalIdle = -1;
 	private int lastTotalAll = -1;
-	private int lastMyAll = -1;
-	private int lastTotalASec = -1;
+//	private int lastMyAll = -1;
+//	private int lastTotalASec = -1;
+	private Map<String, Integer> lastMyAllMap;
+	private Map<String, Integer> lastIorxMap;
+	private Map<String, Integer> lastIotxMap;
 	
 	private final static String CURRENT_DIR = System.getProperty("user.dir");
 	private String statPath = CURRENT_DIR + File.separator + "log" + File.separator + "stat";
+	private String[] pkgs = {"com.android.settings", "com.dpad.launcher", "dji.go.v4"};
 	
 	public SystemInfoGet(IDevice device, String pkg) {
 		this.device = device;
-		this.pkg = pkg;
+//		this.pkg = pkg;
 		init();
 	}
 
 	public void init() {
-		singleReceiver = new CollectingOutputReceiver();
+		lastMyAllMap = new TreeMap();
+		lastMyAllMap.put("Setting", -1);
+		lastMyAllMap.put("Launcher", -1);
+		lastMyAllMap.put("DJI GO", -1);
+		
+		lastIorxMap = new TreeMap<>();
+		lastIorxMap.put("Setting", -1);
+		lastIorxMap.put("Launcher", -1);
+		lastIorxMap.put("DJI GO", -1);
+		
+		lastIotxMap = new TreeMap<>();
+		lastIotxMap.put("Setting", -1);
+		lastIotxMap.put("Launcher", -1);
+		lastIotxMap.put("DJI GO", -1);
 		
 		multiReceiver = new MultiLineReceiver() {
 			
@@ -65,7 +85,8 @@ public class SystemInfoGet {
 		};
 	}
 	
-	public int getMemory(){
+	public synchronized int getMemory(){
+		CollectingOutputReceiver singleReceiver = new CollectingOutputReceiver();
 		try {
 			device.executeShellCommand("\"su 0 \"procrank | grep \'dji.go.v4\'\"\"", singleReceiver);
 		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
@@ -78,9 +99,12 @@ public class SystemInfoGet {
 		return memValue;
 	}
 	
-	public float getTotalCpu(){
+	public synchronized float[] getTotalCpu(){
+System.out.println(Thread.currentThread());
+		float[] info = new float[2];
 		int user, nice, sys, idle, iowait, irq, softirq, all;
 		float totalCpuUsage = -1;
+		int lastTotalASec = -1;
 		
 		BufferedReader reader = null;
 		try {
@@ -104,7 +128,7 @@ public class SystemInfoGet {
 			
 			all = user + nice + sys + idle + iowait + irq + softirq;
 			reader.close();
-//System.out.println("Tall:"+all+"--"+"Tidle:"+idle+"--"+"Tlasttotalall:"+lastTotalAll+"--"+"Tlasttotalidle:"+lastTotalIdle);
+System.out.println("Tall:"+all+"--"+"Tidle:"+idle+"--"+"Tlasttotalall:"+lastTotalAll+"--"+"Tlasttotalidle:"+lastTotalIdle);
 			if (lastTotalAll != -1) {
 				totalCpuUsage = (float)((all - idle) - (lastTotalAll - lastTotalIdle)) / (all - lastTotalAll) * 100;
 //System.out.println("total cpu:"+totalCpuUsage);
@@ -128,59 +152,79 @@ public class SystemInfoGet {
 			}
 		}
 		
-		return totalCpuUsage;
+		info[0] = totalCpuUsage;
+		info[1] = lastTotalASec;
+		return info;
 	}
 	
-	public float getProcessCpu(int pid){
+	public synchronized float getProcessCpu(int pid, String apk, int lastTotalASec){
+		if (pid == 0)
+			return 0;
+		
 		int utime, stime, cutime, cstime, all;
 		float cpuUsage = -1;
 		
 		BufferedReader reader = null;
-		try {
-			File file = new File(statPath);
-			if (!file.getParentFile().exists())
-				file.getParentFile().mkdirs();
-			
-			device.pullFile("/proc/" + pid + "/stat", statPath);
-			reader = new BufferedReader(new FileReader(statPath));
-			
-			String tmpStr = reader.readLine();
-			String[] toks = tmpStr.split(" ");
-			
-			utime = Integer.parseInt(toks[13]);
-			stime = Integer.parseInt(toks[14]);
-			cutime = Integer.parseInt(toks[15]);
-			cstime = Integer.parseInt(toks[16]);
-			
-			all = utime + stime + cutime + cstime;
-			reader.close();
-//System.out.println("Pall:"+all+"--"+"Plastmyall:"+lastMyAll+"--"+"Plasttotalasec:"+lastTotalASec);			
-			if (lastTotalASec != -1) {
-				cpuUsage = (float)(all - lastMyAll) / lastTotalASec * 100;
-//System.out.println("process cpu:"+cpuUsage);
-			}
-			lastMyAll = all;
-		} catch (SyncException | IOException | AdbCommandRejectedException | TimeoutException e) {
-			LOG.error(e);
-		} finally {
-			if (reader != null) {
+		
+		int count = 0;
+		int maxTries = 3;
+		boolean stopGet = false;
+		while (!stopGet) {
+			try {
+	//			device.pullFile("/proc/" + pid + "/stat", CURRENT_DIR + File.separator + "stat");
+	//			reader = new BufferedReader(new FileReader(CURRENT_DIR + File.separator + "stat"));
+				
+				proLines = null;
+				device.executeShellCommand("cat /proc/" + pid + "/stat", multiReceiver);
+				multiReceiver.flush();
+				String[] toks = proLines[0].split(" ");
+				utime = Integer.parseInt(toks[13]);
+				stime = Integer.parseInt(toks[14]);
+				cutime = Integer.parseInt(toks[15]);
+				cstime = Integer.parseInt(toks[16]);
+				all = utime + stime + cutime + cstime;
+
+				if (lastTotalASec != -1) {
+					int last = lastMyAllMap.get(apk);
+System.out.println("Pkg: " + apk + " Proc all: " + all + " Proc lastTotalASec: " + lastTotalASec + " Proc last: " + last);
+					cpuUsage = (float)(all - last) / lastTotalASec * 100;
+				}
+				lastMyAllMap.put(apk, all);
+				stopGet = true;
+			} catch (BindException e) {
 				try {
-					reader.close();
-					reader = null;
-				} catch (IOException e) {
-					LOG.error(e);
+					Thread.sleep(500);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				if (++count == maxTries) {
+					stopGet = true;
+					e.printStackTrace();
+				}
+			} catch (IOException | AdbCommandRejectedException | TimeoutException e) {
+				e.printStackTrace();
+			} catch (ShellCommandUnresponsiveException e) {
+				e.printStackTrace();
+			} finally {
+				if (reader != null) {
+					try {
+						reader.close();
+						reader = null;
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
 		return cpuUsage;
 	}
 	
-	public int getFps() {
-		return new GfxAnalyse(device, pkg).getGfxInfo();
+	public synchronized int getFps() {
+		return new GfxAnalyse(device).getGfxInfo();
 	}
 	
-	public int getPower() {
-		singleReceiver.clearBuffer();
+	public synchronized int getPower() {
+		CollectingOutputReceiver singleReceiver = new CollectingOutputReceiver();
 		try {
 			device.executeShellCommand("getprop hw.bat_current", singleReceiver, 5, TimeUnit.SECONDS);
 		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
@@ -192,20 +236,99 @@ public class SystemInfoGet {
 		return power;
 	}
 	
-	public int getPid(){
-		proLines = null;
+	public String getIO() {
+//		if (pid == 0)
+//			return new int[]{0, 0};
+//		
+//		int periodRead = -1;
+//		int periodWrite = -1;
+//		CollectingOutputReceiver singleReceiver = new CollectingOutputReceiver();
+//		try {
+//			device.executeShellCommand("cat /proc/" + pid + "/io", singleReceiver);
+//		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
+//			e.printStackTrace();
+//		}
+//		singleReceiver.flush();
+//		String[] toks = singleReceiver.getOutput().split("\n");
+//		int nowReadbytes = Integer.parseInt(toks[4].split(": ")[1]);
+////System.out.println(nowReadbytes);
+//		int nowWritebytes = Integer.parseInt(toks[5].split(": ")[1]);
+//		if (lastIorxMap.get(apk) != -1 && lastIotxMap.get(apk) != -1) {
+//			periodRead = nowReadbytes - lastIorxMap.get(apk);
+//			periodWrite = nowWritebytes - lastIotxMap.get(apk);
+//		}
+//		lastIorxMap.put(apk, nowReadbytes);
+//		lastIotxMap.put(apk, nowWritebytes);
+//		
+//		return new int[]{periodRead, periodWrite};
+		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
 		try {
-			device.executeShellCommand("ps | grep " + pkg, multiReceiver);
+			device.executeShellCommand("iotop -m5 -n 1", receiver);
 		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
-			LOG.error(e);
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		if (proLines.length == 2) {
-			if (proLines[0].split("\\s+")[1].equals(proLines[1].split("\\s+")[2]))
-				return Integer.parseInt(proLines[0].split("\\s+")[1]);
-		} else if (proLines.length == 1) {
-			return Integer.parseInt(proLines[0].split("\\s+")[1]);
+		receiver.flush();
+		return receiver.getOutput();
+	}
+	
+	public ArrayList<long[]> getNetwork() {
+		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
+		try {
+			device.executeShellCommand("cat /proc/net/xt_qtaguid/iface_stat_fmt", receiver);
+		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		receiver.flush();
+		String[] portOut = receiver.getOutput().split("\n");
+		System.out.println(portOut[1]);
+		System.out.println(portOut[2]);
+		System.out.println(portOut[3]);
+		long[] wlanData = new long[16];
+		long[] usbData = new long[16];
+		long[] loData = new long[16];
+		for (int i=1; i<portOut.length; i++) {
+			String[] data = portOut[i].split(" ");
+			if (data[0].equals("wlan0")) {
+				for (int j=1; j<17; j++) 
+					wlanData[j-1] = Long.parseLong(data[j]);
+			} else if (data[0].equals("usb0")) {
+				for (int j=1; j<17; j++) 
+					usbData[j-1] = Long.parseLong(data[j]);
+			} else if (data[0].equals("lo")) {
+				for (int j=1; j<17; j++) 
+					loData[j-1] = Long.parseLong(data[j]);
+			}
 		}
 		
-		return 0;
+		ArrayList<long[]> tmp = new ArrayList<>();
+		tmp.add(wlanData);
+		tmp.add(usbData);
+		tmp.add(loData);
+		return tmp;
+	}
+	
+	public synchronized int[] getPids(){
+		int[] pids = new int[3];
+		proLines = null;
+		for (int i=0; i<pids.length; i++) {
+			try {
+				String exeCmd = "ps | grep " + pkgs[i];
+				device.executeShellCommand(exeCmd, multiReceiver);
+			} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
+				LOG.error(e);
+			}
+			if (proLines != null) {
+				if (proLines.length == 2) {
+					if (proLines[0].split("\\s+")[1].equals(proLines[1].split("\\s+")[2]))
+						pids[i] = Integer.parseInt(proLines[0].split("\\s+")[1]);
+				} else if (proLines.length == 1) {
+					pids[i] = Integer.parseInt(proLines[0].split("\\s+")[1]);
+				}
+			}
+		}
+		
+		return pids;
 	}
 }

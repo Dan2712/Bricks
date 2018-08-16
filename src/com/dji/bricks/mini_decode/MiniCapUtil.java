@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 
 import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.CollectingOutputReceiver;
-import com.android.ddmlib.DdmPreferences;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.IDevice.DeviceUnixSocketNamespace;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
@@ -29,6 +28,7 @@ import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.MainEntry;
 import com.dji.bricks.SubjectForListener;
 import com.dji.bricks.tools.ConstantsUtils;
+import com.dji.bricks.tools.ExcelUtils;
 
 /**
  * @author Dan
@@ -68,7 +68,7 @@ public class MiniCapUtil implements SubjectForListener{
 	private volatile boolean isRunning = false;
 	
 	private static final int PORT = 1717;
-	private IDevice device;
+	private static IDevice device;
 	private Socket socket;
 	
 	private String PID;
@@ -77,13 +77,21 @@ public class MiniCapUtil implements SubjectForListener{
 	
 	private BufferedImage image_tmp = null;
 	
-	public MiniCapUtil(IDevice device) {
-		this.device = device;
+	private MiniCapUtil() {
 		try {
 			this.init();
 		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static class HolderInit {
+		private final static MiniCapUtil instance = new MiniCapUtil();
+	}
+	
+	public static MiniCapUtil getInstance(IDevice device1) {
+		device = device1;
+		return HolderInit.instance;
 	}
 	
 	/**

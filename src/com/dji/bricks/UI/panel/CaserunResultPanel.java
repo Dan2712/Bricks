@@ -8,20 +8,13 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.text.Format;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -38,12 +31,9 @@ import org.apache.log4j.Logger;
 import com.alibaba.fastjson.JSONArray;
 import com.android.ddmlib.IDevice;
 import com.dji.bricks.MainEntry;
-import com.dji.bricks.PerformanceWatcher;
 import com.dji.bricks.UI.ConstantsUI;
 import com.dji.bricks.UI.MyIconButton;
 import com.dji.bricks.backgrounder.ExecutionMain;
-import com.dji.bricks.node_selection.RealTimeScreenUI;
-import com.dji.bricks.tools.FileUtils;
 import com.dji.bricks.tools.PropertyUtil;
 
 public class CaserunResultPanel extends JPanel{
@@ -283,13 +273,7 @@ public class CaserunResultPanel extends JPanel{
 						}
 						
 						logprint.setText("");
-//						for (int i=0; i<Integer.parseInt(run_num.getText()); i++) {
-//							for (int j=0; j<case_list.size(); j++) {
-//								jsonFile = FileUtils.loadJson(case_list.get(j));
 						new ExecutionMain(case_list, logprint, device, pkg, Integer.parseInt(run_num.getText())).runTestCase();;
-						RealTimeScreenUI.isRuncase = true;
-//							}
-//						}
 					}
 				}));
 			}
