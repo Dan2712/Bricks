@@ -30,13 +30,11 @@ public class CusAction {
 	private String savePath = "/sdcard/rm500_0042.bin";
 	 
 	private AndroidDriver driver;
-	private TouchAction touchAction;
 	private IDevice device;
 	
 	public CusAction(AndroidDriver driver, IDevice device) {
 		this.driver = driver;
 		this.device = device;
-		touchAction = new TouchAction(driver);
 	}
 	
 	//0.click
@@ -51,6 +49,7 @@ public class CusAction {
 	
 	//1.long press
 	public void longPress(WebElement ele) {
+		TouchAction touchAction = new TouchAction(driver);
 		driver.performTouchAction(touchAction.longPress(ele));
 	}
 	
@@ -67,6 +66,7 @@ public class CusAction {
 	
 	//4.point drag
 	public void pointDrag(WebElement ele, Point desPoint) {
+		TouchAction touchAction = new TouchAction(driver);
 		int xAxisEndPoint = desPoint.x;
 		int yAxisEndPoint = desPoint.y;
 		
@@ -189,6 +189,7 @@ public class CusAction {
 	
 	//10.seekbar drag
 	public void dragBar(WebElement ele) {
+		TouchAction touchAction = new TouchAction(driver);
 		int xAxisStartPoint = ele.getLocation().x;
 		int xAxisEndPoint = ele.getSize().width + xAxisStartPoint;
 		int yAxis = ele.getLocation().y;
@@ -209,6 +210,7 @@ public class CusAction {
 	
 	//12.tap point
 	public void tapPoint(int x, int y) {
+		TouchAction touchAction = new TouchAction(driver);
 		touchAction.tap(x, y);
 	}
 	
