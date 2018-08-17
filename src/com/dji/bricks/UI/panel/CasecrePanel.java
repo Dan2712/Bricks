@@ -17,12 +17,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -762,7 +765,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
                             		json.getParentFile().mkdirs();
                             	
                             	String str = JSON.toJSONString(caseList);
-                            	PrintWriter pw = new PrintWriter(new FileWriter(json));
+                            	PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream(json), StandardCharsets.UTF_8));
+//                            	PrintWriter pw = new PrintWriter(new FileWriter(json));
                                 pw.print(str);
                                 pw.flush();
                                 pw.close();

@@ -126,8 +126,8 @@ public class SQLUtils {
 		String screen_path = patterns.get(5).get("SCREEN_PATH");
 		
 		Statement stmt = conn.createStatement();
-		String update_act = "UPDATE ELEMENT SET XPATH = " + xpath + ", STATE = " + state + ", SCREEN_PATH = " + screen_path +
-				" WHERE ACTIVITY_NAME = " + activity_name + ", APP_NAME = " + app_name + ", CUSTOM_NAME = " + custom_name + ";";
+		String update_act = "UPDATE ELEMENT SET XPATH = \"" + xpath + "\", STATE = \"" + state + "\", SCREEN_PATH = \"" + screen_path +
+				"\" WHERE ACTIVITY_NAME = \"" + activity_name + "\", APP_NAME = \"" + app_name + "\", CUSTOM_NAME = \"" + custom_name + "\";";
 		return stmt.executeUpdate(update_act);
 	}
 }

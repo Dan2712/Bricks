@@ -281,7 +281,7 @@ public class FileUtils {
 		JSONArray jArray = null;
 		
 		try {
-			reader = new BufferedReader(new FileReader(path));
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
 			String line = "";
 			String str = "";
 			while((line = reader.readLine()) != null) {

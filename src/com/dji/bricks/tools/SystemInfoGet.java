@@ -175,8 +175,9 @@ System.out.println("Tall:"+all+"--"+"Tidle:"+idle+"--"+"Tlasttotalall:"+lastTota
 	//			reader = new BufferedReader(new FileReader(CURRENT_DIR + File.separator + "stat"));
 				
 				proLines = null;
-				device.executeShellCommand("cat /proc/" + pid + "/stat", multiReceiver);
+				device.executeShellCommand("cat /proc/" + pid + "/stat", multiReceiver, 2, TimeUnit.SECONDS);
 				multiReceiver.flush();
+System.out.println("Procline: " + proLines[0]);
 				String[] toks = proLines[0].split(" ");
 				utime = Integer.parseInt(toks[13]);
 				stime = Integer.parseInt(toks[14]);
@@ -191,20 +192,12 @@ System.out.println("Pkg: " + apk + " Proc all: " + all + " Proc lastTotalASec: "
 				}
 				lastMyAllMap.put(apk, all);
 				stopGet = true;
-			} catch (BindException e) {
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
+			} catch (Exception e) {
+//				e.printStackTrace();
 				if (++count == maxTries) {
 					stopGet = true;
 					e.printStackTrace();
 				}
-			} catch (IOException | AdbCommandRejectedException | TimeoutException e) {
-				e.printStackTrace();
-			} catch (ShellCommandUnresponsiveException e) {
-				e.printStackTrace();
 			} finally {
 				if (reader != null) {
 					try {
