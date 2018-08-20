@@ -41,7 +41,6 @@ public class CusAction {
 	public void click(WebElement ele) {
 //		for (int i=0; i<Math.random()*6; i++) {
 		ele.click();
-//		driver.getPageSource();
 //		WebElement parent = driver.findElement(By.xpath("//android.support.v7.widget.RecyclerView[@resource-id='com.android.systemui:id/ntf']"));
 //		System.out.println(parent.findElements(By.className("android.widget.ImageView")).size());
 //		}
