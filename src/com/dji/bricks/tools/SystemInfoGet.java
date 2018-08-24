@@ -256,7 +256,7 @@ System.out.println("Pkg: " + apk + " Proc all: " + all + " Proc lastTotalASec: "
 //		return new int[]{periodRead, periodWrite};
 		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
 		try {
-			device.executeShellCommand("iotop -m5 -n 1", receiver);
+			device.executeShellCommand("iotop -m 5 -n 1", receiver);
 		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -85,6 +85,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 	private Map<String, Object[]> MemInfo = null;
 	private Map<String, Object[]> FPSInfo = null;
 	private Map<String, Object[]> PowerInfo = null;
+	private String caseName;
 //	private Object[] cpuTotalList;
 //	private Object[] cpuProcessList;
 //	private Object[] memList;
@@ -221,6 +222,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 	}
 
 	public void run(JSONArray jsonFile, String caseName) {
+		this.caseName = caseName;
 		int actionCount = 0;
 		BufferedWriter out = null;
 		StringBuilder tmpStore1 = new StringBuilder();
@@ -485,6 +487,10 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		}
 	}
 
+	public String getCaseName() {
+		return caseName;
+	}
+	
 	private void getScreenshot(String screenshotRunPath, int actionCount) throws TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException {
 		RawImage rawImg = device.getScreenshot();
 		Boolean landscape = false;

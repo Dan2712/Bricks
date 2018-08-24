@@ -13,6 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import com.android.ddmlib.IDevice;
+import com.dji.bricks.backgrounder.execution.RunTestCase;
 import com.dji.bricks.tools.ExcelUtils;
 import com.dji.bricks.tools.SystemInfoGet;
 import com.dji.bricks.tools.TimeUtils;
@@ -25,6 +26,7 @@ public class PerformanceWatcher {
 	private XSSFSheet watchSheet;
 	private SystemInfoGet sysInfo;
 	private XSSFCellStyle style;
+	private RunTestCase caseRun;
 	
 	private Map<String, Object[]> sysInfoMap = null;
 	private int sysInfoRowNum;
@@ -32,9 +34,10 @@ public class PerformanceWatcher {
 	private String[] networkKey = {"total_skb_rx_bytes", "total_skb_rx_packets", "total_skb_tx_bytes", "total_skb_tx_packets", "rx_tcp_bytes", "rx_tcp_packets", "rx_udp_bytes",
 								"rx_udp_packets", "rx_other_bytes", "rx_other_packets", "tx_tcp_bytes", "tx_tcp_packets", "tx_udp_bytes", "tx_udp_packets", "tx_other_bytes", "tx_other_packets"};
 	
-	public PerformanceWatcher(IDevice device, String pkg, SystemInfoGet sysInfoGet) {
+	public PerformanceWatcher(IDevice device, String pkg, SystemInfoGet sysInfoGet, RunTestCase caseRun) {
 		this.device = device;
 		this.sysInfo = sysInfoGet;
+		this.caseRun = caseRun;
 		init();
 	}
 	
@@ -185,7 +188,8 @@ public class PerformanceWatcher {
 	public void startWatch() {
 		Object[] infoList = new Object[57];
 //		infoList[0] = TimeUtils.formatTimeStamp(System.currentTimeMillis());
-		infoList[0] = timeStamp;
+		String casename = caseRun.getCaseName();
+		infoList[0] = timeStamp + "(" + casename.substring(0, casename.length()-5) + ")";
 		float[] totalCpuInfo = sysInfo.getTotalCpu();
 		infoList[1] = (float)(Math.round(totalCpuInfo[0]*100)) / 100;
 		infoList[2] = (float)(Math.round(sysInfo.getProcessCpu(pids[0], "Setting", Math.round(totalCpuInfo[1]))*100)) / 100;
