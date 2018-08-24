@@ -211,6 +211,7 @@ public class CusAction {
 	public void tapPoint(int x, int y) {
 		TouchAction touchAction = new TouchAction(driver);
 		touchAction.tap(x, y);
+		touchAction.perform();
 	}
 	
 	//13.save to tmp store

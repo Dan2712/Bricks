@@ -1014,6 +1014,7 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 		scrshot_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		scrshot_frame.setLocation(MainEntry.frame.getLocationOnScreen());  
 		scrshot_frame.setLocationRelativeTo(MainEntry.frame);
+		point_chosen = null;
 		
 		if(brick != null){
 			picLabel.addMouseListener(new MouseAdapter() {
