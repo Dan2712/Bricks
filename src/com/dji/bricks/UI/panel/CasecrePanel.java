@@ -448,6 +448,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                	if (appStartName.equals(""))
+                		appStartName = filepath.substring(filepath.lastIndexOf("\\")+1).substring(0, filepath.substring(filepath.lastIndexOf("\\")+1).indexOf("_"));
 //                	model.getDataVector().clear();
                 	for (int i=0; i<tmpJson.size(); i++) {
                     	String str = JSONObject.toJSONString(tmpJson.get(i));

@@ -180,9 +180,12 @@ public class PerformanceWatcher {
 	private long[] wlanStore = new long[16];
 	private long[] usbStore = new long[16];
 	private long[] loStore = new long[16];
+	private int timeStamp = 0;
+	private long currentTime = System.currentTimeMillis();
 	public void startWatch() {
 		Object[] infoList = new Object[57];
-		infoList[0] = TimeUtils.formatTimeStamp(System.currentTimeMillis());
+//		infoList[0] = TimeUtils.formatTimeStamp(System.currentTimeMillis());
+		infoList[0] = timeStamp;
 		float[] totalCpuInfo = sysInfo.getTotalCpu();
 		infoList[1] = (float)(Math.round(totalCpuInfo[0]*100)) / 100;
 		infoList[2] = (float)(Math.round(sysInfo.getProcessCpu(pids[0], "Setting", Math.round(totalCpuInfo[1]))*100)) / 100;
@@ -219,6 +222,8 @@ public class PerformanceWatcher {
 			loStore = netInfo.get(2);
 		}
 		
+		timeStamp += (System.currentTimeMillis() - currentTime) / 1000;
+		currentTime = System.currentTimeMillis();
 		updateRow(infoList);
 	}
 }

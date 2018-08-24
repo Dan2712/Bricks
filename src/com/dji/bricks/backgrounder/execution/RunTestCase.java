@@ -260,6 +260,13 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 						Thread.sleep(time);
 					}
 				} catch (Exception e) {
+					action.KeyBACK();
+					try {
+						Thread.sleep(300);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+					action.KeyBACK();
 					if (e instanceof NoSuchElementException)
 						logText.append("No such element: " + this.ele_customName + "\n");
 					else {
