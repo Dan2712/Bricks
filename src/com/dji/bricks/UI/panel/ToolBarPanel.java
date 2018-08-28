@@ -91,6 +91,7 @@ public class ToolBarPanel extends JPanel implements GlobalObserver {
 				MainEntry.mainPanelCenter.removeAll();
 				//StatusPanel.setContent();
 				MainEntry.mainPanelCenter.add(MainEntry.statusPanel, BorderLayout.CENTER);
+				MainEntry.elecrePanel.getSwitch_btn().setSelected(false);
 
 				MainEntry.mainPanelCenter.updateUI();
 			}
@@ -125,6 +126,7 @@ public class ToolBarPanel extends JPanel implements GlobalObserver {
 
 				MainEntry.mainPanelCenter.removeAll();
 				MainEntry.mainPanelCenter.add(MainEntry.casecrePanel, BorderLayout.CENTER);
+				MainEntry.elecrePanel.getSwitch_btn().setSelected(false);
 
 				MainEntry.mainPanelCenter.updateUI();
 
@@ -143,6 +145,7 @@ public class ToolBarPanel extends JPanel implements GlobalObserver {
 
 				MainEntry.mainPanelCenter.removeAll();
 				MainEntry.mainPanelCenter.add(MainEntry.caserunPanel, BorderLayout.CENTER);
+				MainEntry.elecrePanel.getSwitch_btn().setSelected(false);
 
 				MainEntry.mainPanelCenter.updateUI();
 
@@ -161,6 +164,7 @@ public class ToolBarPanel extends JPanel implements GlobalObserver {
 
 				MainEntry.mainPanelCenter.removeAll();
 				MainEntry.mainPanelCenter.add(MainEntry.settingPanel, BorderLayout.CENTER);
+				MainEntry.elecrePanel.getSwitch_btn().setSelected(false);
 
 				MainEntry.mainPanelCenter.updateUI();
 

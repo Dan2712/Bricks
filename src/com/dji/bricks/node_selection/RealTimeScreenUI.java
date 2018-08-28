@@ -27,7 +27,10 @@ import javax.swing.JProgressBar;
 
 import org.apache.log4j.Logger;
 
+import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.IDevice;
+import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.TimeoutException;
 import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.MainEntry;
 import com.dji.bricks.mini_decode.MiniCapUtil;
@@ -84,6 +87,11 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
     	this.obs = obs;
     	this.parentPanel = parentPanel;
     	minicap = MiniCapUtil.getInstance(device);
+    	try {
+			minicap.deviceInit();
+		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
+			e.printStackTrace();
+		}
 		minicap.registerObserver(this);
 		minicap.startScreenListener();
 		

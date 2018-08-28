@@ -113,7 +113,11 @@ public class ExecutionMain {
 			
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
 				while (isRunning) {
 					watcher.startWatch();
 					try {

@@ -193,7 +193,6 @@ System.out.println("Pkg: " + apk + " Proc all: " + all + " Proc lastTotalASec: "
 				lastMyAllMap.put(apk, all);
 				stopGet = true;
 			} catch (Exception e) {
-//				e.printStackTrace();
 				if (++count == maxTries) {
 					stopGet = true;
 					e.printStackTrace();
@@ -323,5 +322,16 @@ System.out.println("Pkg: " + apk + " Proc all: " + all + " Proc lastTotalASec: "
 		}
 		
 		return pids;
+	}
+	
+	public String getCpuTop() {
+		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
+		try {
+			device.executeShellCommand("top -m 5 -n 1", receiver);
+		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
+			e.printStackTrace();
+		}
+		receiver.flush();
+		return receiver.getOutput();
 	}
 }

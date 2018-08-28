@@ -98,6 +98,11 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		return panelUp;
 	}
 
+	private SwitchButton switch_btn;
+	public SwitchButton getSwitch_btn() {
+		return switch_btn;
+	}
+
 	private JPanel getCenterPanel() {
 		panelEreCenter = new JPanel();
 		panelEreCenter.setBackground(ConstantsUI.MAIN_BACK_COLOR);
@@ -109,7 +114,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 		panelView.setLayout(new BorderLayout());
 		panelView.updateUI();
 		
-        SwitchButton switch_btn = new SwitchButton();
+        switch_btn = new SwitchButton();
         
         switch_btn.addItemListener(new ItemListener() {
             @Override

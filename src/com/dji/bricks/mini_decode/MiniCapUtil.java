@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -16,7 +17,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
-
 import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
@@ -28,7 +28,6 @@ import com.dji.bricks.GlobalObserver;
 import com.dji.bricks.MainEntry;
 import com.dji.bricks.SubjectForListener;
 import com.dji.bricks.tools.ConstantsUtils;
-import com.dji.bricks.tools.ExcelUtils;
 
 /**
  * @author Dan
@@ -78,11 +77,6 @@ public class MiniCapUtil implements SubjectForListener{
 	private BufferedImage image_tmp = null;
 	
 	private MiniCapUtil() {
-		try {
-			this.init();
-		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	private static class HolderInit {
@@ -101,37 +95,46 @@ public class MiniCapUtil implements SubjectForListener{
 	 * @throws AdbCommandRejectedException 
 	 * @throws TimeoutException 
 	 */
-	private void init() throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
-		
+	public void deviceInit() throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
+		int count = 0;
+		int maxTries = 100;
+		boolean stopGet = false;
 		cachedThreadPool = MainEntry.cachedThreadPool;
-		String abi = device.getPropertySync(ABI_COMMAND);
-		String sdk = device.getPropertySync(SDK_COMMAND);
-		File miniCapBin = new File(ConstantsUtils.getMinicapBin(), abi + File.separator + MINICAP_BIN);
-		File miniCapSo = new File(ConstantsUtils.getMinicapSo(), "android-" + sdk
-				+ File.separator + abi + File.separator + MINICAP_SO);
 		
-		// push .so and minicap file to specified path
-		try {
-			//need to debug
-			device.pushFile(miniCapBin.getAbsolutePath(), REMOTE_PATH + "/" + MINICAP_BIN);
-			device.pushFile(miniCapSo.getAbsolutePath(), REMOTE_PATH + "/" + MINICAP_SO);
-			executeShellCommand(String.format(MINICAP_CHMOD_COMMAND,
-					REMOTE_PATH, MINICAP_BIN));
+		while (!stopGet) {
+			String abi = device.getProperty(ABI_COMMAND);
+			String sdk = device.getProperty(SDK_COMMAND);
+			File miniCapBin = new File(ConstantsUtils.getMinicapBin(), abi + File.separator + MINICAP_BIN);
+			File miniCapSo = new File(ConstantsUtils.getMinicapSo(), "android-" + sdk
+					+ File.separator + abi + File.separator + MINICAP_SO);
 			
-			// port transmission
-			this.device.createForward(PORT, "minicap", DeviceUnixSocketNamespace.ABSTRACT);
-			
-			// get the screen size
-			String output = this.executeShellCommand(MINICAP_WM_SIZE_COMMAND);
-			size = output.split(":")[1].trim();
-			
-			//get the screen orientation
-			orientation_tag = dumpsOrientation();
-			
-			//if the device is a pad
-			isPad = isPad();
-		} catch (SyncException | IOException | AdbCommandRejectedException | TimeoutException e1) {
-			e1.printStackTrace();
+			// push .so and minicap file to specified path
+			try {
+				//need to debug
+				device.pushFile(miniCapBin.getAbsolutePath(), REMOTE_PATH + "/" + MINICAP_BIN);
+				device.pushFile(miniCapSo.getAbsolutePath(), REMOTE_PATH + "/" + MINICAP_SO);
+				executeShellCommand(String.format(MINICAP_CHMOD_COMMAND,
+						REMOTE_PATH, MINICAP_BIN));
+				
+				// port transmission
+				this.device.createForward(PORT, "minicap", DeviceUnixSocketNamespace.ABSTRACT);
+				
+				// get the screen size
+				String output = this.executeShellCommand(MINICAP_WM_SIZE_COMMAND);
+				size = output.split(":")[1].trim();
+				
+				//get the screen orientation
+				orientation_tag = dumpsOrientation();
+				
+				//if the device is a pad
+				isPad = isPad();
+				stopGet = true;
+			} catch (SyncException | IOException | AdbCommandRejectedException | TimeoutException e1) {
+				if (++count == maxTries) {
+					stopGet = true;
+					e1.printStackTrace();
+				}
+			}
 		}
 	}
 	
@@ -326,7 +329,10 @@ public class MiniCapUtil implements SubjectForListener{
 				
 				PID = executeShellCommand(GET_PID).substring(10, 15);
 				
-				socket = new Socket("localhost", PORT);
+				if (socket == null) {
+					socket = new Socket("localhost", PORT);
+					socket.setSoLinger(true, 0);
+				}
 				input = socket.getInputStream();
 				
 				int len = 4096;
@@ -356,6 +362,7 @@ public class MiniCapUtil implements SubjectForListener{
 				if (input != null)
 					try {
 						input.close();
+						input = null;
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -363,6 +370,7 @@ public class MiniCapUtil implements SubjectForListener{
 				if (socket != null && socket.isConnected()) {
 					try {
 						socket.close();
+						socket = null;
 					} catch (IOException e) {
 						e.printStackTrace();
 					}

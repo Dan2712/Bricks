@@ -55,7 +55,7 @@ public class PerformanceWatcher {
 	}
 	
 	private void initRow() {
-		Object[] arrayOb = new Object[8];
+		Object[] arrayOb = new Object[9];
 		arrayOb[0] = "time/type";
 		arrayOb[1] = "CPU(Total)";
 		arrayOb[2] = "CPU(Process)";
@@ -64,6 +64,7 @@ public class PerformanceWatcher {
 		arrayOb[5] = "Power Consume";
 		arrayOb[6] = "I/O Speed Top 5";
 		arrayOb[7] = "Network Speed";
+		arrayOb[8] = "CPU Top 5";
 		
 		sysInfoMap.put("0", arrayOb);
 		
@@ -75,6 +76,7 @@ public class PerformanceWatcher {
 		watchSheet.addMergedRegion(new CellRangeAddress(0, 2, 6, 6));
 		watchSheet.addMergedRegion(new CellRangeAddress(0, 2, 7, 7));
 		watchSheet.addMergedRegion(new CellRangeAddress(0, 2, 8, 8));
+		watchSheet.addMergedRegion(new CellRangeAddress(0, 2, 57, 57));
 		watchSheet.addMergedRegion(new CellRangeAddress(1, 2, 2, 2));
 		watchSheet.addMergedRegion(new CellRangeAddress(1, 2, 3, 3));
 		watchSheet.addMergedRegion(new CellRangeAddress(1, 2, 4, 4));
@@ -155,6 +157,7 @@ public class PerformanceWatcher {
 //			} 
 		}
 		watchSheet.setColumnWidth(8, watchSheet.getColumnWidth(8) * 12);
+		watchSheet.setColumnWidth(57, watchSheet.getColumnWidth(57) * 12);
 		sysInfoRowNum = 2;
 		exlUtils.updateWatchWorkbook();
 	}
@@ -186,7 +189,7 @@ public class PerformanceWatcher {
 	private int timeStamp = 0;
 	private long currentTime = System.currentTimeMillis();
 	public void startWatch() {
-		Object[] infoList = new Object[57];
+		Object[] infoList = new Object[58];
 //		infoList[0] = TimeUtils.formatTimeStamp(System.currentTimeMillis());
 		String casename = caseRun.getCaseName();
 		infoList[0] = timeStamp + "(" + casename.substring(0, casename.length()-5) + ")";
@@ -228,6 +231,7 @@ public class PerformanceWatcher {
 		
 		timeStamp += (System.currentTimeMillis() - currentTime) / 1000;
 		currentTime = System.currentTimeMillis();
+		infoList[57] = sysInfo.getCpuTop();
 		updateRow(infoList);
 	}
 }

@@ -137,33 +137,6 @@ public class DeviceConnection implements IDeviceChangeListener, SubjectForListen
 				@Override
 				public void run() {
 					try {
-//SystemInfoGet sysinfo = new SystemInfoGet(devices[0], "dji.go.v4");
-//int pid = sysinfo.getPid();
-//System.out.println(sysinfo.getTotalCpu());
-//System.out.println(sysinfo.getProcessCpu(pid));
-////System.out.println(sysinfo.getMemory());
-//System.out.println(sysinfo.getFps());
-//System.out.println("1------");
-//System.out.println(sysinfo.getTotalCpu());
-//System.out.println(sysinfo.getProcessCpu(pid));
-////System.out.println(sysinfo.getMemory());
-//System.out.println(sysinfo.getFps());
-//System.out.println("2------");
-//System.out.println(sysinfo.getTotalCpu());
-//System.out.println(sysinfo.getProcessCpu(pid));
-////System.out.println(sysinfo.getMemory());
-//System.out.println(sysinfo.getFps());
-//System.out.println("3------");
-//System.out.println(sysinfo.getTotalCpu());
-//System.out.println(sysinfo.getProcessCpu(pid));
-////System.out.println(sysinfo.getMemory());
-//System.out.println(sysinfo.getFps());
-//System.out.println("4------");
-//System.out.println(sysinfo.getTotalCpu());
-//System.out.println(sysinfo.getProcessCpu(pid));
-////System.out.println(sysinfo.getMemory());
-//System.out.println(sysinfo.getFps());
-//System.out.println("5------");
 						IDevice device = devices[0];
 						String appPath = System.getProperty("user.dir") + "/lib/app-debug.apk";
 						String testPath = System.getProperty("user.dir") + "/lib/app-debug-androidTest.apk";
