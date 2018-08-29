@@ -50,8 +50,6 @@ public class PerformanceWatcher {
 		
 		if (sysInfoRowNum == 0)
 			initRow();
-		
-		pids = sysInfo.getPids();
 	}
 	
 	private void initRow() {
@@ -189,16 +187,26 @@ public class PerformanceWatcher {
 	private int timeStamp = 0;
 	private long currentTime = System.currentTimeMillis();
 	public void startWatch() {
+		pids = sysInfo.getPids();
 		Object[] infoList = new Object[58];
 //		infoList[0] = TimeUtils.formatTimeStamp(System.currentTimeMillis());
 		String casename = caseRun.getCaseName();
 		infoList[0] = timeStamp + "(" + casename.substring(0, casename.length()-5) + ")";
 		float[] totalCpuInfo = sysInfo.getTotalCpu();
 		infoList[1] = (float)(Math.round(totalCpuInfo[0]*100)) / 100;
-		infoList[2] = (float)(Math.round(sysInfo.getProcessCpu(pids[0], "Setting", Math.round(totalCpuInfo[1]))*100)) / 100;
-		infoList[3] = (float)(Math.round(sysInfo.getProcessCpu(pids[1], "Launcher", Math.round(totalCpuInfo[1]))*100)) / 100;
-		infoList[4] = (float)(Math.round(sysInfo.getProcessCpu(pids[2], "DJI GO", Math.round(totalCpuInfo[1]))*100)) / 100;
-			
+		float settingCpu = (float)(Math.round(sysInfo.getProcessCpu(pids[0], "Setting", Math.round(totalCpuInfo[1]))*100)) / 100;
+		float launchCpu = (float)(Math.round(sysInfo.getProcessCpu(pids[1], "Launcher", Math.round(totalCpuInfo[1]))*100)) / 100;
+		float goCpu = (float)(Math.round(sysInfo.getProcessCpu(pids[2], "DJI GO", Math.round(totalCpuInfo[1]))*100)) / 100;
+		infoList[2] = settingCpu;
+		infoList[3] = launchCpu;
+		infoList[4] = goCpu;
+		
+		if (settingCpu == -1) {
+			System.out.println("------------------");
+			System.out.println(pids[0]);
+			System.out.println(sysInfo.getPids());
+			System.out.println("------------------");
+		}
 //		infoList[5] = sysInfo.getMemory();
 		infoList[6] = sysInfo.getFps();
 		infoList[7] = sysInfo.getPower();

@@ -312,11 +312,17 @@ System.out.println("Pkg: " + apk + " Proc all: " + all + " Proc lastTotalASec: "
 				LOG.error(e);
 			}
 			if (proLines != null) {
-				if (proLines.length == 2) {
+				if (pkgs[i].equals("dji.go.v4")) {
+					if (proLines == null)
+						pids[i] = -1;
 					if (proLines[0].split("\\s+")[1].equals(proLines[1].split("\\s+")[2]))
 						pids[i] = Integer.parseInt(proLines[0].split("\\s+")[1]);
-				} else if (proLines.length == 1) {
+					proLines = null;
+				} else {
+					if (proLines == null)
+						pids[i] = -1;
 					pids[i] = Integer.parseInt(proLines[0].split("\\s+")[1]);
+					proLines = null;
 				}
 			}
 		}

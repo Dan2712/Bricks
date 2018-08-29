@@ -102,6 +102,7 @@ public class MiniCapUtil implements SubjectForListener{
 		cachedThreadPool = MainEntry.cachedThreadPool;
 		
 		while (!stopGet) {
+System.out.println(device);
 			String abi = device.getProperty(ABI_COMMAND);
 			String sdk = device.getProperty(SDK_COMMAND);
 			File miniCapBin = new File(ConstantsUtils.getMinicapBin(), abi + File.separator + MINICAP_BIN);
