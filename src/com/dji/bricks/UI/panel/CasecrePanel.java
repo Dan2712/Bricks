@@ -1028,8 +1028,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 							| IOException e2) {
 						e2.printStackTrace();
 					}
-			    	int y = Integer.parseInt(output.split(":")[1].trim().split("x")[0]);
-			    	int x = Integer.parseInt(output.split(":")[1].trim().split("x")[1]);
+			    	int y = Integer.parseInt(output.split(":")[1].trim().split("\n")[0].split("x")[0]);
+			    	int x = Integer.parseInt(output.split(":")[1].trim().split("\n")[0].split("x")[1]);
 			    	
 			    	double xRatio = ((double) e.getX()) / ((double) Scrshot_image.getIconWidth());
 			    	double yRatio = ((double) e.getY()) / ((double) Scrshot_image.getIconHeight());

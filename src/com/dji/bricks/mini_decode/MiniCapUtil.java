@@ -122,7 +122,7 @@ System.out.println(device);
 				
 				// get the screen size
 				String output = this.executeShellCommand(MINICAP_WM_SIZE_COMMAND);
-				size = output.split(":")[1].trim();
+				size = output.split(":")[1].trim().split("\n")[0];
 				
 				//get the screen orientation
 				orientation_tag = dumpsOrientation();

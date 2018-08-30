@@ -197,8 +197,8 @@ public class PerformanceWatcher {
 		float settingCpu = (float)(Math.round(sysInfo.getProcessCpu(pids[0], "Setting", Math.round(totalCpuInfo[1]))*100)) / 100;
 		float launchCpu = (float)(Math.round(sysInfo.getProcessCpu(pids[1], "Launcher", Math.round(totalCpuInfo[1]))*100)) / 100;
 		float goCpu = (float)(Math.round(sysInfo.getProcessCpu(pids[2], "DJI GO", Math.round(totalCpuInfo[1]))*100)) / 100;
-		infoList[2] = settingCpu;
-		infoList[3] = launchCpu;
+//		infoList[2] = settingCpu;
+//		infoList[3] = launchCpu;
 		infoList[4] = goCpu;
 		
 		if (settingCpu == -1) {
@@ -209,33 +209,33 @@ public class PerformanceWatcher {
 		}
 //		infoList[5] = sysInfo.getMemory();
 		infoList[6] = sysInfo.getFps();
-		infoList[7] = sysInfo.getPower();
-		infoList[8] = sysInfo.getIO();
+//		infoList[7] = sysInfo.getPower();
+//		infoList[8] = sysInfo.getIO();
 		
-		ArrayList<long[]> netInfo = sysInfo.getNetwork();
-		if (timeStore != -1) {
-			long currentTime = System.currentTimeMillis();
-			long[] currentWlanStore = netInfo.get(0);
-			long[] currentUsbStore = netInfo.get(1);
-			long[] currentLoStore = netInfo.get(2);
-			long deltaTime = (currentTime - timeStore) / 1000;
-			timeStore = currentTime;
-			
-			for (int i=9; i<57; i++) {
-				if (i % 3 == 0) {
-					infoList[i] = (currentWlanStore[(i-9) / 3] - wlanStore[(i-9) / 3]) / deltaTime;
-				} else if (i % 3 == 1) {
-					infoList[i] = (currentUsbStore[(i-10) / 3] - usbStore[(i-10) / 3]) / deltaTime;
-				} else if (i % 3 == 2) {
-					infoList[i] = (currentLoStore[(i-11) / 3] - loStore[(i-11) / 3]) / deltaTime;
-				}
-			}
-		} else {
-			timeStore = System.currentTimeMillis();
-			wlanStore = netInfo.get(0);
-			usbStore = netInfo.get(1);
-			loStore = netInfo.get(2);
-		}
+//		ArrayList<long[]> netInfo = sysInfo.getNetwork();
+//		if (timeStore != -1) {
+//			long currentTime = System.currentTimeMillis();
+//			long[] currentWlanStore = netInfo.get(0);
+//			long[] currentUsbStore = netInfo.get(1);
+//			long[] currentLoStore = netInfo.get(2);
+//			long deltaTime = (currentTime - timeStore) / 1000;
+//			timeStore = currentTime;
+//			
+//			for (int i=9; i<57; i++) {
+//				if (i % 3 == 0) {
+//					infoList[i] = (currentWlanStore[(i-9) / 3] - wlanStore[(i-9) / 3]) / deltaTime;
+//				} else if (i % 3 == 1) {
+//					infoList[i] = (currentUsbStore[(i-10) / 3] - usbStore[(i-10) / 3]) / deltaTime;
+//				} else if (i % 3 == 2) {
+//					infoList[i] = (currentLoStore[(i-11) / 3] - loStore[(i-11) / 3]) / deltaTime;
+//				}
+//			}
+//		} else {
+//			timeStore = System.currentTimeMillis();
+//			wlanStore = netInfo.get(0);
+//			usbStore = netInfo.get(1);
+//			loStore = netInfo.get(2);
+//		}
 		
 		timeStamp += (System.currentTimeMillis() - currentTime) / 1000;
 		currentTime = System.currentTimeMillis();
