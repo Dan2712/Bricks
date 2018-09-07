@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.openqa.selenium.support.ui.Sleeper;
@@ -99,8 +100,19 @@ public class DeviceConnection implements IDeviceChangeListener, SubjectForListen
 		} catch (InterruptedException e) {
 			LOG.error(e);
 		}
-		devices[0] = device;
-		notifyObservers(devices);
+		
+		boolean conStable = true;
+		for (int i=0; i<3; i++) {
+			if (device.isOffline()) {
+				conStable = false;
+				break;
+			}
+		}
+		
+		if (conStable) {
+			devices[0] = device;
+			notifyObservers(devices);
+		}
 	}
 
 	@Override
@@ -159,10 +171,10 @@ public class DeviceConnection implements IDeviceChangeListener, SubjectForListen
 							isTestInstall = true;
 						
 						if (!isAppInstall)
-							device.executeShellCommand("pm install -t -r \"/data/local/tmp/dan.dji.com.dumpxml\"", new CollectingOutputReceiver(), 40000);
+							device.executeShellCommand("pm install -t -r \"/data/local/tmp/dan.dji.com.dumpxml\"", new CollectingOutputReceiver(), 40, TimeUnit.SECONDS);
 							
 						if (!isTestInstall)
-							device.executeShellCommand("pm install -t -r \"/data/local/tmp/dan.dji.com.dumpxml.test\"", new CollectingOutputReceiver(), 40000);
+							device.executeShellCommand("pm install -t -r \"/data/local/tmp/dan.dji.com.dumpxml.test\"", new CollectingOutputReceiver(), 40, TimeUnit.SECONDS);
 
 					} catch (SyncException | IOException | AdbCommandRejectedException | TimeoutException e) {
 						LOG.error(e);

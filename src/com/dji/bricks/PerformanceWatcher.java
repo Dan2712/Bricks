@@ -130,29 +130,6 @@ public class PerformanceWatcher {
 				cellid1 ++;
 				cell.setCellStyle(style);
 			}
-//			else if (cellid1 == 8) {
-//				Cell cell = row1.createCell(cellid1);
-//				Cell cell21 = row2.createCell(cellid1);
-//				cell21.setCellValue("Setting");
-//				Cell cell31 = row3.createCell(cellid1);
-//				cell31.setCellValue("rx");
-//				Cell cell32 = row3.createCell(cellid1 + 1);
-//				cell32.setCellValue("tx");
-//				Cell cell22 = row2.createCell(cellid1 + 2);
-//				cell22.setCellValue("Launcher");
-//				Cell cell33 = row3.createCell(cellid1 + 2);
-//				cell33.setCellValue("rx");
-//				Cell cell34 = row3.createCell(cellid1 + 3);
-//				cell34.setCellValue("tx");
-//				Cell cell23 = row2.createCell(cellid1 + 4);
-//				cell23.setCellValue("DJI GO");
-//				Cell cell35 = row3.createCell(cellid1 + 4);
-//				cell35.setCellValue("rx");
-//				Cell cell36 = row3.createCell(cellid1 + 5);
-//				cell36.setCellValue("tx");
-//				cell.setCellValue((String) obj);
-//				cellid1 += 6;
-//			} 
 		}
 		watchSheet.setColumnWidth(8, watchSheet.getColumnWidth(8) * 12);
 		watchSheet.setColumnWidth(57, watchSheet.getColumnWidth(57) * 12);
@@ -187,60 +164,62 @@ public class PerformanceWatcher {
 	private int timeStamp = 0;
 	private long currentTime = System.currentTimeMillis();
 	public void startWatch() {
-		pids = sysInfo.getPids();
-		Object[] infoList = new Object[58];
-//		infoList[0] = TimeUtils.formatTimeStamp(System.currentTimeMillis());
-		String casename = caseRun.getCaseName();
-//		infoList[0] = timeStamp + "(" + casename.substring(0, casename.length()-5) + ")";
-		infoList[0] = TimeUtils.formatTimeStamp(System.currentTimeMillis()) + "(" + casename.substring(0, casename.length()-5) + ")";
-		float[] totalCpuInfo = sysInfo.getTotalCpu();
-		infoList[1] = (float)(Math.round(totalCpuInfo[0]*100)) / 100;
-		float settingCpu = (float)(Math.round(sysInfo.getProcessCpu(pids[0], "Setting", Math.round(totalCpuInfo[1]))*100)) / 100;
-		float launchCpu = (float)(Math.round(sysInfo.getProcessCpu(pids[1], "Launcher", Math.round(totalCpuInfo[1]))*100)) / 100;
-		float goCpu = (float)(Math.round(sysInfo.getProcessCpu(pids[2], "DJI GO", Math.round(totalCpuInfo[1]))*100)) / 100;
-		infoList[2] = settingCpu;
-		infoList[3] = launchCpu;
-		infoList[4] = goCpu;
-		
-		if (settingCpu == -1) {
-			System.out.println("------------------");
-			System.out.println(pids[0]);
-			System.out.println(sysInfo.getPids());
-			System.out.println("------------------");
-		}
-//		infoList[5] = sysInfo.getMemory();
-		infoList[6] = sysInfo.getFps();
-		infoList[7] = sysInfo.getPower();
-		infoList[8] = sysInfo.getIO();
-		
-		ArrayList<long[]> netInfo = sysInfo.getNetwork();
-		if (timeStore != -1) {
-			long currentTime = System.currentTimeMillis();
-			long[] currentWlanStore = netInfo.get(0);
-			long[] currentUsbStore = netInfo.get(1);
-			long[] currentLoStore = netInfo.get(2);
-			long deltaTime = (currentTime - timeStore) / 1000;
-			timeStore = currentTime;
+		if (device.isOnline()) {
+			pids = sysInfo.getPids();
+			Object[] infoList = new Object[58];
+	//		infoList[0] = TimeUtils.formatTimeStamp(System.currentTimeMillis());
+			String casename = caseRun.getCaseName();
+	//		infoList[0] = timeStamp + "(" + casename.substring(0, casename.length()-5) + ")";
+			infoList[0] = TimeUtils.formatTimeStamp(System.currentTimeMillis()) + "(" + casename.substring(0, casename.length()-5) + ")";
+			float[] totalCpuInfo = sysInfo.getTotalCpu();
+			infoList[1] = (float)(Math.round(totalCpuInfo[0]*100)) / 100;
+			float settingCpu = (float)(Math.round(sysInfo.getProcessCpu(pids[0], "Setting", Math.round(totalCpuInfo[1]))*100)) / 100;
+			float launchCpu = (float)(Math.round(sysInfo.getProcessCpu(pids[1], "Launcher", Math.round(totalCpuInfo[1]))*100)) / 100;
+			float goCpu = (float)(Math.round(sysInfo.getProcessCpu(pids[2], "DJI GO", Math.round(totalCpuInfo[1]))*100)) / 100;
+			infoList[2] = settingCpu;
+			infoList[3] = launchCpu;
+			infoList[4] = goCpu;
 			
-			for (int i=9; i<57; i++) {
-				if (i % 3 == 0) {
-					infoList[i] = (currentWlanStore[(i-9) / 3] - wlanStore[(i-9) / 3]) / deltaTime;
-				} else if (i % 3 == 1) {
-					infoList[i] = (currentUsbStore[(i-10) / 3] - usbStore[(i-10) / 3]) / deltaTime;
-				} else if (i % 3 == 2) {
-					infoList[i] = (currentLoStore[(i-11) / 3] - loStore[(i-11) / 3]) / deltaTime;
-				}
+			if (settingCpu == -1) {
+				System.out.println("------------------");
+				System.out.println(pids[0]);
+				System.out.println(sysInfo.getPids());
+				System.out.println("------------------");
 			}
-		} else {
-			timeStore = System.currentTimeMillis();
-			wlanStore = netInfo.get(0);
-			usbStore = netInfo.get(1);
-			loStore = netInfo.get(2);
+	//		infoList[5] = sysInfo.getMemory();
+			infoList[6] = sysInfo.getFps();
+			infoList[7] = sysInfo.getPower();
+			infoList[8] = sysInfo.getIO();
+			
+			ArrayList<long[]> netInfo = sysInfo.getNetwork();
+			if (timeStore != -1) {
+				long currentTime = System.currentTimeMillis();
+				long[] currentWlanStore = netInfo.get(0);
+				long[] currentUsbStore = netInfo.get(1);
+				long[] currentLoStore = netInfo.get(2);
+				long deltaTime = (currentTime - timeStore) / 1000;
+				timeStore = currentTime;
+				
+				for (int i=9; i<57; i++) {
+					if (i % 3 == 0) {
+						infoList[i] = (currentWlanStore[(i-9) / 3] - wlanStore[(i-9) / 3]) / deltaTime;
+					} else if (i % 3 == 1) {
+						infoList[i] = (currentUsbStore[(i-10) / 3] - usbStore[(i-10) / 3]) / deltaTime;
+					} else if (i % 3 == 2) {
+						infoList[i] = (currentLoStore[(i-11) / 3] - loStore[(i-11) / 3]) / deltaTime;
+					}
+				}
+			} else {
+				timeStore = System.currentTimeMillis();
+				wlanStore = netInfo.get(0);
+				usbStore = netInfo.get(1);
+				loStore = netInfo.get(2);
+			}
+			
+			timeStamp += (System.currentTimeMillis() - currentTime) / 1000;
+			currentTime = System.currentTimeMillis();
+			infoList[57] = sysInfo.getCpuTop();
+			updateRow(infoList);
 		}
-		
-		timeStamp += (System.currentTimeMillis() - currentTime) / 1000;
-		currentTime = System.currentTimeMillis();
-		infoList[57] = sysInfo.getCpuTop();
-		updateRow(infoList);
 	}
 }

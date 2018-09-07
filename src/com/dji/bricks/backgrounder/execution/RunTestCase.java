@@ -49,57 +49,29 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 	private WebElement ele_sub;
 	private String ele_customName;
 	private int runMode;
-//	private String path;
 	private AndroidDriver driver;
 	private CusAction action;
 	private CusValidation validation;
 	private String pkg;
 	private JTextArea logText;
 	private IDevice device;
-	private List<WebElement> dragedElement;
-	private Boolean isDraged = false;
-	private String tmp;
 	private ExcelUtils exlUtils;
-	private GfxAnalyse gfxUtil;
-	private int[] pids;
-	private XSSFSheet CPUTotalSheet;
-	private XSSFSheet CPUProcessSheet;
-	private XSSFSheet MemSheet;
-	private XSSFSheet FPSSheet;
-	private XSSFSheet PowerSheet;
-	private XSSFRow CPUTotalRow;
-	private XSSFRow CPUProcessRow;
-	private XSSFRow MemRow;
-	private XSSFRow FPSRow;
-	private XSSFRow PowerRow;
 	private XSSFCellStyle style;
 	private String screenshotRunPath;
-	private SystemInfoGet sysInfoGet;
-	private int CPUTotalRowNum;
-	private int CPUProcessRowNum;
-	private int MemRowNum;
-	private int FPSRowNum;
-	private int PowerRowNum;
-	private Map<String, Object[]> CPUTotalInfo = null;
-	private Map<String, Object[]> CPUProcessInfo = null;
-	private Map<String, Object[]> MemInfo = null;
-	private Map<String, Object[]> FPSInfo = null;
-	private Map<String, Object[]> PowerInfo = null;
 	private String caseName;
-//	private Object[] cpuTotalList;
-//	private Object[] cpuProcessList;
-//	private Object[] memList;
-//	private Object[] fpsList;
-//	private Object[] powerList;
 	
-	public RunTestCase(int runMode, AndroidDriver driver, JTextArea logText, IDevice device, String pkg, SystemInfoGet sysInfoGet) {
+	private XSSFSheet resultSheet;
+	private XSSFRow resultRow;
+	private int resultRowNum;
+	private Map<String, Object[]> resultInfo = null;
+	
+	public RunTestCase(int runMode, AndroidDriver driver, JTextArea logText, IDevice device, String pkg) {
 //		this.path = path;
 		this.runMode = runMode;
 		this.driver = driver;
 		this.logText = logText;
 		this.device = device;
 		this.pkg = pkg;
-		this.sysInfoGet = sysInfoGet;
 		init();
 	}
 	
@@ -107,137 +79,44 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		action = new CusAction(driver, device);
 		validation = new CusValidation(driver);
 		exlUtils = ExcelUtils.getInstance();
-		gfxUtil = new GfxAnalyse(device);
 		
-//		cpuTotalList = new Object[jsonFile.size() + 1];
-//		cpuProcessList = new Object[jsonFile.size() + 1];
-//		memList = new Object[jsonFile.size() + 1];
-//		fpsList = new Object[jsonFile.size() + 1];
-//		powerList = new Object[jsonFile.size() + 1];
-//		cpuTotalList[0] = caseName;
-//		cpuProcessList[0] = caseName;
-//		memList[0] = caseName;
-//		fpsList[0] = caseName;
-//		powerList[0] = caseName;
-		
-		//init screenshot running cap
-		screenshotRunPath = System.getProperty("user.dir") + File.separator + "screenshot/RunCap/" +
-	    		File.separator + TimeUtils.formatTimeForFile(System.currentTimeMillis());
-		File screenRun = new File(screenshotRunPath);
-		if (!screenRun.exists())
-			screenRun.mkdirs();
-		
-		//init performance archive
-		pids = sysInfoGet.getPids();
-		
-//		style = exlUtils.setCellAlignCenter();
-		
-		CPUTotalSheet = exlUtils.getCaseSheet("CPU Total");
-		CPUProcessSheet = exlUtils.getCaseSheet("CPU Process");
-		MemSheet = exlUtils.getCaseSheet("Memory");
-		FPSSheet = exlUtils.getCaseSheet("FPS");
-		PowerSheet = exlUtils.getCaseSheet("Power Consume");
-		CPUTotalRowNum = CPUTotalSheet.getLastRowNum();
-		CPUProcessRowNum = CPUProcessSheet.getLastRowNum();
-		MemRowNum = MemSheet.getLastRowNum();
-		FPSRowNum = FPSSheet.getLastRowNum();
-		PowerRowNum = PowerSheet.getLastRowNum();
-		CPUTotalInfo = new TreeMap<String, Object[]>();
-		CPUProcessInfo = new TreeMap<String, Object[]>();
-		MemInfo = new TreeMap<String, Object[]>();
-		FPSInfo = new TreeMap<String, Object[]>();
-		PowerInfo = new TreeMap<String, Object[]>();
-		
-		if (CPUTotalRowNum == 0)
-			initRow(CPUTotalInfo, CPUTotalRow, CPUTotalSheet);
-		
-		if (CPUProcessRowNum == 0) 
-			initRow(CPUProcessInfo, CPUProcessRow, CPUProcessSheet);
-		
-		if (MemRowNum == 0)
-			initRow(MemInfo, MemRow, MemSheet);
-		
-		if (FPSRowNum == 0)
-			initRow(FPSInfo, FPSRow, FPSSheet);
-		
-		if (PowerRowNum == 0)
-			initRow(PowerInfo, PowerRow, PowerSheet);
+		style = exlUtils.getCellAlignCenter(exlUtils.getWorkbookWatch());
+		resultSheet = exlUtils.getResultSheet("CaseResult");
+		resultRowNum = resultSheet.getLastRowNum();
+		resultInfo = new TreeMap<String, Object[]>();
+		if (resultRowNum == 0) {
+			Object[] arrayOb = new Object[5];
+			arrayOb[0] = "time";
+			arrayOb[1] = "case_name";
+			arrayOb[2] = "state";
+			arrayOb[3] = "info";
+			arrayOb[4] = "Screenshot Path";
+			
+			resultInfo.put("1", arrayOb);
+			int rowId = 0;
+			int cellId = 0;
+			
+			resultRow = resultSheet.createRow(rowId++);
+			for (Object obj : arrayOb) {
+				Cell cell = resultRow.createCell(cellId ++);
+				cell.setCellValue((String) obj);
+			}
+			exlUtils.updateResultWorkbook();
+		}
 	}
 	
-	private void initRow(Map<String, Object[]> infoMap, XSSFRow row, XSSFSheet sheet) {
-		Object[] arrayOb = new Object[101];
-		arrayOb[0] = "caseName/Num";
-		for (int i=1; i<=100; i++) {
-			arrayOb[i] = i;
-		}
-		
-		infoMap.put("1", arrayOb);
-		int rowid = 0;
-		
-//		if (type == 0) {
-		row = sheet.createRow(rowid ++);
-		Object [] objectArr = infoMap.get("1");
-		int cellid = 0;
-		for (Object obj : objectArr) {
-			Cell cell = row.createCell(cellid ++);
-			if (obj instanceof String)
-				cell.setCellValue((String) obj);
-			else if (obj instanceof Integer)
-				cell.setCellValue(String.valueOf(obj));
-		}
-//		} else if (type == 1) {
-//			row = sheet.createRow(0);
-//			XSSFRow rowGPU = sheet.createRow(1);
-//			Object[] objectArr = infoMap.get("1");
-//			for (Object obj : objectArr) {
-//				if (obj instanceof String) {
-//					Cell cell = row.createCell(0);
-//					cell.setCellValue((String) obj);
-//					GPUSheet.addMergedRegion(new CellRangeAddress(0, 1, 0, 0));
-//				} else if (obj instanceof Integer) {
-//					int cellid = ((Integer) obj) * 3 - 2;
-//					Cell cell = row.createCell(cellid);
-//					cell.setCellValue(String.valueOf(obj));
-//					
-//					int cellGpuid = (Integer) obj;
-//					if (cellGpuid % 3 == 1) {
-//						Cell cellDraw = rowGPU.createCell(cellGpuid);
-//						cellDraw.setCellValue("Draw");
-//						cellDraw.setCellStyle(style);
-//					} else if (cellGpuid % 3 == 2) {
-//						Cell cellPro = rowGPU.createCell(cellGpuid);
-//						cellPro.setCellValue("Process");
-//						cellPro.setCellStyle(style);
-//					} else if (cellGpuid % 3 == 0) {
-//						Cell cellExe = rowGPU.createCell(cellGpuid);
-//						cellExe.setCellValue("Execute");
-//						cellExe.setCellStyle(style);
-//					}
-//					cell.setCellStyle(style);
-//					GPUSheet.addMergedRegion(new CellRangeAddress(0, 0, cellid, cellid + 2));
-//				}
-//			}
-//		}
-		exlUtils.updateCaseWorkbook();
-	}
-
 	public void run(JSONArray jsonFile, String caseName) {
 		this.caseName = caseName;
-		int actionCount = 0;
-		BufferedWriter out = null;
+		int actionCount = 1;
 		StringBuilder tmpStore1 = new StringBuilder();
 		StringBuilder tmpStore2 = new StringBuilder();
 		
-		Object[] cpuTotalList = new Object[jsonFile.size() + 1];
-		Object[] cpuProcessList = new Object[jsonFile.size() + 1];
-		Object[] memList = new Object[jsonFile.size() + 1];
-		Object[] fpsList = new Object[jsonFile.size() + 1];
-		Object[] powerList = new Object[jsonFile.size() + 1];
-		cpuTotalList[0] = caseName;
-		cpuProcessList[0] = caseName;
-		memList[0] = caseName;
-		fpsList[0] = caseName;
-		powerList[0] = caseName;
+		Object[] resultList = new Object[5];
+		resultList[0] = TimeUtils.formatTimeStamp(System.currentTimeMillis());
+		resultList[1] = caseName;
+		resultList[2] = "Pass";
+		resultList[3] = "";
+		resultList[4] = "";
 		
 		//running start
 		if (this.runMode == 0) {
@@ -262,13 +141,28 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 						Thread.sleep(time);
 					}
 				} catch (Exception e) {
-					action.KeyBACK();
+					screenshotRunPath = System.getProperty("user.dir") + File.separator + "screenshot/CaseFailScreenshot/" +
+				    		File.separator + TimeUtils.formatTimeForFile(System.currentTimeMillis());
+					File screenRun = new File(screenshotRunPath);
+					if (!screenRun.exists())
+						screenRun.mkdirs();
+					
+					try {
+						getScreenshot(screenshotRunPath, actionCount);
+					} catch (TimeoutException | AdbCommandRejectedException | IOException
+							| ShellCommandUnresponsiveException e2) {
+						e2.printStackTrace();
+					}
+					resultList[2] = "Fail";
+					resultList[3] = e.getMessage();
+					resultList[4] = screenshotRunPath + "-" + caseName + "-" + actionCount;
+					action.keyBACK();
 					try {
 						Thread.sleep(300);
 					} catch (InterruptedException e1) {
 						e1.printStackTrace();
 					}
-					action.KeyBACK();
+					action.keyBACK();
 					if (e instanceof NoSuchElementException)
 						logText.append("No such element: " + this.ele_customName + "\n");
 					else {
@@ -278,89 +172,21 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					break;
 				}
 			}
-//			updateRow(cpuTotalList, cpuProcessList, memList, fpsList, powerList);
+			resultInfo.put(String.valueOf(resultRowNum++), resultList);
+			resultRow= resultSheet.createRow(resultRowNum);
+			int cellid = 0;
+			for (Object obj : resultList) {
+				Cell cell = resultRow.createCell(cellid++);
+				if (obj instanceof String)
+					cell.setCellValue((String) obj);
+				else if (obj instanceof Integer)
+					cell.setCellValue((Integer) obj);
+				else if (obj instanceof Float) 
+					cell.setCellValue((Float) obj);
+				cell.setCellStyle(style);
+			}
+			exlUtils.updateResultWorkbook();
 		}
-	}
-	
-	private void performanceGet(int index, Object[] cpuTotalList, Object[] cpuProcessList, Object[] memList, Object[] fpsList, Object[] powerList) throws TimeoutException, AdbCommandRejectedException, ShellCommandUnresponsiveException, IOException {
-		//get mem value
-//		device.executeShellCommand("adb shell \"su 0 \"procrank | grep \'dji.go.v4\'\"\"", receiver);
-//		receiver.flush();
-//		int memValue = Integer.parseInt(receiver.getOutput().split("\\s+")[3]);
-//		memList[index] = memValue;
-		
-		//get CPU value
-		float[] totalCpuInfo = sysInfoGet.getTotalCpu();
-		float CPUTotal = (float)(Math.round(totalCpuInfo[0]*100)) / 100;
-//		float CPUProcess = (float)(Math.round(sysInfoGet.getProcessCpu(pid)*100)) / 100;
-		cpuTotalList[index] = CPUTotal;
-//		cpuProcessList[index] = CPUProcess;
-		
-		//get FPS value
-		int fps = gfxUtil.getGfxInfo();
-		fpsList[index] = fps;
-		
-		//get power
-		int power = sysInfoGet.getPower();
-		powerList[index] = power;
-	}
-	
-	private void updateRow(Object[] cpuTotalList, Object[] cpuProcessList, Object[] memList, Object[] fpsList, Object[] powerList) {
-		CPUTotalInfo.put(String.valueOf(CPUTotalRowNum++), cpuTotalList);
-		CPUTotalRow = CPUTotalSheet.createRow(CPUTotalRowNum);
-		int cellCPUTotalid = 0;
-		for (Object obj : cpuTotalList) {
-			Cell cell = CPUTotalRow.createCell(cellCPUTotalid++);
-			if (obj instanceof String)
-				cell.setCellValue((String) obj);
-			else if (obj instanceof Float)
-				cell.setCellValue((Float) obj);
-		}
-		
-		CPUProcessInfo.put(String.valueOf(CPUProcessRowNum++), cpuProcessList);
-		CPUProcessRow = CPUProcessSheet.createRow(CPUProcessRowNum);
-		int cellCPUProcessid = 0;
-		for (Object obj : cpuProcessList) {
-			Cell cell = CPUProcessRow.createCell(cellCPUProcessid++);
-			if (obj instanceof String)
-				cell.setCellValue((String) obj);
-			else if (obj instanceof Float)
-				cell.setCellValue((Float) obj);
-		}
-		
-		MemInfo.put(String.valueOf(MemRowNum++), memList);
-		MemRow = MemSheet.createRow(MemRowNum);
-		int cellMemid = 0;
-		for (Object obj : memList) {
-			Cell cell = MemRow.createCell(cellMemid++);
-			if (obj instanceof String)
-				cell.setCellValue((String) obj);
-			else if (obj instanceof Integer)
-				cell.setCellValue((Integer) obj);
-		}
-		
-		FPSInfo.put(String.valueOf(FPSRowNum++), fpsList);
-		FPSRow = FPSSheet.createRow(FPSRowNum);
-		int cellFpsid = 0;
-		for (Object obj : fpsList) {
-			Cell cell = FPSRow.createCell(cellFpsid++);
-			if (obj instanceof String)
-				cell.setCellValue((String)obj);
-			else if (obj instanceof Integer)
-				cell.setCellValue(String.valueOf(obj));
-		}
-		
-		PowerInfo.put(String.valueOf(PowerRowNum++), powerList);
-		PowerRow = PowerSheet.createRow(PowerRowNum);
-		int cellPowerid = 0;
-		for (Object obj : powerList) {
-			Cell cell = PowerRow.createCell(cellPowerid++);
-			if (obj instanceof String)
-				cell.setCellValue((String)obj);
-			else if (obj instanceof Integer)
-				cell.setCellValue(String.valueOf(obj));
-		}
-		exlUtils.updateCaseWorkbook();
 	}
 	
 	public void actionSwitch(JSONObject action_info, StringBuilder tmpStore1, StringBuilder tmpStore2) throws Exception {
@@ -422,7 +248,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 				logText.append("Press HOME" + "\n");
 				break;
 			case 9:
-				action.KeyBACK();
+				action.keyBACK();
 				logText.append("Press BACK" + "\n");
 				break;
 			case 10:
@@ -437,7 +263,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 			case 12:
 				JSONObject params_tap = action_info.getJSONObject("params");
 				action.tapPoint(params_tap.getJSONObject("DesPoint").getIntValue("x"), params_tap.getJSONObject("DesPoint").getIntValue("y"));
-				logText.append("Point is tapped");
+				logText.append("Point is tapped" + "\n");
 				break;
 			case 13:
 				action.saveToTmp(ele_sub, tmpStore1);
@@ -452,6 +278,10 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 				JSONObject params_eles = action_info.getJSONObject("params");
 				action.getChildViewNum(params_eles.getString("parentName"), params_eles.getString("childClass"), tmpStore2);
 				logText.append("ChildView num is " + tmpStore2.toString() + " and save to tmp2 \n");
+				break;
+			case 16:
+				driver = action.reInit(pkg);
+				logText.append("Appium reinit" + "\n");
 				break;
 		}
 		
@@ -523,7 +353,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		        }
 		    }
 	
-		    String filePath = screenshotRunPath + File.separator + actionCount + ".png";
+		    String filePath = screenshotRunPath + File.separator + caseName + "-" + actionCount + ".png";
 		    if (!ImageIO.write(image, "png", new File(filePath))) {
 		        throw new IOException("Failed to find png writer");
 		    }

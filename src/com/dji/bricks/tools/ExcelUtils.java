@@ -21,14 +21,14 @@ public class ExcelUtils {
 	
 	private final String CURRENT_DIR = System.getProperty("user.dir");
 	
-	private XSSFWorkbook workbookCase;
+	private XSSFWorkbook workbookResult;
 	private XSSFWorkbook workbookWatch;
 
-	private File xlsFileCase;
+	private File xlsFileResult;
 	private File xlsFileWatch;
 	
 	private ExcelUtils() {
-		initCaseXls();
+		initResultXls();
 		initWatchXls();
 	}
 	
@@ -61,19 +61,19 @@ public class ExcelUtils {
 		}  
 	}
 	
-	private void initCaseXls() {
+	private void initResultXls() {
 		Date now = new Date();
 		SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd"); 
 		try {
-			xlsFileCase = new File(CURRENT_DIR + File.separator + "performanceIndex" + File.separator + format.format(now) + "-Case.xlsx");
-			if (xlsFileCase.exists()) {
-				FileInputStream fip = new FileInputStream(xlsFileCase);
-				workbookCase = new XSSFWorkbook(fip);
+			xlsFileResult = new File(CURRENT_DIR + File.separator + "performanceIndex" + File.separator + format.format(now) + "-Result.xlsx");
+			if (xlsFileResult.exists()) {
+				FileInputStream fip = new FileInputStream(xlsFileResult);
+				workbookResult = new XSSFWorkbook(fip);
 			} else {
-				workbookCase = new XSSFWorkbook();
-				xlsFileCase.getParentFile().mkdirs();
-				FileOutputStream out = new FileOutputStream(xlsFileCase);
-				workbookCase.write(out);
+				workbookResult = new XSSFWorkbook();
+				xlsFileResult.getParentFile().mkdirs();
+				FileOutputStream out = new FileOutputStream(xlsFileResult);
+				workbookResult.write(out);
 				out.close();
 			}
 			
@@ -86,26 +86,26 @@ public class ExcelUtils {
 		return workbookWatch;
 	}
 	
-	public XSSFWorkbook getWorkbookCase() {
-		return workbookCase;
+	public XSSFWorkbook getWorkbookResult() {
+		return workbookResult;
 	}
 	
-	public XSSFSheet getCaseSheet(String sheetName) {
+	public XSSFSheet getResultSheet(String sheetName) {
 		XSSFSheet worksheet = null;
-		if (workbookCase.getSheet(sheetName) == null)
-			worksheet = workbookCase.createSheet(sheetName);	
+		if (workbookResult.getSheet(sheetName) == null)
+			worksheet = workbookResult.createSheet(sheetName);	
 		else
-			worksheet = workbookCase.getSheet(sheetName);
+			worksheet = workbookResult.getSheet(sheetName);
 		
 		return worksheet;
 	}
 	
-	public synchronized void updateCaseWorkbook() {
+	public synchronized void updateResultWorkbook() {
 		System.out.println(Thread.currentThread());
 		FileOutputStream out = null;
 		try {
-			out = new FileOutputStream(xlsFileCase);
-			workbookCase.write(out);
+			out = new FileOutputStream(xlsFileResult);
+			workbookResult.write(out);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

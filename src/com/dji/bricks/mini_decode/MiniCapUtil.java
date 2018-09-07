@@ -174,12 +174,14 @@ System.out.println(device);
 	private String executeShellCommand(String command) {
 		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
 		
-		try {
-			device.executeShellCommand(command, receiver, 0, TimeUnit.SECONDS);
-		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
-			e.printStackTrace();
-			if (e.getMessage().contains("not found"))
-				JOptionPane.showMessageDialog(null,"Device ADB error, please check your device");
+		if (device.isOnline()) {
+			try {
+				device.executeShellCommand(command, receiver, 0, TimeUnit.SECONDS);
+			} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
+				e.printStackTrace();
+				if (e.getMessage().contains("not found"))
+					JOptionPane.showMessageDialog(null,"Device ADB error, please check your device");
+			}
 		}
 		receiver.flush();
 		return receiver.getOutput();

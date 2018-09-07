@@ -182,7 +182,7 @@ public class CusAction {
 	}
 	
 	//9.Key BACK
-	public void KeyBACK() {
+	public void keyBACK() {
 		driver.pressKeyCode(4);
 	}
 	
@@ -233,5 +233,36 @@ public class CusAction {
 	public void getChildViewNum(String parentName, String childClass, StringBuilder tmpStore) {
 		driver.getPageSource();
 		tmpStore.delete(0, tmpStore.length()).append(driver.findElement(By.name(parentName)).findElements(By.className(childClass)).size());
+	}
+	
+	//16.reinit appium
+	public AndroidDriver reInit(String pkg) {
+		String launchActivity = "";
+		switch (pkg) {
+			case "com.dji.industry.pilot":
+				launchActivity = "com.dji.industry.pilot.SplashActivity";
+				break;
+			case "dji.pilot":
+				launchActivity = "dji.pilot.home.cs.activity.DJICsMainActivity";
+				break;
+			case "dji.go.v4":
+				launchActivity = "dji.pilot.main.activity.DJILauncherActivity";
+				break;
+			case "com.dpad.launcher":
+				launchActivity = "com.dpad.launcher.Launcher";
+				break;
+			case "dji.prof.mg": case "dji.prof.args.tiny":
+				launchActivity = "dji.prof.mg.main.SplashActivity";
+				break;
+			case "dji.pilot.pad":
+				launchActivity = "dji.pilot.main.activity.DJILauncherActivity";
+				break;
+			case "com.android.settings":
+				launchActivity = "com.android.settings.Settings";
+				break;
+		}
+		AppiumInit init = AppiumInit.getInstance(device, pkg, launchActivity);
+		init.setUp();
+		return init.getDriver();
 	}
 }

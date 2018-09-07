@@ -28,6 +28,7 @@ public class UiAutomatorHelper {
     private static final String UIAUTOMATOR = "/system/bin/uiautomator";    //$NON-NLS-1$
     private static final String UIAUTOMATOR_DUMP_COMMAND = "dump";          //$NON-NLS-1$
     private static final String UIDUMP_DEVICE_PATH = "/data/local/tmp/uidump.xml";  //$NON-NLS-1$
+    private static final String UIDUMP_DEVICE_PATH_UNIT = "/storage/emulated/0/Android/data/dan.dji.com.dumpxml/cache/uidump.xml";
     private static final int XML_CAPTURE_TIMEOUT_SEC = 40;
 //    private static File uiDumpFile = null;
 
@@ -52,10 +53,13 @@ public class UiAutomatorHelper {
 
         monitor.subTask("Deleting old UI XML snapshot ...");
         String command = "rm " + UIDUMP_DEVICE_PATH;
+        String command_unit = "rm" + UIDUMP_DEVICE_PATH_UNIT;
 
         try {
             CountDownLatch commandCompleteLatch = new CountDownLatch(1);
             device.executeShellCommand(command,
+                    new CollectingOutputReceiver(commandCompleteLatch));
+            device.executeShellCommand(command_unit,
                     new CollectingOutputReceiver(commandCompleteLatch));
             commandCompleteLatch.await(5, TimeUnit.SECONDS);
         } catch (Exception e1) {
@@ -78,7 +82,7 @@ public class UiAutomatorHelper {
             device.executeShellCommand(
                     command,
                     new CollectingOutputReceiver(commandCompleteLatch),
-                    XML_CAPTURE_TIMEOUT_SEC * 1000);
+                    XML_CAPTURE_TIMEOUT_SEC * 1000, TimeUnit.SECONDS);
             commandCompleteLatch.await(XML_CAPTURE_TIMEOUT_SEC, TimeUnit.SECONDS);
 
             monitor.subTask("Pull UI XML snapshot from device...");
@@ -88,10 +92,10 @@ public class UiAutomatorHelper {
         	if (e.getMessage().equals("Remote object doesn't exist!")) {
 	        	try {
 	        		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
-					device.executeShellCommand("am instrument -w -r   -e debug false -e class dan.dji.com.dumpxml.DumpKit dan.dji.com.dumpxml.test/android.support.test.runner.AndroidJUnitRunner", 
-							receiver, XML_CAPTURE_TIMEOUT_SEC * 1000);
+					device.executeShellCommand("am instrument -w -r -e debug false -e class dan.dji.com.dumpxml.DumpKit dan.dji.com.dumpxml.test/android.support.test.runner.AndroidJUnitRunner", 
+							receiver, XML_CAPTURE_TIMEOUT_SEC * 1000, TimeUnit.SECONDS);
 					monitor.subTask("Pull UI XML snapshot from device...");
-					device.getSyncService().pullFile("/storage/emulated/0/Android/data/dan.dji.com.dumpxml/cache/uidump.xml",
+					device.getSyncService().pullFile(UIDUMP_DEVICE_PATH_UNIT,
 		                    dst.getAbsolutePath(), SyncService.getNullProgressMonitor());
 				} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException
 						| IOException e1) {
