@@ -84,7 +84,7 @@ public class ExecutionMain {
 				launchActivity = "com.dji.industry.pilot.SplashActivity";
 				break;
 			case "dji.pilot":
-				launchActivity = "dji.pilot.home.cs.activity.DJICsMainActivity";
+				launchActivity = "dji.pilot.main.activity.DJILauncherActivity";
 				break;
 			case "dji.go.v4":
 				launchActivity = "dji.pilot.main.activity.DJILauncherActivity";
