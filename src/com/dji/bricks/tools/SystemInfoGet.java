@@ -229,30 +229,6 @@ System.out.println("Pkg: " + apk + " Proc all: " + all + " Proc lastTotalASec: "
 	}
 	
 	public String getIO() {
-//		if (pid == 0)
-//			return new int[]{0, 0};
-//		
-//		int periodRead = -1;
-//		int periodWrite = -1;
-//		CollectingOutputReceiver singleReceiver = new CollectingOutputReceiver();
-//		try {
-//			device.executeShellCommand("cat /proc/" + pid + "/io", singleReceiver);
-//		} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException | IOException e) {
-//			e.printStackTrace();
-//		}
-//		singleReceiver.flush();
-//		String[] toks = singleReceiver.getOutput().split("\n");
-//		int nowReadbytes = Integer.parseInt(toks[4].split(": ")[1]);
-////System.out.println(nowReadbytes);
-//		int nowWritebytes = Integer.parseInt(toks[5].split(": ")[1]);
-//		if (lastIorxMap.get(apk) != -1 && lastIotxMap.get(apk) != -1) {
-//			periodRead = nowReadbytes - lastIorxMap.get(apk);
-//			periodWrite = nowWritebytes - lastIotxMap.get(apk);
-//		}
-//		lastIorxMap.put(apk, nowReadbytes);
-//		lastIotxMap.put(apk, nowWritebytes);
-//		
-//		return new int[]{periodRead, periodWrite};
 		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
 		try {
 			device.executeShellCommand("iotop -m 5 -n 1", receiver);
@@ -274,9 +250,6 @@ System.out.println("Pkg: " + apk + " Proc all: " + all + " Proc lastTotalASec: "
 		}
 		receiver.flush();
 		String[] portOut = receiver.getOutput().split("\n");
-		System.out.println(portOut[1]);
-		System.out.println(portOut[2]);
-		System.out.println(portOut[3]);
 		long[] wlanData = new long[16];
 		long[] usbData = new long[16];
 		long[] loData = new long[16];

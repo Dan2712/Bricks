@@ -28,7 +28,7 @@ public class AppiumInit {
 	private static String launchActivity;
 	
 	private AppiumInit() {
-		setUp(device, appPackage, launchActivity);
+		setUp();
 	}
 	
 	private static class HolderInit {
@@ -46,7 +46,7 @@ public class AppiumInit {
 		return driver;
 	}
 	
-	public void setUp(IDevice device, String appPackage, String launchActivity) {
+	public void setUp() {
 		//init appium  
         DesiredCapabilities capabilities = new DesiredCapabilities();  
         capabilities.setCapability("deviceName", device.getSerialNumber());  
@@ -61,7 +61,7 @@ public class AppiumInit {
         capabilities.setCapability("full-reset", false);
         capabilities.setCapability("--session-override", true);    //override session everytime， otherwise cannot start a new session second time
         capabilities.setCapability("ignoreUnimportantViews", false);
-        capabilities.setCapability("newCommandTimeout", 600);
+        capabilities.setCapability("newCommandTimeout", 1800);
 
         try {
 			driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);

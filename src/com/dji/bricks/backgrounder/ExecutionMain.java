@@ -106,7 +106,7 @@ public class ExecutionMain {
     	driver = AppiumInit.getInstance(device, pkg, launchActivity).getDriver();
     	SystemInfoGet sysInfoGet = new SystemInfoGet(device, pkg);
 		
-    	testCase = new RunTestCase(0, driver, logText, device, pkg, sysInfoGet);
+    	testCase = new RunTestCase(0, driver, logText, device, pkg);
     	
 		PerformanceWatcher watcher = new PerformanceWatcher(device, pkg, sysInfoGet, testCase);
 		MainEntry.cachedThreadPool.submit(new Runnable() {
