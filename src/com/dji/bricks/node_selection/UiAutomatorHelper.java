@@ -86,8 +86,8 @@ public class UiAutomatorHelper {
             commandCompleteLatch.await(XML_CAPTURE_TIMEOUT_SEC, TimeUnit.SECONDS);
 
             monitor.subTask("Pull UI XML snapshot from device...");
-            device.getSyncService().pullFile(UIDUMP_DEVICE_PATH,
-                    dst.getAbsolutePath(), SyncService.getNullProgressMonitor());
+            device.pullFile(UIDUMP_DEVICE_PATH,
+                    dst.getAbsolutePath());
         } catch (Exception e) {
         	if (e.getMessage().equals("Remote object doesn't exist!")) {
 	        	try {
