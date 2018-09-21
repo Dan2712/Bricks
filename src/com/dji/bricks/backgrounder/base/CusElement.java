@@ -2,11 +2,13 @@ package com.dji.bricks.backgrounder.base;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.functions.ExpectedCondition;
 
 public class CusElement {
 	
@@ -27,14 +29,14 @@ public class CusElement {
 		} else
 			eleModify = ele;
 		WebDriverWait wait = new WebDriverWait(driver, wait_time);
-//		element = wait.until(new ExpectedCondition<WebElement>() {
-//
-//			@Override
-//			public WebElement apply(WebDriver d) {
-//				return d.findElement(By.xpath(eleModify));
-//			}
-//		});
-		element = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(eleModify)));
+		element = wait.until(new ExpectedCondition<WebElement>() {
+
+			@Override
+			public WebElement apply(WebDriver d) {
+				return d.findElement(By.xpath(eleModify));
+			}
+		});
+//		element = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(eleModify)));
 		
 		return element;
 	}

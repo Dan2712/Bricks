@@ -326,42 +326,47 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 	}
 	
 	private void getScreenshot(String screenshotRunPath, int actionCount) throws TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException {
-		RawImage rawImg = device.getScreenshot();
-		Boolean landscape = false;
-		
-		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
-		device.executeShellCommand("dumpsys display | grep 'mDefaultViewport'", receiver, 0, TimeUnit.SECONDS);
-		switch (Character.getNumericValue(receiver.getOutput().charAt(72))) {
-			case 0:
-				landscape = false;
-				break;
-			case 1:
-				landscape = true;
-				break;
-		}
-		
-		if (landscape) 
-			rawImg = rawImg.getRotated();
-
-		if (rawImg != null) {
-			BufferedImage image = new BufferedImage(rawImg.width, rawImg.height,  
-                    BufferedImage.TYPE_INT_RGB);
-			
-			int index = 0;
-		    int IndexInc = rawImg.bpp >> 3;
-		    for (int y = 0; y < rawImg.height; y++) {
-		        for (int x = 0; x < rawImg.width; x++) {
-		            int value = rawImg.getARGB(index);
-		            index += IndexInc;
-		            image.setRGB(x, y, value);
-		        }
-		    }
-	
-		    String filePath = screenshotRunPath + File.separator + caseName + "-step " + actionCount + "-" + TimeUtils.formatTimeForFile(System.currentTimeMillis()) + ".png";
-		    if (!ImageIO.write(image, "png", new File(filePath))) {
-		        throw new IOException("Failed to find png writer");
-		    }
-		}
+		//adb screenshot
+		String screenpath="/sdcard/" + actionCount+ ".png";
+		Runtime.getRuntime().exec("cmd /c adb shell screencap -p " + screenpath );
+		Runtime.getRuntime().exec("cmd /c adb pull " + screenpath + " " +  screenshotRunPath );
+		Runtime.getRuntime().exec("cmd /c adb shell rm " + screenpath);
+//		RawImage rawImg = device.getScreenshot();
+//		Boolean landscape = false;
+//		
+//		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
+//		device.executeShellCommand("dumpsys display | grep 'mDefaultViewport'", receiver, 0, TimeUnit.SECONDS);
+//		switch (Character.getNumericValue(receiver.getOutput().charAt(72))) {
+//			case 0:
+//				landscape = false;
+//				break;
+//			case 1:
+//				landscape = true;
+//				break;
+//		}
+//		
+//		if (landscape) 
+//			rawImg = rawImg.getRotated();
+//
+//		if (rawImg != null) {
+//			BufferedImage image = new BufferedImage(rawImg.width, rawImg.height,  
+//                    BufferedImage.TYPE_INT_RGB);
+//			
+//			int index = 0;
+//		    int IndexInc = rawImg.bpp >> 3;
+//		    for (int y = 0; y < rawImg.height; y++) {
+//		        for (int x = 0; x < rawImg.width; x++) {
+//		            int value = rawImg.getARGB(index);
+//		            index += IndexInc;
+//		            image.setRGB(x, y, value);
+//		        }
+//		    }
+//	
+//		    String filePath = screenshotRunPath + File.separator + caseName + "-" + actionCount + ".png";
+//		    if (!ImageIO.write(image, "png", new File(filePath))) {
+//		        throw new IOException("Failed to find png writer");
+//		    }
+//		}
 	}
 	
 	@Override

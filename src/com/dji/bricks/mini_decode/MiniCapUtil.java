@@ -103,8 +103,8 @@ public class MiniCapUtil implements SubjectForListener{
 		
 		while (!stopGet) {
 System.out.println(device);
-			String abi = device.getProperty(ABI_COMMAND);
-			String sdk = device.getProperty(SDK_COMMAND);
+			String abi = device.getPropertySync(ABI_COMMAND);
+			String sdk = device.getPropertySync(SDK_COMMAND);
 			File miniCapBin = new File(ConstantsUtils.getMinicapBin(), abi + File.separator + MINICAP_BIN);
 			File miniCapSo = new File(ConstantsUtils.getMinicapSo(), "android-" + sdk
 					+ File.separator + abi + File.separator + MINICAP_SO);
