@@ -35,6 +35,7 @@ import com.dji.bricks.node_selection.VariableChangeObserve;
 import com.dji.bricks.tools.PropertyUtil;
 import com.dji.bricks.tools.SQLUtils;
 import com.dji.bricks.tools.SwitchButton;
+import com.hp.hpl.sparta.xpath.NodeTest;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -272,11 +273,13 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	    o.addObserver(this);
 	}
 
-	Map<String, String> node_info;
+	private Map<String, String> node_info;
+	private String node_text = "";
 	@Override
 	public void update(Observable o, Object arg) {
 		node_info = ((VariableChangeObserve) o).getInfo();
 		textFieldEleItem_1.setText(node_info.get("xpath"));
+		node_text = node_info.get("text");
 		
 		if(node_info.get("package").equals("dji.pilot"))
 			textFieldEleItem_4.setText("DJI GO3");
@@ -338,12 +341,14 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	private String state_text;
 	private String activity_name_text;
 	private String screen_text;
+	private String textview_text;
 	private Map<String, String> app_name = new HashMap<String, String>();
 	private Map<String, String> custom_name = new HashMap<String, String>();
 	private Map<String, String> xpath = new HashMap<String, String>();
 	private Map<String, String> state = new HashMap<String, String>();
 	private Map<String, String> activity_name = new HashMap<String, String>();
 	private Map<String, String> screen = new HashMap<String, String>();
+	private Map<String, String> view_text = new HashMap<String, String>();
 	
 	private ArrayList<Map<String, String>> sqllist = new ArrayList<Map<String, String>>();
 	private EventList<String> actEventList = new BasicEventList<>();
@@ -367,18 +372,21 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
                     	state_text = node_info.get("clickable") + node_info.get("scrollable") + node_info.get("checkable") + node_info.get("focusable") + node_info.get("long-clickable");
                     	xpath_text = node_info.get("xpath");
                     	screen_text = node_info.get("screenPath");
+                    	textview_text = node_info.get("text");
                     	app_name.put("APP_NAME", app_name_text);
                     	custom_name.put("CUSTOM_NAME", custom_name_text);
                     	activity_name.put("ACTIVITY_NAME", activity_name_text);
                     	xpath.put("XPATH", xpath_text);
                     	state.put("STATE", state_text);
                     	screen.put("SCREEN_PATH", screen_text);
+                    	view_text.put("VIEW_TEXT", textview_text);
                     	sqllist.add(app_name);
                     	sqllist.add(custom_name);
                     	sqllist.add(activity_name);
                     	sqllist.add(xpath);
                     	sqllist.add(state);
                     	sqllist.add(screen);
+                    	sqllist.add(view_text);
                     	sql.insertEle("ELEMENT", sqllist);
                     	JOptionPane.showMessageDialog(buttonSave,"Save Complete");
                     	
@@ -410,12 +418,14 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	                	state_text = node_info.get("clickable") + node_info.get("scrollable") + node_info.get("checkable") + node_info.get("focusable") + node_info.get("long-clickable");
 	                	xpath_text = node_info.get("xpath");
 	                	screen_text = node_info.get("screenPath");
+	                	textview_text = node_info.get("text");
 	                	app_name.put("APP_NAME", app_name_text);
                     	custom_name.put("CUSTOM_NAME", custom_name_text);
                     	activity_name.put("ACTIVITY_NAME", activity_name_text);
                     	xpath.put("XPATH", xpath_text);
                     	state.put("STATE", state_text);
                     	screen.put("SCREEN_PATH", screen_text);
+                    	view_text.put("VIEW_TEXT", textview_text);
                     	
                     	sqllist.add(app_name);
                     	sqllist.add(custom_name);
@@ -423,6 +433,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
                     	sqllist.add(xpath);
                     	sqllist.add(state);
                     	sqllist.add(screen);
+                    	sqllist.add(view_text);
                     	
                     	int success = sql.updateElement("ELEMENT", sqllist);
                     	if (success > 0)

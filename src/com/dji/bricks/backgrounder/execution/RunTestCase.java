@@ -2,10 +2,8 @@ package com.dji.bricks.backgrounder.execution;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +26,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
-import com.android.ddmlib.MultiLineReceiver;
 import com.android.ddmlib.RawImage;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
 import com.android.ddmlib.TimeoutException;
@@ -36,8 +33,6 @@ import com.dji.bricks.backgrounder.base.CusAction;
 import com.dji.bricks.backgrounder.base.CusElement;
 import com.dji.bricks.backgrounder.base.CusValidation;
 import com.dji.bricks.tools.ExcelUtils;
-import com.dji.bricks.tools.GfxAnalyse;
-import com.dji.bricks.tools.SystemInfoGet;
 import com.dji.bricks.tools.TimeUtils;
 
 import io.appium.java_client.android.AndroidDriver;
@@ -57,7 +52,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 	private IDevice device;
 	private ExcelUtils exlUtils;
 	private XSSFCellStyle style;
-	private String screenshotRunPath;
+	private String caseFailRecordPath;
 	private String caseName;
 	
 	private XSSFSheet resultSheet;
@@ -80,7 +75,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		validation = new CusValidation(driver);
 		exlUtils = ExcelUtils.getInstance();
 		
-		style = exlUtils.getCellAlignCenter(exlUtils.getWorkbookWatch());
+		style = exlUtils.getCellAlignCenter(exlUtils.getWorkbookResult());
 		resultSheet = exlUtils.getResultSheet("CaseResult");
 		resultRowNum = resultSheet.getLastRowNum();
 		resultInfo = new TreeMap<String, Object[]>();
@@ -141,21 +136,30 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 						Thread.sleep(time);
 					}
 				} catch (Exception e) {
-					screenshotRunPath = System.getProperty("user.dir") + File.separator + "screenshot/CaseFailScreenshot/" +
-				    		File.separator + TimeUtils.formatTimeForFile(System.currentTimeMillis());
-					File screenRun = new File(screenshotRunPath);
-					if (!screenRun.exists())
-						screenRun.mkdirs();
+					caseFailRecordPath = System.getProperty("user.dir") + File.separator + "screenshot/CaseFailScreenshot";
+					try {
+						CollectingOutputReceiver receiver = new CollectingOutputReceiver();
+						String logCmd = "logcat -v time -d > /sdcard/log-"
+								+ TimeUtils.formatTimeForFile(System.currentTimeMillis()) + ".log";
+						device.executeShellCommand(logCmd, receiver);
+					} catch (TimeoutException | AdbCommandRejectedException | ShellCommandUnresponsiveException
+							| IOException e3) {
+						e3.printStackTrace();
+					}
+
+					File caseFailRecord = new File(caseFailRecordPath);
+					if (!caseFailRecord.exists())
+						caseFailRecord.mkdirs();
 					
 					try {
-						getScreenshot(screenshotRunPath, actionCount);
+						getScreenshot(caseFailRecordPath, actionCount);
 					} catch (TimeoutException | AdbCommandRejectedException | IOException
 							| ShellCommandUnresponsiveException e2) {
 						e2.printStackTrace();
 					}
 					resultList[2] = "Fail";
 					resultList[3] = e.getMessage();
-					resultList[4] = screenshotRunPath + "-" + caseName + "-" + actionCount;
+					resultList[4] = caseFailRecordPath + "-" + caseName + "-" + actionCount;
 					action.keyBACK();
 					try {
 						Thread.sleep(300);
@@ -218,8 +222,6 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 			case 6:
 				action.reboot();
 				logText.append("Rebooting..." + "\n");
-//				AppiumInit.setUp(device, "com.dpad.launcher", "com.dpad.launcher.Launcher");
-//				this.driver = AppiumInit.driver;
 				break;
 			case 7:
 				JSONObject params_swipe = action_info.getJSONObject("params");
@@ -281,6 +283,8 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 				break;
 			case 16:
 				driver = action.reInit(pkg);
+				action.setDriver(driver);
+				validation.setDriver(driver);
 				logText.append("Appium reinit" + "\n");
 				break;
 		}
@@ -353,7 +357,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		        }
 		    }
 	
-		    String filePath = screenshotRunPath + File.separator + caseName + "-" + actionCount + ".png";
+		    String filePath = screenshotRunPath + File.separator + caseName + "-step " + actionCount + "-" + TimeUtils.formatTimeForFile(System.currentTimeMillis()) + ".png";
 		    if (!ImageIO.write(image, "png", new File(filePath))) {
 		        throw new IOException("Failed to find png writer");
 		    }

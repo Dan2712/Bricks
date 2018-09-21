@@ -35,6 +35,30 @@ public class SQLUtils {
         return isTableExist;
 	}
 	
+	private boolean isFieldExist(String tableName, String fieldName) {
+		String tableCreateSql = null;
+		try {
+		    String queryStr = "select sql from sqlite_master where type = 'table' and name = '%s'";  
+		    queryStr = String.format(queryStr, tableName);
+		    Statement stmt = conn.createStatement();
+		    ResultSet rs = stmt.executeQuery(queryStr);
+		    try {  
+		        if (rs != null) {  
+		            tableCreateSql = rs.getString("sql");  
+		        }  
+		    } finally {  
+		        if (rs != null)  
+		            rs.close();  
+		    }
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+	    if (tableCreateSql != null && tableCreateSql.contains(fieldName))  
+	        return true;  
+	    return false;  
+	}
+	
 	public void creatTable() {
 		try {
 			Statement stmt = conn.createStatement();
@@ -49,10 +73,17 @@ public class SQLUtils {
 					+ "ACTIVITY_NAME TEXT NOT NULL,"
 					+ "APP_NAME TEXT NOT NULL,"
 					+ "STATE TEXT NOT NULL,"
-					+ "SCREEN_PATH TEXT NOT NULL);"
-					+ "CREATE UNIQUE INDEX ELEMENT_I ON ELEMENT(CUSTOM_NAME, ACTIVITY_NAME);";
+					+ "SCREEN_PATH TEXT NOT NULL,"
+					+ "VIEW_TEXT TEXT);";
+			
+			String updateElementTable = "ALTER TABLE ELEMENT ADD COLUMN VIEW_TEXT TEXT";
 			if (!isTableExist("ELEMENT"))
 				stmt.executeUpdate(createElementTable);
+			else {
+				if (!isFieldExist("ELEMENT", "VIEW_TEXT")) {
+					stmt.executeUpdate(updateElementTable);
+				}
+			}
 			
 			stmt.close();
 		} catch (SQLException e) {
@@ -68,12 +99,13 @@ public class SQLUtils {
 		String xpath = patterns.get(3).get("XPATH");
 		String state = patterns.get(4).get("STATE");
 		String screen_path = patterns.get(5).get("SCREEN_PATH");
+		String view_text = patterns.get(6).get("VIEW_TEXT");
 		
 		Statement stmt = conn.createStatement();
 		String insert_act = "INSERT INTO ACTIVITY (ACTIVITY_NAME, APP_NAME) "
 				+ "VALUES (\"" + activity_name + "\", \"" + app_name + "\");";
-		String insert_ele = "INSERT INTO ELEMENT (CUSTOM_NAME, XPATH, ACTIVITY_NAME, APP_NAME, STATE, SCREEN_PATH) "
-				+ "VALUES (\"" + custom_name + "\", \"" + xpath + "\", \"" + activity_name + "\", \"" + app_name + "\", \"" + state + "\", \"" + screen_path + "\");";
+		String insert_ele = "INSERT INTO ELEMENT (CUSTOM_NAME, XPATH, ACTIVITY_NAME, APP_NAME, STATE, SCREEN_PATH, VIEW_TEXT) "
+				+ "VALUES (\"" + custom_name + "\", \"" + xpath + "\", \"" + activity_name + "\", \"" + app_name + "\", \"" + state + "\", \"" + screen_path + "\", \"" + view_text + "\");";
 		stmt.executeUpdate(insert_ele);
 		stmt.executeUpdate(insert_act);
 		
@@ -124,10 +156,11 @@ public class SQLUtils {
 		String xpath = patterns.get(3).get("XPATH");
 		String state = patterns.get(4).get("STATE");
 		String screen_path = patterns.get(5).get("SCREEN_PATH");
+		String view_text = patterns.get(6).get("VIEW_TEXT");
 		
 		Statement stmt = conn.createStatement();
-		String update_act = "UPDATE ELEMENT SET XPATH = \"" + xpath + "\", STATE = \"" + state + "\", SCREEN_PATH = \"" + screen_path +
-				"\" WHERE ACTIVITY_NAME = \"" + activity_name + "\", APP_NAME = \"" + app_name + "\", CUSTOM_NAME = \"" + custom_name + "\";";
+		String update_act = "UPDATE ELEMENT SET XPATH = \"" + xpath + "\", STATE = \"" + state + "\", SCREEN_PATH = \"" + screen_path + "\", VIEW_TEXT = \"" + view_text +
+				"\" WHERE ACTIVITY_NAME = \"" + activity_name + "\" AND APP_NAME = \"" + app_name + "\" AND CUSTOM_NAME = \"" + custom_name + "\";";
 		return stmt.executeUpdate(update_act);
 	}
 }

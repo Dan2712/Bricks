@@ -16,6 +16,10 @@ public class CusValidation {
 		this.driver = driver;
 	}
 	
+	public void setDriver(AndroidDriver driver) {
+		this.driver = driver;
+	}
+
 	//1.text val
 	public boolean getText(String eleName, String expectText) {
 		WebElement ele = new CusElement(AppiumInit.WAIT_TIME, driver).explicitlyWait(eleName);

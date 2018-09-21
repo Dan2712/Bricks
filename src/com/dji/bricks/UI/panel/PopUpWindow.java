@@ -161,6 +161,7 @@ public class PopUpWindow extends JFrame {
     	StringBuilder cus_name = new StringBuilder();
     	StringBuilder scrshot_pathname = new StringBuilder();
     	StringBuilder appName = new StringBuilder();
+    	StringBuilder viewText = new StringBuilder();
     	
     	// Text verification method
 		popup_frame.setSize(400, 280);
@@ -181,12 +182,13 @@ public class PopUpWindow extends JFrame {
 		JComboBox<String> comboxAppName = new JComboBox<String>();
     	JComboBox<String> comboxViewName = new JComboBox<String>();
     	JComboBox<String> comboxEleName = new JComboBox<String>();
-		addEleCombox(comboxAppName, comboxViewName, comboxEleName, xpath, cus_name, scrshot_pathname, appName);
-		
-		JPanel text_pane = new JPanel();
+    	JPanel text_pane = new JPanel();
 		JPanel text_btn_pane = new JPanel();
 		JTextArea ver_text_input = new JTextArea(8,30);
 		ver_text_input.setLineWrap(true);
+		
+		addEleCombox(comboxAppName, comboxViewName, comboxEleName, xpath, cus_name, scrshot_pathname, appName, ver_text_input);
+		
 		MyIconButton buttonVersetTX_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
                 ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
 		MyIconButton buttonVersetTX_re = new MyIconButton(ConstantsUI.ICON_ROW_REFRESH, ConstantsUI.ICON_ROW_REFRESH_ENABLE,
@@ -292,7 +294,7 @@ public class PopUpWindow extends JFrame {
 		JComboBox<String> comboxAppName = new JComboBox<String>();
     	JComboBox<String> comboxViewName = new JComboBox<String>();
     	JComboBox<String> comboxEleName = new JComboBox<String>();
-		addEleCombox(comboxAppName, comboxViewName, comboxEleName, xpath, cus_name, scrshot_pathname, appName);
+		addEleCombox(comboxAppName, comboxViewName, comboxEleName, xpath, cus_name, scrshot_pathname, appName, null);
 		
 		MyIconButton buttonVersetEE_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
                 ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));
@@ -604,12 +606,12 @@ public class PopUpWindow extends JFrame {
 		JComboBox<String> comboxTarAppName = new JComboBox<String>();
     	JComboBox<String> comboxTarViewName = new JComboBox<String>();
     	JComboBox<String> comboxTarEleName = new JComboBox<String>();
-    	addEleCombox(comboxTarAppName, comboxTarViewName, comboxTarEleName, tarXpath, tarCus_name, tarScrshot_pathname, tarAppName);
+    	addEleCombox(comboxTarAppName, comboxTarViewName, comboxTarEleName, tarXpath, tarCus_name, tarScrshot_pathname, tarAppName, null);
     	
     	JComboBox<String> comboxConAppName = new JComboBox<String>();
     	JComboBox<String> comboxConViewName = new JComboBox<String>();
     	JComboBox<String> comboxConEleName = new JComboBox<String>();
-    	addEleCombox(comboxConAppName, comboxConViewName, comboxConEleName, conXpath, conCus_name, conScrshot_pathname, conAppName);
+    	addEleCombox(comboxConAppName, comboxConViewName, comboxConEleName, conXpath, conCus_name, conScrshot_pathname, conAppName, null);
     	
     	JComboBox<String> comboxHeading = new JComboBox<>();
     	comboxHeading.addItem("UP");
@@ -755,7 +757,7 @@ public class PopUpWindow extends JFrame {
     }
     
     private void addEleCombox(JComboBox<String> comboxAppName, JComboBox<String> comboxViewName, JComboBox<String> comboxEleName,
-    		StringBuilder xpath, StringBuilder cus_name, StringBuilder scrshot_pathname, StringBuilder appName) {
+    		StringBuilder xpath, StringBuilder cus_name, StringBuilder scrshot_pathname, StringBuilder appName, JTextArea textArea) {
     	
 		comboxAppName.addItem("DJI GO3");
 		comboxAppName.addItem("DJI GO4");
@@ -886,6 +888,8 @@ public class PopUpWindow extends JFrame {
 						cus_name.delete(0, cus_name.length()).append(xpathSet.getString("CUSTOM_NAME"));
 						scrshot_pathname.delete(0, scrshot_pathname.length()).append(xpathSet.getString("SCREEN_PATH"));
 						String state = xpathSet.getString(5);
+						if (textArea != null)
+							textArea.setText(xpathSet.getString("VIEW_TEXT"));
 					}
 				} catch (SQLException e1) {
 					e1.printStackTrace();
@@ -894,46 +898,6 @@ public class PopUpWindow extends JFrame {
 				}
 			}
 		});
-		
-//		comboxAppName.addItemListener(new ItemListener() {
-//			// combobox item changed method
-//			@Override
-//			public void itemStateChanged(ItemEvent e) {
-//				if (e.getStateChange() == ItemEvent.SELECTED) {
-//					ResultSet rs = null;
-//					try {
-//						appName.delete(0, appName.length()).append(new String(((String) e.getItem()).getBytes(), "UTF-8"));
-//    					rs = sql.queryElement("ACTIVITY", appName.toString());
-//    					
-//    					comboxViewName.removeAllItems();
-//    					comboxEleName.removeAllItems();
-//    					comboxViewName.removeItemListener(vlisten);
-//					
-//						while (rs.next()) {
-//							String viewName = new String(rs.getBytes("ACTIVITY_NAME"), "UTF-8");
-//							comboxViewName.addItem(viewName);
-//						}
-//						comboxViewName.setSelectedItem(null);
-//						comboxViewName.addItemListener(vlisten);
-//						
-//					} catch (SQLException e1) {
-//						e1.printStackTrace();
-//					} catch (UnsupportedEncodingException e1) {
-//						e1.printStackTrace();
-//					} finally {
-//						if (rs != null) {
-//							try {
-//								rs.close();
-//							} catch (SQLException e1) {
-//								e1.printStackTrace();
-//							}
-//						}
-//					}
-//				}
-//			}
-//		});
-		
-		
 	}
     
     private void cmpVer() {
@@ -959,7 +923,7 @@ public class PopUpWindow extends JFrame {
 		JComboBox<String> comboxAppName = new JComboBox<String>();
     	JComboBox<String> comboxViewName = new JComboBox<String>();
     	JComboBox<String> comboxEleName = new JComboBox<String>();
-		addEleCombox(comboxAppName, comboxViewName, comboxEleName, xpath, cus_name, scrshot_pathname, appName);
+		addEleCombox(comboxAppName, comboxViewName, comboxEleName, xpath, cus_name, scrshot_pathname, appName, null);
 		
 		MyIconButton buttonVersetEE_add = new MyIconButton(ConstantsUI.ICON_ELE_ADD, ConstantsUI.ICON_ELE_ADD_ENABLE,
                 ConstantsUI.ICON_ELE_ADD_DISABLE, PropertyUtil.getProperty("bricks.ui.casecre.btntip.addver"));

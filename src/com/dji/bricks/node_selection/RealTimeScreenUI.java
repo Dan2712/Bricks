@@ -364,6 +364,7 @@ public class RealTimeScreenUI extends JPanel implements GlobalObserver, MouseLis
 	            	node_info.put("long-clickable", node_sel.getAttribute("long-clickable").equals("true") ? "1" : "0");
 	            	node_info.put("package", node_sel.getAttribute("package"));
 	            	node_info.put("screenPath", screenPath);
+	            	node_info.put("text", node_sel.getAttribute("text"));
 	            	obs.setInfo(node_info);
 	            	parentPanel.repaint();
 	            	repaint();

@@ -30,6 +30,7 @@ public class CusAction {
 	private String savePath = "/sdcard/rm500_0042.bin";
 	 
 	private AndroidDriver driver;
+
 	private IDevice device;
 	
 	public CusAction(AndroidDriver driver, IDevice device) {
@@ -37,13 +38,13 @@ public class CusAction {
 		this.device = device;
 	}
 	
+	public void setDriver(AndroidDriver driver) {
+		this.driver = driver;
+	}
+	
 	//0.click
 	public void click(WebElement ele) {
-//		for (int i=0; i<Math.random()*6; i++) {
 		ele.click();
-//		WebElement parent = driver.findElement(By.xpath("//android.support.v7.widget.RecyclerView[@resource-id='com.android.systemui:id/ntf']"));
-//		System.out.println(parent.findElements(By.className("android.widget.ImageView")).size());
-//		}
 	}
 	
 	//1.long press
@@ -237,6 +238,7 @@ public class CusAction {
 	
 	//16.reinit appium
 	public AndroidDriver reInit(String pkg) {
+		this.driver.quit();
 		String launchActivity = "";
 		switch (pkg) {
 			case "com.dji.industry.pilot":

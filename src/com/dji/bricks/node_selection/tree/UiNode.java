@@ -139,7 +139,7 @@ public class UiNode extends BasicTreeNode {
 				flag = true;
 			}
 		}
-//		
+		
 //		String text = getAttribute("text");
 //		if (text != null && !text.equals("")) {
 //			text = text.replaceAll("\"", "\\\\\"");
@@ -150,7 +150,9 @@ public class UiNode extends BasicTreeNode {
 //				xpath += "[@text=\'" + text + "\'";
 //				flag = true;
 //			}
+			
 //		}
+		
 		String content_desc = getAttribute("content-desc");
 		if(!content_desc.equals("")){
 			content_desc = content_desc.replaceAll("'", "\\\\'");

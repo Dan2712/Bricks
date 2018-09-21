@@ -62,6 +62,7 @@ public class AppiumInit {
         capabilities.setCapability("--session-override", true);    //override session everytime， otherwise cannot start a new session second time
         capabilities.setCapability("ignoreUnimportantViews", false);
         capabilities.setCapability("newCommandTimeout", 1800);
+        capabilities.setCapability("systemPort", 8201);
 
         try {
 			driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
