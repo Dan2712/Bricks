@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
@@ -44,8 +43,7 @@ public class UiAutomatorHelper {
         return apiLevel >= UIAUTOMATOR_MIN_API_LEVEL;
     }
 
-    @SuppressWarnings("deprecation")
-	private static void getUiHierarchyFile(IDevice device, File dst,
+    private static void getUiHierarchyFile(IDevice device, File dst,
             IProgressMonitor monitor, boolean compressed) {
         if (monitor == null) {
             monitor = new NullProgressMonitor();
@@ -77,14 +75,22 @@ public class UiAutomatorHelper {
                     UIDUMP_DEVICE_PATH);
         }
         CountDownLatch commandCompleteLatch = new CountDownLatch(1);
-
+        
+        CollectingOutputReceiver xmlReceiver = new CollectingOutputReceiver(commandCompleteLatch);
+        boolean isGetXml = false;
         try {
-            device.executeShellCommand(
-                    command,
-                    new CollectingOutputReceiver(commandCompleteLatch),
-                    XML_CAPTURE_TIMEOUT_SEC * 1000, TimeUnit.SECONDS);
-            commandCompleteLatch.await(XML_CAPTURE_TIMEOUT_SEC, TimeUnit.SECONDS);
-
+//        	while (!isGetXml) {
+	            device.executeShellCommand(
+	                    command, xmlReceiver,
+	                    XML_CAPTURE_TIMEOUT_SEC * 1000, TimeUnit.SECONDS);
+	            commandCompleteLatch.await(XML_CAPTURE_TIMEOUT_SEC, TimeUnit.SECONDS);
+	            xmlReceiver.flush();
+	            String receiverOutput = xmlReceiver.getOutput();
+	            xmlReceiver.clearBuffer();
+	            if (receiverOutput.equals("UI hierchary dumped to: /data/local/tmp/uidump.xml\n"))
+	            	isGetXml = true;
+//        	}
+            
             monitor.subTask("Pull UI XML snapshot from device...");
             device.pullFile(UIDUMP_DEVICE_PATH,
                     dst.getAbsolutePath());

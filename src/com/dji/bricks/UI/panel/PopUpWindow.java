@@ -234,7 +234,7 @@ public class PopUpWindow extends JFrame {
                     }
                 	
                 	String ele_path_text = xpath.toString();
-					String expect_text = ver_text_input.getText();
+					String expect_text = new String(ver_text_input.getText().getBytes(), "UTF-8");
 					
 					BrickBean brick_valText = new BrickBean();
 					brick_valText.setProperty("val");
@@ -481,7 +481,7 @@ public class PopUpWindow extends JFrame {
 				    	table_row[4] = "N/A";
 	                	
 	                	Map<String, Object> params_set_text = new HashMap<>();
-	                    params_set_text.put("inputText", text_content.getText());
+	                    params_set_text.put("inputText", new String(text_content.getText().getBytes(), "UTF-8"));
 	                    if (brick != null) {
 	                    	brick.setParams(params_set_text);
 	                    }
@@ -492,7 +492,7 @@ public class PopUpWindow extends JFrame {
 						table_row[4] = "N/A";
 						
 						Map<String, Object> params_spinner = new HashMap<>();
-						params_spinner.put("choose", text_content.getText());
+						params_spinner.put("choose", new String(text_content.getText().getBytes(), "UTF-8"));
 						if (brick != null) {
 							brick.setParams(params_spinner);
 						}
@@ -503,7 +503,7 @@ public class PopUpWindow extends JFrame {
 						table_row[4] = "N/A";
 						
 						Map<String, Object> params_adb = new HashMap<>();
-						params_adb.put("cmd", text_content.getText());
+						params_adb.put("cmd", new String(text_content.getText().getBytes(), "UTF-8"));
 						if (brick != null) {
 							brick.setParams(params_adb);
 						}
