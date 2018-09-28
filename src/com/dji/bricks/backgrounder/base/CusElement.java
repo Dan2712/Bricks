@@ -37,7 +37,6 @@ public class CusElement {
 			}
 		});
 //		element = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(eleModify)));
-		
 		return element;
 	}
 }

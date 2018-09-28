@@ -306,6 +306,8 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
     	comboxActName.addItem("Save text to tmp");
     	comboxActName.addItem("Send adb cmd");
     	comboxActName.addItem("Appium reinit");
+    	comboxActName.addItem("Open switch");
+    	comboxActName.addItem("Close switch");
     	comboxActName.setSelectedItem(null);
 		comboxActName.addItemListener(new ActListener());
 		JLabel ActNull = new JLabel();
@@ -968,6 +970,12 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 					case "Appium reinit":
 						action = 16;
 						break;
+					case "Open switch":
+						action = 17;
+						break;	
+					case "Close switch":
+						action = 18;
+						break;
 				}
 			}
 		}
@@ -1324,6 +1332,12 @@ public class CasecrePanel extends JPanel implements Observer, GlobalObserver{
 				break;
 			case 16:
 				act_name = "Appium reinit";
+				break;
+			case 17:
+				act_name = "Open switch";
+				break;
+			case 18:
+				act_name = "Close switch";
 				break;
 		}
 		

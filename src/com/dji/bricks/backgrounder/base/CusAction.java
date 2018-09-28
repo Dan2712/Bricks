@@ -129,7 +129,6 @@ public class CusAction {
 				}
 			}
 		}
-		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 	}
 	
 	public void swipe(double position, String containerPath, int heading) {
@@ -266,5 +265,18 @@ public class CusAction {
 		AppiumInit init = AppiumInit.getInstance(device, pkg, launchActivity);
 		init.setUp();
 		return init.getDriver();
+	}
+	
+	//17. open switch 
+	public void openswitch(WebElement ele) {
+		if( !Boolean.valueOf(ele.getAttribute("checked")) ) {
+			ele.click();
+		}
+	}
+	//18. close switch 
+	public void closeswitch(WebElement ele) {
+		if( Boolean.valueOf(ele.getAttribute("checked")) ) {
+			ele.click();
+		}
 	}
 }

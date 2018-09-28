@@ -28,6 +28,7 @@ import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.RawImage;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.SyncException;
 import com.android.ddmlib.TimeoutException;
 import com.dji.bricks.backgrounder.base.CusAction;
 import com.dji.bricks.backgrounder.base.CusElement;
@@ -151,15 +152,17 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					if (!caseFailRecord.exists())
 						caseFailRecord.mkdirs();
 					
+					String a[] = caseName.split(".json");
+					
 					try {
-						getScreenshot(caseFailRecordPath, actionCount);
+						getScreenshot(caseFailRecordPath + File.separator + a[0], actionCount);
 					} catch (TimeoutException | AdbCommandRejectedException | IOException
-							| ShellCommandUnresponsiveException e2) {
+							| ShellCommandUnresponsiveException | SyncException e2) {
 						e2.printStackTrace();
 					}
 					resultList[2] = "Fail";
 					resultList[3] = e.getMessage();
-					resultList[4] = caseFailRecordPath + "-" + caseName + "-" + actionCount;
+					resultList[4] = caseFailRecordPath + File.separator + a[0] + "_" + actionCount + ".png";
 					action.keyBACK();
 					try {
 						Thread.sleep(300);
@@ -287,6 +290,14 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 				validation.setDriver(driver);
 				logText.append("Appium reinit" + "\n");
 				break;
+			case 17:
+				action.openswitch(ele_sub);
+				logText.append(this.ele_customName + " switch has opened" + "\n");
+				break;
+			case 18:
+				action.closeswitch(ele_sub);
+				logText.append(this.ele_customName + " switch has closed" + "\n");
+				break;
 		}
 		
 	}
@@ -325,13 +336,20 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		return caseName;
 	}
 	
-	private void getScreenshot(String screenshotRunPath, int actionCount) throws TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException {
-		//adb screenshot
+	private void getScreenshot(String screenshotRunPath, int actionCount) throws TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException, SyncException {
+//		//adb screenshot
+//		String screenpath="/sdcard/" + actionCount+ ".png";
+//		Runtime.getRuntime().exec("cmd /c adb shell screencap -p " + screenpath );
+//		Runtime.getRuntime().exec("cmd /c adb pull " + screenpath + " " +  screenshotRunPath );
+//		Runtime.getRuntime().exec("cmd /c adb shell rm " + screenpath);
+//		
 		String screenpath="/sdcard/" + actionCount+ ".png";
-		Runtime.getRuntime().exec("cmd /c adb shell screencap -p " + screenpath );
-		Runtime.getRuntime().exec("cmd /c adb pull " + screenpath + " " +  screenshotRunPath );
-		Runtime.getRuntime().exec("cmd /c adb shell rm " + screenpath);
-//		RawImage rawImg = device.getScreenshot();
+		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
+		device.executeShellCommand("screencap -p " + screenpath, receiver);
+		device.pullFile(screenpath, screenshotRunPath + "_" + actionCount + ".png");
+		Boolean landscape = false;
+		
+		RawImage rawImg = device.getScreenshot();
 //		Boolean landscape = false;
 //		
 //		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
