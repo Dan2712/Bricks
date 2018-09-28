@@ -28,6 +28,7 @@ import com.android.ddmlib.CollectingOutputReceiver;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.RawImage;
 import com.android.ddmlib.ShellCommandUnresponsiveException;
+import com.android.ddmlib.SyncException;
 import com.android.ddmlib.TimeoutException;
 import com.dji.bricks.backgrounder.base.CusAction;
 import com.dji.bricks.backgrounder.base.CusElement;
@@ -136,7 +137,7 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 						Thread.sleep(time);
 					}
 				} catch (Exception e) {
-					caseFailRecordPath = System.getProperty("user.dir") + File.separator + "screenshot/CaseFailScreenshot";
+					caseFailRecordPath = System.getProperty("user.dir") + File.separator + "screenshot/CaseFailScreenshot" + File.separator + caseName.substring(0, caseName.length()-5) + "-" + actionCount;
 					try {
 						CollectingOutputReceiver receiver = new CollectingOutputReceiver();
 						String logCmd = "logcat -v time -d > /sdcard/log-"
@@ -148,18 +149,18 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					}
 
 					File caseFailRecord = new File(caseFailRecordPath);
-					if (!caseFailRecord.exists())
-						caseFailRecord.mkdirs();
+					if (!caseFailRecord.getParentFile().exists())
+						caseFailRecord.getParentFile().mkdirs();
 					
 					try {
 						getScreenshot(caseFailRecordPath, actionCount);
 					} catch (TimeoutException | AdbCommandRejectedException | IOException
-							| ShellCommandUnresponsiveException e2) {
+							| ShellCommandUnresponsiveException | SyncException e2) {
 						e2.printStackTrace();
 					}
 					resultList[2] = "Fail";
 					resultList[3] = e.getMessage();
-					resultList[4] = caseFailRecordPath + "-" + caseName + "-" + actionCount;
+					resultList[4] = caseFailRecordPath;
 					action.keyBACK();
 					try {
 						Thread.sleep(300);
@@ -325,48 +326,12 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 		return caseName;
 	}
 	
-	private void getScreenshot(String screenshotRunPath, int actionCount) throws TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException {
+	private void getScreenshot(String screenshotRunPath, int actionCount) throws TimeoutException, AdbCommandRejectedException, IOException, ShellCommandUnresponsiveException, SyncException {
 		//adb screenshot
 		String screenpath="/sdcard/" + actionCount+ ".png";
-		Runtime.getRuntime().exec("cmd /c adb shell screencap -p " + screenpath );
-		Runtime.getRuntime().exec("cmd /c adb pull " + screenpath + " " +  screenshotRunPath );
-		Runtime.getRuntime().exec("cmd /c adb shell rm " + screenpath);
-//		RawImage rawImg = device.getScreenshot();
-//		Boolean landscape = false;
-//		
-//		CollectingOutputReceiver receiver = new CollectingOutputReceiver();
-//		device.executeShellCommand("dumpsys display | grep 'mDefaultViewport'", receiver, 0, TimeUnit.SECONDS);
-//		switch (Character.getNumericValue(receiver.getOutput().charAt(72))) {
-//			case 0:
-//				landscape = false;
-//				break;
-//			case 1:
-//				landscape = true;
-//				break;
-//		}
-//		
-//		if (landscape) 
-//			rawImg = rawImg.getRotated();
-//
-//		if (rawImg != null) {
-//			BufferedImage image = new BufferedImage(rawImg.width, rawImg.height,  
-//                    BufferedImage.TYPE_INT_RGB);
-//			
-//			int index = 0;
-//		    int IndexInc = rawImg.bpp >> 3;
-//		    for (int y = 0; y < rawImg.height; y++) {
-//		        for (int x = 0; x < rawImg.width; x++) {
-//		            int value = rawImg.getARGB(index);
-//		            index += IndexInc;
-//		            image.setRGB(x, y, value);
-//		        }
-//		    }
-//	
-//		    String filePath = screenshotRunPath + File.separator + caseName + "-" + actionCount + ".png";
-//		    if (!ImageIO.write(image, "png", new File(filePath))) {
-//		        throw new IOException("Failed to find png writer");
-//		    }
-//		}
+		device.executeShellCommand("screencap -p " + screenpath, new CollectingOutputReceiver());
+		device.pullFile(screenpath, screenshotRunPath + ".png");
+		device.executeShellCommand("rm " + screenpath, new CollectingOutputReceiver());
 	}
 	
 	@Override
