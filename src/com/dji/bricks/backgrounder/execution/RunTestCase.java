@@ -137,7 +137,6 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 						Thread.sleep(time);
 					}
 				} catch (Exception e) {
-					caseFailRecordPath = System.getProperty("user.dir") + File.separator + "screenshot/CaseFailScreenshot";
 					caseFailRecordPath = System.getProperty("user.dir") + File.separator + "screenshot/CaseFailScreenshot" + File.separator + caseName.substring(0, caseName.length()-5) + "-" + actionCount;
 					try {
 						CollectingOutputReceiver receiver = new CollectingOutputReceiver();
@@ -150,8 +149,6 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					}
 
 					File caseFailRecord = new File(caseFailRecordPath);
-					if (!caseFailRecord.exists())
-						caseFailRecord.mkdirs();
 					if (!caseFailRecord.getParentFile().exists())
 						caseFailRecord.getParentFile().mkdirs();
 					
@@ -165,11 +162,8 @@ public class RunTestCase implements AppiumWebDriverEventListener{
 					}
 					resultList[2] = "Fail";
 					resultList[3] = e.getMessage();
-<<<<<<< HEAD
 					resultList[4] = caseFailRecordPath + File.separator + a[0] + "_" + actionCount + ".png";
-=======
 					resultList[4] = caseFailRecordPath;
->>>>>>> 0a5e146a88e479046fc90aeb16663681fab40ad6
 					action.keyBACK();
 					try {
 						Thread.sleep(300);
