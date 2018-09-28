@@ -372,7 +372,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
                     	state_text = node_info.get("clickable") + node_info.get("scrollable") + node_info.get("checkable") + node_info.get("focusable") + node_info.get("long-clickable");
                     	xpath_text = node_info.get("xpath");
                     	screen_text = node_info.get("screenPath");
-                    	textview_text = node_info.get("text");
+                    	textview_text = new String(node_info.get("text").getBytes(), "UTF-8");
                     	app_name.put("APP_NAME", app_name_text);
                     	custom_name.put("CUSTOM_NAME", custom_name_text);
                     	activity_name.put("ACTIVITY_NAME", activity_name_text);
@@ -418,7 +418,7 @@ public class ElecrePanel extends JPanel implements Observer, GlobalObserver {
 	                	state_text = node_info.get("clickable") + node_info.get("scrollable") + node_info.get("checkable") + node_info.get("focusable") + node_info.get("long-clickable");
 	                	xpath_text = node_info.get("xpath");
 	                	screen_text = node_info.get("screenPath");
-	                	textview_text = node_info.get("text");
+	                	textview_text = new String(node_info.get("text").getBytes(), "UTF-8");
 	                	app_name.put("APP_NAME", app_name_text);
                     	custom_name.put("CUSTOM_NAME", custom_name_text);
                     	activity_name.put("ACTIVITY_NAME", activity_name_text);
